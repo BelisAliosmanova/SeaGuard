@@ -1,0 +1,19 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: seaguard
+      MYSQL_USER: seaguard
+      MYSQL_PASSWORD: seaguard_local_dev
+      MYSQL_ROOT_PASSWORD: local_root_dev_only
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - seaguard_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+volumes:
+  seaguard_mysql_data:
