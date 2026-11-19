@@ -5,3 +5,6 @@ target/
 .env.*
 !.env.example
 .DS_Store
+
+# Local API keys, never commit
+secrets.properties

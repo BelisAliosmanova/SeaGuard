@@ -71,9 +71,9 @@ function showMapStatus(message) {
 function footprintStyle(feature) {
     const active = feature.id === selected?.id;
     return {
-        color: active ? '#127d88' : '#4e7484',
+        color: active ? '#1e7a36' : '#4d6670',
         weight: active ? 2.5 : 1.5,
-        fillColor: active ? '#20c0bd' : '#8bb1bd',
+        fillColor: active ? '#34c759' : '#9db9b0',
         fillOpacity: active ? .59 : .35
     };
 }
@@ -85,14 +85,10 @@ function initMap(archive) {
         showMapStatus('Картата е недостъпна. Данните са достъпни от списъка с участъци.');
         return;
     }
-    map = L.map('map', {scrollWheelZoom: false});
-    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
-    tiles.on('tileerror', () => showMapStatus('Част от фоновата карта е недостъпна. Границите остават видими.'));
+    let footprints;
+    ({map} = window.SeaMap.create('map', {onReset: m => footprints && m.fitBounds(footprints.getBounds(), {padding: [26, 26]})}));
 
-    const footprints = L.geoJSON(archive, {
+    footprints = L.geoJSON(archive, {
         style: footprintStyle,
         onEachFeature(feature, layer) {
             const label = document.createElement('span');
@@ -105,7 +101,7 @@ function initMap(archive) {
 
     const dots = L.layerGroup(archive.features.map(feature => {
         const center = layers.get(feature.id).getBounds().getCenter();
-        const dot = L.circleMarker(center, {radius: 4, weight: 1.5, color: '#fff', fillColor: '#127d88', fillOpacity: 1});
+        const dot = L.circleMarker(center, {radius: 4, weight: 1.5, color: '#fff', fillColor: '#248a3d', fillOpacity: 1});
         dot.on('click', () => selectSite(feature));
         return dot;
     }));
@@ -116,7 +112,6 @@ function initMap(archive) {
     const reset = byId('reset-map');
     reset.disabled = false;
     reset.addEventListener('click', () => map.fitBounds(footprints.getBounds(), {padding: [26, 26], animate: false}));
-    L.control.scale({imperial: false, position: 'bottomright'}).addTo(map);
 }
 
 function siteCenter(feature) {
@@ -168,6 +163,8 @@ function selectSite(feature) {
     byId('run-report').setAttribute('aria-expanded', 'false');
     const previousLayer = layers.get(selected?.id);
     selected = feature;
+    const ecologistLink = byId('open-ecologist');
+    if (ecologistLink) ecologistLink.href = '/ecologist?site=' + feature.id;
     const selectedLayer = layers.get(feature.id);
     if (selectedLayer) {
         previousLayer?.setStyle(footprintStyle(previousLayer.feature));

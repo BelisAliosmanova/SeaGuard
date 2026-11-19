@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('AI еколог')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/ecologist.css}">
+</head>
+<body>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<a class="skip" href="#workspace">Към разследването</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/layout :: rail('ecologist')}"></aside>
+    <main id="workspace" class="workspace" th:data-provider="${aiProvider}">
+        <header class="masthead">
+            <div>
+                <h1>AI еколог</h1>
+                <p>Избери участък и виж какво застрашава ливадата, защо мислим така и какво да направи екипът първо.</p>
+            </div>
+            <div class="engine-pill" th:classappend="${aiEnabled} ? 'is-ai' : 'is-rules'"
+                 th:title="${aiEnabled} ? 'Докладите и отговорите се пишат от езиков модел' : 'Няма API ключ: отговорите са от правила'">
+                <i></i>
+                <span th:if="${aiProvider == 'claude'}" th:text="'Claude · ' + ${aiModel}">Claude</span>
+                <span th:if="${aiProvider == 'gemini'}" th:text="'Gemini · ' + ${aiModel}">Gemini</span>
+                <span th:if="${aiProvider == 'rules'}">Експертна система, без AI ключ</span>
+            </div>
+        </header>
+
+        <div class="eco-toolbar">
+            <div id="picker" class="eco-picker"></div>
+            <a id="map-link" class="button secondary" th:href="@{/dashboard}"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>Покажи на картата</a>
+        </div>
+
+        <section class="verdict panel section" aria-labelledby="verdict-headline">
+            <div class="verdict-main">
+                <div class="verdict-top">
+                    <span id="verdict-status" class="badge risk-unknown">—</span>
+                    <span id="verdict-meta" class="verdict-meta"></span>
+                </div>
+                <h2 id="verdict-headline" class="verdict-headline">Зареждане…</h2>
+                <dl class="gauges">
+                    <div>
+                        <dt>Риск</dt>
+                        <dd><strong id="risk-score">—</strong><span>/100</span></dd>
+                        <dd class="gauge"><i id="risk-bar"></i></dd>
+                        <dd class="gauge-note">0 = няма сигнали, 100 = всички показатели са високи</dd>
+                    </div>
+                    <div>
+                        <dt>Увереност</dt>
+                        <dd><strong id="confidence">—</strong><span>%</span></dd>
+                        <dd class="gauge confidence"><i id="confidence-bar"></i></dd>
+                        <dd class="gauge-note">Колко пълни и нови са данните за участъка</dd>
+                    </div>
+                </dl>
+            </div>
+            <figure class="profile">
+                <svg id="depth-profile" viewBox="0 0 300 250" role="img" aria-labelledby="profile-caption"></svg>
+                <figcaption id="profile-caption">Колко светлина стига до дъното на ливадата</figcaption>
+            </figure>
+        </section>
+
+        <section class="panel section" aria-labelledby="fresh-title">
+            <header class="panel-head">
+                <div><h2 id="fresh-title">Колко нови са данните</h2><p>Водата се следи почти на живо. Самата ливада е картирана преди години, затова оценката е за условията около нея.</p></div>
+            </header>
+            <div id="freshness" class="fresh-list"></div>
+        </section>
+
+        <div class="grid-2 even section">
+            <section class="panel" aria-labelledby="threats-title">
+                <header class="panel-head"><div><h2 id="threats-title">Какво застрашава ливадата</h2><p>Кликни показател за обяснение, праг и източник</p></div></header>
+                <div id="threats" class="threats"></div>
+            </section>
+            <section class="panel" aria-labelledby="causes-title">
+                <header class="panel-head"><div><h2 id="causes-title">Вероятни причини</h2><p>Процентът показва колко силни са доказателствата</p></div></header>
+                <ol id="causes" class="causes panel-body"></ol>
+            </section>
+        </div>
+
+        <section class="panel section" aria-labelledby="plan-title">
+            <header class="panel-head"><div><h2 id="plan-title">Какво да направим</h2><p>Стъпките са подредени по приоритет</p></div></header>
+            <ol id="actions" class="actions panel-body"></ol>
+        </section>
+
+        <section class="panel section ai-panel" aria-labelledby="ai-title">
+            <header class="panel-head">
+                <div><h2 id="ai-title">Попитай AI еколога</h2><p>Отговорите се опират само на данните за избрания участък</p></div>
+                <div class="segmented" role="tablist" aria-label="Режим">
+                    <button type="button" role="tab" data-tab="ask" aria-pressed="true">Въпрос</button>
+                    <button type="button" role="tab" data-tab="report" aria-pressed="false">Доклад</button>
+                </div>
+            </header>
+            <div class="panel-body" data-panel="ask">
+                <div id="chat" class="chat" aria-live="polite"></div>
+                <div class="suggestions" id="suggestions">
+                    <button type="button">Можем ли да засаждаме тук?</button>
+                    <button type="button">Какво застрашава ливадата най-много?</button>
+                    <button type="button">Ще помогне ли забрана за котвене?</button>
+                    <button type="button">Какво да измерим следващия месец?</button>
+                </div>
+                <form id="ask-form" class="ask-row">
+                    <input id="question" class="input" maxlength="1000" placeholder="Напиши въпрос за този участък" autocomplete="off" aria-label="Въпрос">
+                    <button class="button primary" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg>Попитай</button>
+                </form>
+            </div>
+            <div class="panel-body" data-panel="report" hidden>
+                <div class="report-actions">
+                    <p>Обобщение за морски биолог или община, готово за копиране.</p>
+                    <button id="write-report" class="button primary" type="button"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Напиши доклад</button>
+                    <button id="copy-report" class="button secondary" type="button" hidden>Копирай</button>
+                </div>
+                <div id="report-body" class="report-body"></div>
+            </div>
+        </section>
+
+        <section class="panel section" aria-labelledby="tasks-title">
+            <header class="panel-head">
+                <div><h2 id="tasks-title">План за терена</h2><p>Задачите за този участък, добавени от теб или потвърдени от AI еколога</p></div>
+                <span id="tasks-count" class="badge neutral">0</span>
+            </header>
+            <ul id="tasks" class="tasks"></ul>
+        </section>
+
+        <div class="grid-2 section">
+            <section class="panel" aria-labelledby="trend-title">
+                <header class="panel-head">
+                    <div><h2 id="trend-title">Водата над ливадата по месеци</h2><p>Сателит Copernicus, средно за месеца</p></div>
+                    <div class="segmented" id="trend-switch" role="group" aria-label="Показател">
+                        <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
+                        <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
+                        <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
+                    </div>
+                </header>
+                <div class="panel-body"><div class="trend-wrap"><canvas id="trend" aria-label="Месечна графика"></canvas></div></div>
+            </section>
+            <section class="panel" aria-labelledby="gaps-title">
+                <header class="panel-head"><div><h2 id="gaps-title">Какво не знаем</h2><p>Данни, които биха променили извода</p></div></header>
+                <ul id="gaps" class="gaps panel-body"></ul>
+            </section>
+        </div>
+
+        <details class="panel section sources">
+            <summary><span>Източници на данните</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+            <ul id="evidence" class="evidence panel-body"></ul>
+        </details>
+
+        <p class="page-foot"><span>Оценката е скрининг.</span> Намеси в морето изискват потвърждение от морски биолог.</p>
+    </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/charts.js}"></script>
+<script th:src="@{/js/site-picker.js}"></script>
+<script th:src="@{/js/depth-profile.js}"></script>
+<script th:src="@{/js/ecologist.js}"></script>
+</body>
+</html>

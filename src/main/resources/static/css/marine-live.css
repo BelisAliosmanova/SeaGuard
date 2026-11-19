@@ -1,3 +1,14 @@
-:root{color-scheme:dark}body{margin:0;background:radial-gradient(ellipse at 70% -10%,#134b63 0%,#071c2d 43%,#06121f 85%);color:#eaf7f8;font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}.brand{color:#f1ffff;text-decoration:none;font-weight:850;letter-spacing:.08em}.brand span,.intro em{color:#67eac3;font-style:normal}.intro{padding:35px 0 26px}.intro h1{font-size:clamp(2.4rem,6vw,4.5rem);font-weight:850;letter-spacing:-.045em}.intro p{max-width:700px;color:#b7ced7}.eyebrow{font-size:.72rem;letter-spacing:.15em;color:#87b6c7;font-weight:750}.notice{background:#153743;border:1px solid #367b83;border-radius:14px;padding:15px 20px;margin-bottom:18px;color:#d9f2ef}.notice a,footer a{color:#83e7c9}.panel,.tile{background:linear-gradient(145deg,rgba(21,60,76,.9),rgba(8,31,47,.96));border:1px solid #2b5363;border-radius:18px;padding:23px;box-shadow:0 12px 40px #0002}.tile{min-height:158px}.big{font-size:clamp(2.3rem,5vw,3.6rem);font-weight:800;color:#83e7c9;letter-spacing:-.04em;margin:8px 0}.muted{color:#a5c1ca}.btn-glow{background:#6ee8bd;color:#052d2d;font-weight:800;border-radius:10px;padding:11px 20px}.btn-glow:hover{background:#a0f5d6;color:#052d2d}.form-select{background:#0b2a3c;color:white;border:1px solid #3b6473;min-width:210px}.form-select:focus{background:#0b2a3c;color:white}.metric-select{max-width:220px}.panel h2{font-size:1.25rem;font-weight:750}.chart-container{height:310px;position:relative}hr{border-color:#3b6473}#status.error{color:#ffb4ad}#status.ok{color:#8cf1ce}
-
-.quality-tag{display:inline-block;border:1px solid #417c81;border-radius:999px;padding:6px 12px;color:#b5eadd;font-size:.8rem}.quality-number{font-size:1.65rem;font-weight:750;color:#83e7c9;margin-top:6px}#exportCsv:disabled{opacity:.4}
+/* Marine conditions page. Shared tokens and components are in app.css. */
+.chart-wrap { position: relative; height: 320px; }
+.facts { display: grid; gap: 0; }
+.facts > div { display: grid; grid-template-columns: minmax(130px, 1fr) minmax(0, 1.6fr); gap: 10px; padding-block: 9px; border-top: 1px solid var(--border); font-size: .8rem; }
+.facts > div:first-child { border-top: 0; padding-top: 0; }
+.facts dt { color: var(--muted); font-weight: 550; }
+.facts dd { color: var(--ink); font-weight: 560; overflow-wrap: anywhere; }
+#status:not(.ok):not(.error) .icon { color: var(--accent); }
+@media (max-width: 625px) {
+    .chart-wrap { height: 240px; }
+    .facts > div { grid-template-columns: 1fr; gap: 2px; }
+    .masthead-actions { width: 100%; }
+    .masthead-actions .select-field { flex: 1 1 100%; }
+}

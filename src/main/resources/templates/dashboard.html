@@ -1,24 +1,147 @@
 <!doctype html>
 <html lang="bg" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mission Control | SeaGuard</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
-<link rel="stylesheet" th:href="@{/css/dashboard.css}"></head>
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Мониторинг')}"></th:block>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
 <body>
-<nav class="navbar navbar-dark nav-custom"><div class="container-fluid px-lg-5"><a class="navbar-brand fw-bold" href="/">◈ SEA<span class="accent">GUARD</span></a><div class="d-flex gap-2"><a class="btn btn-sm btn-outline-info" href="/marine-live">◉ Реални морски данни</a><a class="btn btn-sm btn-accent" href="/lab">✦ Подводна лаборатория</a><a class="btn btn-sm btn-outline-light" href="/measurements">Данни</a><a class="btn btn-sm btn-accent" href="/measurements/new">+ Измерване</a></div></div></nav>
-<main class="container-fluid px-lg-5 py-4">
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><div class="eyebrow">BLACK SEA · ENVIRONMENTAL INTELLIGENCE</div><h1 class="display-6 fw-bold mb-1">Мониторинг център <span class="accent">◉</span></h1><p class="muted mb-0">Преглед на измерванията, пространствени данни и обясними сигнали</p></div><div class="d-flex flex-wrap gap-2 align-items-center"><select id="kind" class="form-select form-select-sm dark-select" aria-label="Филтър за тип данни"><option value="all">Всички записи</option><option value="real">Само въведени</option><option value="demo">Само синтетични</option></select><a id="csv" class="btn btn-sm btn-outline-light" href="/measurements/export">↓ CSV</a></div></div>
-<div th:if="${notice}" class="alert alert-warning" th:text="${notice}"></div>
-<div class="lab-promo mb-4">
-    <div><h2>Морски ливади</h2><p>Разгледай историческите граници на участъците и провери какви наблюдения има наблизо.</p></div>
-    <a th:href="@{/seagrass}" class="btn btn-accent">Отвори картата</a>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<a class="skip" href="#workspace">Към съдържанието</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/layout :: rail('dashboard')}"></aside>
+    <main id="workspace" class="workspace">
+        <header class="masthead">
+            <div>
+                <h1>Мониторинг</h1>
+                <p>Състоянието на 35-те морски ливади по крайбрежието и измерванията на екипа. Кликни участък на картата, за да видиш какво го застрашава.</p>
+            </div>
+            <div class="masthead-actions">
+                <a class="button primary" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Ново измерване</a>
+            </div>
+        </header>
+
+        <section class="overview" aria-label="Карта на риска">
+            <div class="map-shell">
+                <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
+                <div class="map-legend-box" aria-hidden="true">
+                    <strong>Риск за ливадата</strong>
+                    <span><i style="background:#ff3b30"></i>Висок</span>
+                    <span><i style="background:#ff9f0a"></i>Повишен</span>
+                    <span><i style="background:#ffcc00"></i>Под наблюдение</span>
+                    <span><i style="background:#34c759"></i>Нисък</span>
+                    <span><i style="background:#0071e3"></i>Теренно измерване</span>
+                </div>
+            </div>
+
+            <aside class="panel site-card" id="site-card" aria-live="polite">
+                <label class="site-card-hint" for="sc-picker">Участък</label>
+                <div id="sc-picker"></div>
+                <div class="sc-row"><span id="sc-status" class="badge risk-unknown">—</span><span id="sc-area" class="muted"></span></div>
+                <div class="sc-score">
+                    <div><strong id="sc-score">—</strong><span>/100 риск</span></div>
+                    <div class="meter"><i id="sc-meter"></i></div>
+                </div>
+                <dl class="sc-facts">
+                    <div><dt>Главна заплаха</dt><dd id="sc-threat">—</dd></div>
+                    <div><dt>Най-вероятна причина</dt><dd id="sc-cause">—</dd></div>
+                    <div><dt>Първа стъпка</dt><dd id="sc-action">—</dd></div>
+                </dl>
+                <div class="sc-fresh">
+                    <span class="sc-fresh-title">Колко нови са данните</span>
+                    <ul id="sc-fresh"></ul>
+                </div>
+                <a id="sc-link" class="button primary sc-cta" th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Пълно разследване</a>
+            </aside>
+        </section>
+
+        <dl class="stats section" aria-label="Обобщение">
+            <div><dt><i class="dot" style="background:#ff3b30"></i>Висок и повишен риск</dt><dd id="n-risk">—</dd><dd class="context">Участъци, които се нуждаят от проверка на терен</dd></div>
+            <div><dt><i class="dot" style="background:#ffcc00"></i>Под наблюдение</dt><dd id="n-watch">—</dd><dd class="context">Умерени сигнали, следят се</dd></div>
+            <div><dt><i class="dot" style="background:#34c759"></i>Нисък риск</dt><dd id="n-low">—</dd><dd class="context">Без силни сигнали в данните</dd></div>
+            <div><dt><i class="dot" style="background:#0071e3"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd><dd class="context">Въведени от екипа</dd></div>
+        </dl>
+
+        <section class="panel section" aria-labelledby="queue-title">
+            <header class="panel-head">
+                <div>
+                    <h2 id="queue-title">Ред за теренни проверки</h2>
+                    <p>Къде да отиде екипът първо. Рискът (0–100) обединява светлина до дъното, хранителни вещества, топлина, мътност и близост до пристанища.</p>
+                </div>
+                <a class="button ghost small" th:href="@{/ecologist}">Всички 35 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            </header>
+            <div class="table-wrap">
+                <table class="table queue">
+                    <thead><tr><th>#</th><th>Участък</th><th>Риск</th><th>Главна заплаха</th><th>Най-вероятна причина</th><th></th></tr></thead>
+                    <tbody id="queue"><tr><td colspan="6" class="empty">Зареждане…</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel section" aria-labelledby="team-tasks-title">
+            <header class="panel-head">
+                <div><h2 id="team-tasks-title">План за терена</h2><p>Всички задачи на екипа. Добавят се от страницата на AI еколога.</p></div>
+            </header>
+            <ul id="team-tasks" class="team-tasks"><li class="empty">Зареждане…</li></ul>
+        </section>
+
+        <section class="section measurements" aria-labelledby="meas-title">
+            <header class="section-head">
+                <div>
+                    <h2 id="meas-title">Теренни измервания</h2>
+                    <p>Стойности, измерени на място от екипа: термометър, сонда, Secchi диск. AI екологът ги използва, когато са до 2 km от ливада.</p>
+                </div>
+                <a class="button secondary" th:href="@{/measurements/export}"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>CSV</a>
+            </header>
+
+            <div id="meas-empty" class="panel empty-card" hidden>
+                <svg class="icon" aria-hidden="true"><use href="#i-table"/></svg>
+                <h3>Още няма измервания</h3>
+                <p>Първото измерване с координати се появява на картата като синя точка и влиза в оценката на най-близката ливада.</p>
+                <a class="button primary" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Добави измерване</a>
+            </div>
+
+            <div id="meas-content" hidden>
+                <div class="grid-2">
+                    <section class="panel" aria-labelledby="trend-title">
+                        <header class="panel-head">
+                            <div><h2 id="trend-title">Как се променят стойностите</h2><p>По място във времето</p></div>
+                            <div class="segmented" id="metric-switch" role="group" aria-label="Показател">
+                                <button type="button" data-metric="temperature" aria-pressed="true">Температура</button>
+                                <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
+                                <button type="button" data-metric="salinity" aria-pressed="false">Соленост</button>
+                            </div>
+                        </header>
+                        <div class="panel-body"><div class="chart-wrap"><canvas id="trend" aria-label="Графика на избрания показател"></canvas></div></div>
+                    </section>
+                    <section class="panel alerts-panel" aria-labelledby="alerts-title">
+                        <header class="panel-head"><div><h2 id="alerts-title">Необичайни стойности</h2><p>Последното измерване се отклонява с над 20 % от средното за мястото</p></div></header>
+                        <div id="alerts" class="alerts" aria-live="polite"></div>
+                    </section>
+                </div>
+                <section class="panel section" aria-labelledby="rows-title">
+                    <header class="panel-head">
+                        <div><h2 id="rows-title">Последни измервания</h2></div>
+                        <a class="button ghost small" th:href="@{/measurements}">Всички <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                    </header>
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead><tr><th>Място</th><th>Дата</th><th class="num">Температура</th><th class="num">Мътност</th><th class="num">Соленост</th><th>Източник</th></tr></thead>
+                            <tbody id="rows"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
 </div>
-<div class="lab-promo mb-4"><div><strong>НОВО · DIVE LAB</strong><h2>Влез под повърхността.</h2><p>Промени температурата, мътността и човешкия натиск. Виж как се променя виртуалната морска ливада и защо.</p></div><a href="/lab" class="btn btn-accent">Отвори подводната лаборатория ↗</a></div><div class="demo-notice mb-4"><strong>Достоверност на данните:</strong> <span id="data-warning">Записите, маркирани „СИНТЕТИЧНИ“, са измислени за демонстрация. Ръчно въведените данни не са независимо проверени.</span></div>
-<div class="row g-3 mb-4"><div class="col-sm-6 col-xl-3"><div class="metric"><div class="eyebrow">ОБЩО ЗАПИСИ</div><div class="metric-value" id="total" th:text="${count}">0</div><div class="muted small">В избрания изглед</div></div></div><div class="col-sm-6 col-xl-3"><div class="metric"><div class="eyebrow">НАБЛЮДАВАНИ МЕСТА</div><div class="metric-value" id="places" th:text="${places}">0</div><div class="muted small">Уникални локации</div></div></div><div class="col-sm-6 col-xl-3"><div class="metric"><div class="eyebrow">РЪЧНО ВЪВЕДЕНИ</div><div class="metric-value" id="real" th:text="${realCount}">0</div><div class="muted small">Не са независимо проверени</div></div></div><div class="col-sm-6 col-xl-3"><div class="metric"><div class="eyebrow">СИНТЕТИЧНИ ЗАПИСИ</div><div class="metric-value warning" id="demo" th:text="${demoCount}">0</div><div class="muted small">Само за демонстрация</div></div></div></div>
-<div class="row g-3 mb-4"><div class="col-xl-7"><section class="panel"><div class="panel-head"><div><h2>Географски преглед</h2><p>Точки с въведени координати</p></div><span class="pill">OPENSTREETMAP</span></div><div id="map"></div><div class="map-footer">Точките показват местоположение на записи, не доказано разпространение на морски треви.</div></section></div><div class="col-xl-5"><section class="panel h-100"><div class="panel-head"><div><h2>Ранни сигнали</h2><p>Отклонения спрямо предишни записи</p></div><span class="pill">EXPLAINABLE</span></div><div id="alerts" class="alerts"><div class="empty">Зареждане...</div></div><div class="panel-foot">Сигналите използват предварително зададен статистически критерий (20%), а не научно валидирани екологични прагове.</div></section></div></div>
-<div class="row g-3 mb-4"><div class="col-xl-8"><section class="panel"><div class="panel-head"><div><h2>Динамика на показателите</h2><p>Времеви редове от записите в системата</p></div><select id="metric" class="form-select form-select-sm dark-select" aria-label="Показател"><option value="temperature">Температура °C</option><option value="turbidity">Мътност NTU</option><option value="salinity">Соленост PSU</option></select></div><div class="chart-wrap"><canvas id="trend"></canvas></div></section></div><div class="col-xl-4"><section class="panel h-100"><div class="panel-head"><div><h2>Сценарий за журито</h2><p>Покажи как работи системата</p></div></div><div class="p-3"><div class="scenario"><div class="eyebrow mb-2">01 / ДАННИ</div><h3>Зареди демонстрационен сценарий</h3><p>36 ясно маркирани синтетични измервания от 3 района. В Созопол има умишлено добавено отклонение.</p><form method="post" action="/demo/load"><button class="btn btn-accent w-100" type="submit">▶ Зареди DEMO сценарий</button></form></div><div class="scenario mt-3"><div class="eyebrow mb-2">02 / ПРОВЕРКА</div><h3>Проследи сигнала</h3><p>Разгледай графиката, сравнението с предходните стойности и ограниченията на анализа.</p></div><form method="post" action="/demo/clear" class="mt-3"><button class="btn btn-sm btn-outline-warning w-100" type="submit">Изчисти само синтетичните данни</button></form></div></section></div></div>
-<section class="panel mb-4"><div class="panel-head"><div><h2>Последни записи</h2><p>Проверими полета: време, място, източник и тип</p></div><a class="btn btn-sm btn-outline-light" href="/measurements">Всички записи →</a></div><div class="table-responsive"><table class="table table-dark table-hover mb-0"><thead><tr><th>МЯСТО</th><th>ДАТА</th><th>ТЕМП.</th><th>МЪТНОСТ</th><th>ТИП</th><th>ИЗТОЧНИК</th></tr></thead><tbody id="rows"><tr><td colspan="6" class="text-center muted">Няма заредени записи.</td></tr></tbody></table></div></section>
-<footer class="muted small pb-3">SeaGuard · Hackathon prototype · Мониторинг на условията, не автоматична диагноза за състоянието на морските треви.</footer>
-</main>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script><script th:src="@{/js/dashboard.js}"></script>
-</body></html>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/charts.js}"></script>
+<script th:src="@{/js/seamap.js}"></script>
+<script th:src="@{/js/site-picker.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

@@ -1,99 +1,4 @@
-@font-face {
-    font-family: Inter;
-    src: url('../fonts/inter-latin.woff2') format('woff2');
-    font-display: swap;
-    font-weight: 400 750;
-}
-@font-face {
-    font-family: Inter;
-    src: url('../fonts/inter-cyrillic.woff2') format('woff2');
-    font-display: swap;
-    font-weight: 400 750;
-    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-}
-:root {
-    color-scheme: light;
-    --canvas: #f5f7fa;
-    --rail: #fbfcfe;
-    --paper: #fff;
-    --ink: #172733;
-    --muted: #526171;
-    --border: #dfe6ed;
-    --control: #c8d3df;
-    --action: #182c3b;
-    --accent: #076b75;
-    --accent-soft: #e8f5f6;
-    --well: #f1f4f8;
-    --water: #e0e9ee;
-    --radius: 12px;
-}
-* { box-sizing: border-box; }
-[hidden] { display: none !important; }
-body {
-    margin: 0;
-    background: var(--canvas);
-    color: var(--ink);
-    font: 450 14px/1.5 Inter, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-}
-::selection { color: var(--ink); background: #c8ecef; }
-h1, h2, h3, p, dl, dd, ol, figure { margin: 0; }
-h2 { font-size: 1rem; font-weight: 650; letter-spacing: -.021em; }
-button, select, input { font: inherit; }
-a { color: var(--accent); text-underline-offset: .19em; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-.symbols { position: absolute; width: 0; height: 0; overflow: hidden; }
-.icon {
-    display: block;
-    flex: 0 0 auto;
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    stroke-width: 1.65;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
-}
-.skip { position: absolute; top: 12px; left: 12px; z-index: 1200; background: var(--paper); padding: 10px; }
-.skip:not(:focus) { clip-path: inset(50%); }
-.app-shell { display: grid; grid-template-columns: 192px minmax(0, 1fr); min-height: 100vh; }
-.rail {
-    position: sticky;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    align-self: start;
-    gap: 34px;
-    height: 100dvh;
-    min-height: 320px;
-    padding: 29px 12px 20px;
-    border-right: 1px solid var(--border);
-    background: var(--rail);
-}
-.brand { display: flex; align-items: center; gap: 10px; margin-left: 8px; color: var(--ink); text-decoration: none; font-size: 1.12rem; letter-spacing: -.033em; font-weight: 700; }
-.brand-mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 7px; background: var(--action); color: #9ee4e7; }
-.brand-mark .icon { width: 21px; height: 21px; }
-.rail nav { display: grid; gap: 4px; }
-.rail nav a {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    border-radius: 7px;
-    min-height: 39px;
-    padding: 7px 9px;
-    color: var(--muted);
-    font-size: .795rem;
-    font-weight: 560;
-    text-decoration: none;
-}
-.rail nav a:hover { background: var(--well); color: var(--ink); }
-.rail nav a[aria-current="page"] { background: #eaf3f5; color: #15434a; font-weight: 650; }
-.rail nav a[aria-current="page"] .icon { color: var(--accent); }
-.rail-link { margin: auto 9px 0; color: var(--muted); font-size: .77rem; }
-.workspace { width: 100%; max-width: 1435px; margin-inline: auto; padding: 29px 34px 22px; }
-.masthead { display: flex; align-items: end; justify-content: space-between; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-.masthead h1 { font-size: 2rem; line-height: 1.16; font-weight: 650; letter-spacing: -.038em; }
-.masthead p { color: var(--muted); margin-top: 5px; }
+/* Marine atlas page. Shared tokens, shell and buttons are in app.css. */
 .archive-count { color: var(--muted); white-space: nowrap; font-size: .77rem; font-variant-numeric: tabular-nums; }
 .atlas-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 10px 20px; margin-block: 14px 14px; }
 .site-selector { width: min(100%, 316px); }
@@ -114,28 +19,6 @@ a { color: var(--accent); text-underline-offset: .19em; }
     font-size: .85rem;
 }
 .toolbar-actions, .footage-actions { display: flex; align-items: center; gap: 8px; }
-.button {
-    border: 1px solid transparent;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-height: 40px;
-    padding: 8px 12px;
-    text-decoration: none;
-    white-space: nowrap;
-    font-size: .79rem;
-    font-weight: 650;
-    line-height: 1.3;
-    cursor: pointer;
-}
-.button .icon { width: 16px; height: 16px; }
-.primary { color: #fff; background: var(--action); }
-.primary:hover { background: #254355; }
-.secondary { background: var(--paper); color: var(--ink); border-color: var(--control); }
-.secondary:hover { background: var(--well); }
-.button:disabled { opacity: .55; cursor: default; }
 .site-stats {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -173,13 +56,13 @@ a { color: var(--accent); text-underline-offset: .19em; }
 .metric-switch button[aria-pressed="true"] { color: var(--accent); background: var(--paper); box-shadow: 0 1px 2px #1a36421c; }
 .water-chart { height: 242px; margin-inline: 11px; }
 .water-chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.water-chart text { font: 500 11px Inter, system-ui, sans-serif; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.water-chart text { font: 500 11px var(--sans); fill: var(--muted); font-variant-numeric: tabular-nums; }
 .chart-gridline { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 3; }
 .chart-area { fill: var(--accent-soft); pointer-events: none; }
 .chart-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .chart-marker { fill: var(--paper); stroke: var(--accent); stroke-width: 1.55; pointer-events: none; }
 .is-current .chart-marker { fill: var(--accent); }
-.chart-guide { display: none; stroke: #a3cfd3; stroke-width: 1; stroke-dasharray: 4 4; pointer-events: none; }
+.chart-guide { display: none; stroke: #9fcfb4; stroke-width: 1; stroke-dasharray: 4 4; pointer-events: none; }
 .is-current .chart-guide { display: block; }
 .chart-hit { fill: transparent; cursor: crosshair; }
 .chart-caption { min-height: 29px; margin-inline: 15px; color: var(--accent); font-size: .77rem; font-weight: 650; font-variant-numeric: tabular-nums; }
@@ -190,20 +73,13 @@ a { color: var(--accent); text-underline-offset: .19em; }
 .water-details th, .water-details td { border-top: 1px solid var(--border); padding: 5px 3px; text-align: right; }
 .water-details :is(th, td):first-child { text-align: left; }
 .trends-panel:has(#water-figure[hidden]) { min-height: 116px; }
-.map-frame { margin-inline: 10px; }
-#map { height: 267px; background: var(--water); border-radius: 8px; z-index: 0; }
-#map .leaflet-tile-pane { filter: saturate(.38) brightness(1.02); }
-#map .leaflet-control-zoom { border: 1px solid #aebdca; border-radius: 7px; overflow: hidden; }
-#map .leaflet-control-zoom a { color: var(--ink); font: 550 19px/30px Inter, sans-serif; border-radius: 0; }
-#map .leaflet-control-zoom a:hover { background: var(--well); }
-#map .leaflet-control-zoom a:focus-visible { outline-offset: -3px; }
-#map .leaflet-control-zoom a.leaflet-disabled { color: #8595a2; }
-#map .leaflet-control-scale-line { border-color: #5b7282; color: #273b48; background: #fffffff2; }
+.map-frame { margin-inline: 10px; border-radius: 8px; }
+#map { height: 380px; min-height: 0; }
 .chart-footer { min-height: 42px; flex-wrap: wrap; }
 .map-legend { display: flex; flex-wrap: wrap; gap: 6px 11px; }
 .map-legend span { display: inline-flex; gap: 6px; align-items: center; }
-.map-swatch { width: 11px; height: 8px; border: 1px solid #4e7484; background: #ccdee3; border-radius: 2px; }
-.map-swatch.is-selected { border-color: #127d88; background: #76d2d0; }
+.map-swatch { width: 11px; height: 8px; border: 1px solid #4d6670; background: #d3e4dc; border-radius: 2px; }
+.map-swatch.is-selected { border-color: #1e7a36; background: #34c759; }
 .map-status { padding: 7px 13px; }
 #site-coordinates { font-variant-numeric: tabular-nums; }
 .report, .footage { margin-top: 15px; scroll-margin-top: 16px; }
@@ -256,28 +132,10 @@ a { color: var(--accent); text-underline-offset: .19em; }
 }
 
 @media (max-width: 1060px) {
-    .app-shell { grid-template-columns: 151px minmax(0, 1fr); }
-    .rail { padding-inline: 8px; }
-    .workspace { padding-inline: 18px; }
 }
 @media (max-width: 865px) {
-    .app-shell { display: block; }
-    .rail { position: static; height: auto; min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 5px 14px; padding: 9px 13px; border-right: 0; border-bottom: 1px solid var(--border); }
-    .brand { margin-left: 0; }
-    .rail nav { display: flex; flex-wrap: wrap; gap: 2px; }
-    .rail nav a { min-height: 33px; font-size: .75rem; padding: 5px 7px; }
-    .rail nav .icon { width: 15px; height: 15px; }
-    .rail-link { display: none; }
-    .workspace { padding: 17px 13px; }
 }
 @media (max-width: 625px) {
-    .rail { gap: 5px; }
-    .rail nav { display: grid; grid-template-columns: repeat(4, auto); width: 100%; }
-    .rail nav a { justify-content: center; padding-inline: 4px; font-size: .72rem; }
-    .rail nav .icon { display: none; }
-    .masthead { align-items: start; padding-bottom: 9px; flex-wrap: wrap; gap: 5px; }
-    .masthead h1 { font-size: 1.55rem; }
-    .masthead p { font-size: .78rem; margin-top: 2px; }
     .archive-count { white-space: normal; font-size: .72rem; }
     .atlas-toolbar { display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; margin-block: 9px; }
     .site-selector { width: 100%; }
@@ -290,7 +148,7 @@ a { color: var(--accent); text-underline-offset: .19em; }
     .atlas-grid { grid-template-columns: 1fr; gap: 9px; margin-top: 9px; }
     .chart-toolbar { min-height: 54px; padding-inline: 10px; }
     .water-chart { height: 166px; }
-    #map { height: 237px; }
+    #map { height: 300px; }
     .chart-footer { padding-inline: 10px; }
     .footage { grid-template-columns: 1fr; }
     .sample-figure { grid-area: auto; min-height: 116px; }
@@ -298,6 +156,5 @@ a { color: var(--accent); text-underline-offset: .19em; }
     .findings > div { grid-template-columns: 1fr; gap: 3px; }
 }
 @media (max-width: 350px) {
-    .rail nav { grid-template-columns: repeat(2, 1fr); }
     .trends-toolbar { flex-wrap: wrap; }
 }

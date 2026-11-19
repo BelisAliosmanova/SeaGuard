@@ -1,45 +1,20 @@
 <!doctype html>
 <html lang="bg" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f5f7fa">
-    <title>Морски атлас | SeaGuard</title>
+    <th:block th:replace="~{fragments/layout :: head('Морски атлас')}"></th:block>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" th:href="@{/css/seagrass.css}">
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script defer th:src="@{/js/seamap.js}"></script>
     <script type="module" th:src="@{/js/seagrass.js}"></script>
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" class="symbols" aria-hidden="true">
-    <symbol id="i-brand" viewBox="0 0 24 24"><path d="M4 9c4.7 0 6.6-4 10.6-4C17 5 19 6 20 7.5M4 14c4.7 0 6.6-4 10.6-4C17 10 19 11 20 12.5M4 19c4.7 0 6.6-4 10.6-4C17 15 19 16 20 17.5"/></symbol>
-    <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/></symbol>
-    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-5 4 2 5-6"/></symbol>
-    <symbol id="i-water" viewBox="0 0 24 24"><path d="M2 8c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2M2 13c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2M2 18c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2"/></symbol>
-    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6m-5 0v7L5 19a1.5 1.5 0 0 0 1.3 2h11.4a1.5 1.5 0 0 0 1.3-2l-5-9V3M8 15h8"/></symbol>
-    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></symbol>
-    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
-    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
-    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h4l2-3h4l2 3h4a1 1 0 0 1 1 1v11H3V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3"/></symbol>
-    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 16v4h16v-4"/></symbol>
-</svg>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
 <a class="skip" href="#workspace">Към атласа</a>
 <div class="app-shell">
-    <aside class="rail">
-        <a class="brand" th:href="@{/}">
-            <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-brand"/></svg></span>
-            <span>SeaGuard</span>
-        </a>
-        <nav aria-label="Основна навигация">
-            <a th:href="@{/seagrass}" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>Морски атлас</a>
-            <a th:href="@{/dashboard}"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Мониторинг</a>
-            <a th:href="@{/marine-live}"><svg class="icon" aria-hidden="true"><use href="#i-water"/></svg>Морски условия</a>
-            <a th:href="@{/lab}"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Dive Lab</a>
-        </nav>
-        <a class="rail-link" href="#sources">Източници на данни</a>
-    </aside>
+    <aside th:replace="~{fragments/layout :: rail('atlas')}"></aside>
     <main id="workspace" class="workspace"
           th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
           th:data-satellite-url="@{/data/copernicus-coast.json}"
@@ -59,6 +34,7 @@
             </div>
             <div class="toolbar-actions">
                 <a class="button secondary" href="#footage"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg> Подводни кадри</a>
+                <a id="open-ecologist" class="button secondary" th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg> AI еколог</a>
                 <button type="button" id="run-report" class="button primary" aria-controls="report" aria-expanded="false" disabled>Разследвай <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
             </div>
         </div>
@@ -101,8 +77,8 @@
                         <svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Цялата карта
                     </button>
                 </header>
-                <div class="map-frame">
-                    <div id="map" aria-label="Интерактивна карта на морските ливади"></div>
+                <div class="map-frame map-shell">
+                    <div id="map" class="seamap" aria-label="Интерактивна карта на морските ливади"></div>
                 </div>
                 <p id="map-status" class="map-status" role="status" hidden></p>
                 <footer class="chart-footer">
@@ -140,7 +116,7 @@
                 <div class="footage-actions">
                     <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
                     <input id="footage-file" class="file-input" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
-                    <button id="analyze-example" class="button secondary" type="button" disabled>Пробвай с кадър от Равда</button>
+                    <button id="analyze-example" class="button secondary" type="button" disabled hidden>Пробвай с кадър от Равда</button>
                 </div>
                 <p id="footage-formats" class="fine-print">JPG, PNG, WebP, MP4 или WebM. До три кадъра от видео. Обработка на тази машина.</p>
                 <div id="frame-preview" class="frame-preview" hidden></div>
