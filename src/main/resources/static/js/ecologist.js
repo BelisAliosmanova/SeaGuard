@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  const LEVEL = {LOW: ['risk-low', 'Ниско', '#34c759'], MODERATE: ['risk-moderate', 'Умерено', '#ff9f0a'], HIGH: ['risk-high', 'Високо', '#ff3b30'], UNKNOWN: ['risk-unknown', 'Няма данни', '#c7c7cc']};
+  const LEVEL = {LOW: ['risk-low', 'Ниско', 'var(--marker-low)'], MODERATE: ['risk-moderate', 'Умерено', 'var(--marker-elevated)'], HIGH: ['risk-high', 'Високо', 'var(--marker-high)'], UNKNOWN: ['risk-unknown', 'Няма данни', 'var(--risk-none)']};
   const PRIORITY = {'Спешно': 'p-urgent', 'Висок': 'p-high', 'Среден': 'p-mid', 'Рутинно': 'p-routine'};
   const FRESH = {live: 'На живо', recent: 'Актуални', old: 'Стари', missing: 'Няма'};
   const workspace = $('workspace');
@@ -107,7 +107,8 @@
         'Границата не се зареди. Презареди страницата или избери друг участък.';
       return;
     }
-    const outline = L.geoJSON(feature, {style: {color: '#5bcaff', weight: 3, fillOpacity: .28}});
+    const outlineColor = getComputedStyle(shell).getPropertyValue('--map-outline').trim();
+    const outline = L.geoJSON(feature, {style: {color: outlineColor, weight: 3, fillOpacity: .22}});
     meadowBounds = outline.getBounds();
     shell.hidden = false;
     status.hidden = true;

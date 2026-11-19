@@ -19,7 +19,7 @@ window.DepthProfile = (() => {
     const y = z => top + (z / maxZ) * (bottom - top);
     const light = z => Math.exp(-kd * z);
     const mix = (t) => { // 1 = bright shallow water, 0 = dark
-      const a = [214, 236, 250], b = [34, 86, 140];
+      const a = [190, 197, 174], b = [54, 74, 68];
       return `rgb(${a.map((v, i) => Math.round(b[i] + (v - b[i]) * t)).join(',')})`;
     };
     const defs = node('defs', {});
@@ -38,14 +38,14 @@ window.DepthProfile = (() => {
     const xAtZ = z => left + Math.pow(Math.max(0, z - 0.4) / (maxZ - 0.4), 1 / shape) * (right - left);
     const pts = [];
     for (let x = left; x <= right; x += 4) pts.push(`${x},${y(seabedZ(x)).toFixed(1)}`);
-    node('polygon', {points: `${left},${bottom + 8} ${pts.join(' ')} ${right},${bottom + 8}`, fill: '#ece4d4'});
-    node('polyline', {points: pts.join(' '), fill: 'none', stroke: '#d6cab2', 'stroke-width': 1.2});
+    node('polygon', {points: `${left},${bottom + 8} ${pts.join(' ')} ${right},${bottom + 8}`, fill: '#776851'});
+    node('polyline', {points: pts.join(' '), fill: 'none', stroke: '#ab9875', 'stroke-width': 1.2});
     // Meadow: blades along the seabed down to the depth limit, coloured by light reaching them.
     for (let x = left + 5; x < right; x += 7) {
       const z = seabedZ(x);
       if (z > depth) break;
       const L = light(z), base = y(z) + 1;
-      const colour = L >= .2 ? '#34c759' : L >= .11 ? '#ff9f0a' : '#ff3b30';
+      const colour = L >= .2 ? 'var(--marker-low)' : L >= .11 ? 'var(--marker-elevated)' : 'var(--marker-high)';
       const h = 10 + 14 * Math.min(1, L * 2);
       node('path', {d: `M${x},${base} q-3,${-h / 2} 1,${-h}`, stroke: colour, 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round'});
       node('path', {d: `M${x + 2.5},${base} q4,${-h / 2.2} 1,${-h * .82}`, stroke: colour, 'stroke-width': 1.6, fill: 'none', 'stroke-linecap': 'round', opacity: .85});
@@ -59,8 +59,8 @@ window.DepthProfile = (() => {
     }
     // Depth axis.
     for (let z = 0; z <= maxZ; z += maxZ > 10 ? 4 : 2) {
-      node('line', {x1: left - 4, x2: left, y1: y(z), y2: y(z), stroke: '#c7c7cc'});
-      node('text', {x: left - 7, y: y(z) + 3.5, 'text-anchor': 'end', fill: '#8e8e93', 'font-size': 10}, z + ' m');
+      node('line', {x1: left - 4, x2: left, y1: y(z), y2: y(z), stroke: 'var(--control)'});
+      node('text', {x: left - 7, y: y(z) + 3.5, 'text-anchor': 'end', fill: 'var(--muted)', 'font-size': 10}, z + ' m');
     }
     // Depth-limit marker.
     const xLimit = xAtZ(depth);
@@ -68,9 +68,9 @@ window.DepthProfile = (() => {
     node('circle', {cx: xLimit, cy: y(depth), r: 4.5, fill: '#fff', stroke: '#1d1d1f', 'stroke-width': 1.5});
     const tag = o.lightPct == null ? 'няма данни' : `${fmt(o.lightPct, 0)} % на ${fmt(depth, 0)} m`;
     const tx = Math.max(left + 2, Math.min(xLimit + 8, right - 94));
-    node('rect', {x: tx, y: top + 6, width: 92, height: 20, rx: 5, fill: '#1d1d1f'});
+    node('rect', {x: tx, y: top + 6, width: 92, height: 20, rx: 5, fill: 'var(--sidebar)'});
     node('text', {x: tx + 46, y: top + 20, 'text-anchor': 'middle', fill: '#fff', 'font-size': 11, 'font-weight': 600}, tag);
-    node('text', {x: left + 4, y: top - 8, fill: '#8e8e93', 'font-size': 10}, `Повърхност · Kd ≈ ${fmt(kd, 2)} m⁻¹`);
+    node('text', {x: left + 4, y: top - 8, fill: 'var(--muted)', 'font-size': 10}, `Повърхност · Kd ≈ ${fmt(kd, 2)} m⁻¹`);
     captionEl.textContent = o.lightPct == null
       ? 'Няма сателитни данни за мътността над участъка.'
       : `До долната граница на ливадата стигат около ${fmt(o.lightPct, 0)} % от слънчевата светлина${o.depthAssumed ? ' (дълбочината е приета 5 m)' : ''}.`;

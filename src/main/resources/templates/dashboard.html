@@ -25,10 +25,10 @@
         </header>
 
         <dl class="stats coast-stats" aria-label="Обобщение">
-            <div><dt><i class="dot" style="background:#ff3b30"></i>Висок и повишен риск</dt><dd id="n-risk">—</dd></div>
-            <div><dt><i class="dot" style="background:#ffcc00"></i>Под наблюдение</dt><dd id="n-watch">—</dd></div>
-            <div><dt><i class="dot" style="background:#34c759"></i>Нисък риск</dt><dd id="n-low">—</dd></div>
-            <div><dt><i class="dot" style="background:#0071e3"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd></div>
+            <div><dt><i class="dot" style="background:var(--marker-high)"></i>Висок и повишен риск</dt><dd id="n-risk">—</dd></div>
+            <div><dt><i class="dot" style="background:var(--marker-watch)"></i>Под наблюдение</dt><dd id="n-watch">—</dd></div>
+            <div><dt><i class="dot" style="background:var(--marker-low)"></i>Нисък риск</dt><dd id="n-low">—</dd></div>
+            <div><dt><i class="dot" style="background:var(--marker-field)"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd></div>
         </dl>
 
         <section id="risk-map" class="monitor-grid section" aria-label="Карта на риска и месечна диаграма">
@@ -41,11 +41,11 @@
                     <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
                     <div class="map-legend-box" aria-hidden="true">
                         <strong>Риск за ливадата</strong>
-                        <span><i style="background:#ff3b30"></i>Висок</span>
-                        <span><i style="background:#ff9f0a"></i>Повишен</span>
-                        <span><i style="background:#ffcc00"></i>Под наблюдение</span>
-                        <span><i style="background:#34c759"></i>Нисък</span>
-                        <span><i style="background:#0071e3"></i>Теренно измерване</span>
+                        <span><i style="background:var(--marker-high)"></i>Висок</span>
+                        <span><i style="background:var(--marker-elevated)"></i>Повишен</span>
+                        <span><i style="background:var(--marker-watch)"></i>Под наблюдение</span>
+                        <span><i style="background:var(--marker-low)"></i>Нисък</span>
+                        <span><i style="background:var(--marker-field)"></i>Теренно измерване</span>
                     </div>
                 </div>
             </div>

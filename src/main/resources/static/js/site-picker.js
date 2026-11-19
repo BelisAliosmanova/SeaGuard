@@ -7,7 +7,6 @@ window.SitePicker = (() => {
     {keys: ['watch'], label: 'Под наблюдение'},
     {keys: ['low'], label: 'Нисък риск'}
   ];
-  const COLOR = {high: '#ff3b30', elevated: '#ff9f0a', watch: '#ffcc00', low: '#34c759'};
 
   function el(tag, cls, text) {
     const e = document.createElement(tag);
@@ -66,7 +65,7 @@ window.SitePicker = (() => {
           row.setAttribute('role', 'option');
           row.setAttribute('aria-selected', String(s.id === current));
           const d = el('i', 'picker-dot');
-          d.style.background = COLOR[s.statusKey];
+          d.style.background = `var(--marker-${s.statusKey})`;
           const text = el('span', 'picker-text');
           text.append(el('strong', null, s.name), el('small', null, s.topThreat && s.topThreat !== '—' ? s.topThreat : s.status));
           row.append(d, text, el('span', 'picker-row-score', s.riskScore));
@@ -111,7 +110,7 @@ window.SitePicker = (() => {
       if (!s && id != null) return;
       current = id;
       name.textContent = s?.name || allLabel || 'Избери участък';
-      dot.style.background = s ? COLOR[s.statusKey] : '';
+      dot.style.background = s ? `var(--marker-${s.statusKey})` : '';
       score.textContent = s ? s.riskScore + '/100' : '';
       if (label) trigger.setAttribute('aria-label', `${label} · ${name.textContent}`);
     }

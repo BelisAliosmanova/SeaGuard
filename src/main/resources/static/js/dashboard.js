@@ -203,7 +203,7 @@
         const content = el('div');
         content.append(el('strong', reading.place), el('br'), `${observation} · ${number.format(reading.temperature)} °C`);
         L.circleMarker([reading.latitude, reading.longitude], {
-          radius: 6, weight: 2, color: '#fff', fillColor: '#0071e3', fillOpacity: 1
+          radius: 6, weight: 2, color: '#fff', fillColor: SeaMap.markerColor('field'), fillOpacity: 1
         }).bindTooltip(content, {direction: 'top'}).addTo(map);
       }
     } catch {

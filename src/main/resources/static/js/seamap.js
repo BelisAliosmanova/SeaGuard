@@ -96,7 +96,9 @@ window.SeaMap = (() => {
   }
 
   /** Colour for an AI ecologist status key. */
-  const RISK = {high: '#ff3b30', elevated: '#ff9f0a', watch: '#ffcc00', low: '#34c759'};
+  const css = getComputedStyle(document.documentElement);
+  const markerColor = key => css.getPropertyValue('--marker-' + key).trim();
+  const RISK = Object.fromEntries(['high', 'elevated', 'watch', 'low'].map(key => [key, markerColor(key)]));
   const RISK_LABEL = {high: 'Висок риск', elevated: 'Повишен риск', watch: 'Под наблюдение', low: 'Нисък риск'};
-  return {create, RISK, RISK_LABEL};
+  return {create, markerColor, RISK, RISK_LABEL};
 })();
