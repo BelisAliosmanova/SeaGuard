@@ -71,10 +71,10 @@ function showMapStatus(message) {
 function footprintStyle(feature) {
     const active = feature.id === selected?.id;
     return {
-        color: active ? '#9c542d' : '#396f66',
-        weight: active ? 3 : 1.65,
-        fillColor: active ? '#e6a368' : '#85b5a5',
-        fillOpacity: active ? .75 : .54
+        color: active ? '#127d88' : '#4e7484',
+        weight: active ? 2.5 : 1.5,
+        fillColor: active ? '#20c0bd' : '#8bb1bd',
+        fillOpacity: active ? .59 : .35
     };
 }
 
@@ -105,7 +105,7 @@ function initMap(archive) {
 
     const dots = L.layerGroup(archive.features.map(feature => {
         const center = layers.get(feature.id).getBounds().getCenter();
-        const dot = L.circleMarker(center, {radius: 4, weight: 1.5, color: '#fff', fillColor: '#396f66', fillOpacity: 1});
+        const dot = L.circleMarker(center, {radius: 4, weight: 1.5, color: '#fff', fillColor: '#127d88', fillOpacity: 1});
         dot.on('click', () => selectSite(feature));
         return dot;
     }));
@@ -260,7 +260,7 @@ async function loadAtlas() {
         byId('run-report').disabled = false;
         picker.addEventListener('change', () => selectSite(features.find(feature => String(feature.id) === picker.value)));
         byId('run-report').addEventListener('click', runReport);
-        setText('archive-status', `${number.format(features.length)} картографирани участъка`);
+        setText('archive-status', `${number.format(features.length)} участъка в архива`);
         initMap(archive);
         selectSite(features.find(feature => feature.properties.NAME === 'RavdaS1') ?? features[0]);
     } catch {

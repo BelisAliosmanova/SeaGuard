@@ -90,7 +90,10 @@ export function setupWaterChart(figure, controls) {
         const markers = points.map(point => {
             const position = {cx: x(point.index), cy: y(point.value)};
             const group = svgNode('g', {'data-month': point.index});
-            group.append(svgNode('circle', {...position, r: 4, class: 'chart-marker'}));
+            group.append(
+                svgNode('line', {x1: position.cx, x2: position.cx, y1: top, y2: bottom, class: 'chart-guide'}),
+                svgNode('circle', {...position, r: 3.5, class: 'chart-marker'})
+            );
             const hit = svgNode('circle', {...position, r: 15, class: 'chart-hit'});
             hit.addEventListener('pointerenter', () => highlight(point));
             hit.addEventListener('click', () => highlight(point));

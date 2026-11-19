@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f5f3f0">
+    <meta name="theme-color" content="#f5f7fa">
     <title>Морски атлас | SeaGuard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
@@ -14,12 +14,13 @@
 </head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" class="symbols" aria-hidden="true">
-    <symbol id="i-brand" viewBox="0 0 24 24"><path d="M3 13c2.1 0 2.3-2 4.5-2s2.4 2 4.5 2 2.3-2 4.5-2 2.4 2 4.5 2M3 18c2.1 0 2.3-2 4.5-2s2.4 2 4.5 2 2.3-2 4.5-2 2.4 2 4.5 2M12 6v3m4.2-5.5L14 7M7.8 3.5 10 7"/></symbol>
+    <symbol id="i-brand" viewBox="0 0 24 24"><path d="M4 9c4.7 0 6.6-4 10.6-4C17 5 19 6 20 7.5M4 14c4.7 0 6.6-4 10.6-4C17 10 19 11 20 12.5M4 19c4.7 0 6.6-4 10.6-4C17 15 19 16 20 17.5"/></symbol>
     <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-5 4 2 5-6"/></symbol>
     <symbol id="i-water" viewBox="0 0 24 24"><path d="M2 8c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2M2 13c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2M2 18c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2"/></symbol>
     <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6m-5 0v7L5 19a1.5 1.5 0 0 0 1.3 2h11.4a1.5 1.5 0 0 0 1.3-2l-5-9V3M8 15h8"/></symbol>
     <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h4l2-3h4l2 3h4a1 1 0 0 1 1 1v11H3V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3"/></symbol>
     <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 16v4h16v-4"/></symbol>
@@ -51,7 +52,10 @@
         <div class="atlas-toolbar">
             <div class="site-selector">
                 <label for="site-select">Участък</label>
-                <select id="site-select" disabled><option>Зареждане…</option></select>
+                <div class="select-field">
+                    <select id="site-select" disabled><option>Зареждане…</option></select>
+                    <svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg>
+                </div>
             </div>
             <div class="toolbar-actions">
                 <a class="button secondary" href="#footage"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg> Подводни кадри</a>
@@ -102,7 +106,10 @@
                 </div>
                 <p id="map-status" class="map-status" role="status" hidden></p>
                 <footer class="chart-footer">
-                    <span><i class="map-swatch" aria-hidden="true"></i> Исторически граници</span>
+                    <div class="map-legend">
+                        <span><i class="map-swatch" aria-hidden="true"></i> Исторически граници</span>
+                        <span><i class="map-swatch is-selected" aria-hidden="true"></i> Избран участък</span>
+                    </div>
                     <span id="site-coordinates"></span>
                 </footer>
             </section>
@@ -143,7 +150,7 @@
             <figure class="sample-figure">
                 <img src="/media/ravda-berov.jpg" th:src="@{/media/ravda-berov.jpg}" width="1000" height="666"
                      alt="Морски треви и скалисто дъно край Равда">
-                <figcaption>Подводен кадър край Равда <a href="https://doi.org/10.3897/BDJ.10.e78942.figure4">Berov и съавт.</a></figcaption>
+                <figcaption>Равда · <a href="https://doi.org/10.3897/BDJ.10.e78942.figure4">Berov и съавт.</a></figcaption>
             </figure>
             <section id="analysis-result" class="analysis-result" aria-labelledby="analysis-title" hidden>
                 <h3 id="analysis-title" tabindex="-1">Първичен AI прочит</h3>
