@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#122624">
+    <meta name="theme-color" content="#f5f3f0">
     <title>Морски атлас | SeaGuard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
@@ -20,12 +20,11 @@
     <symbol id="i-water" viewBox="0 0 24 24"><path d="M2 8c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2M2 13c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2M2 18c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2"/></symbol>
     <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6m-5 0v7L5 19a1.5 1.5 0 0 0 1.3 2h11.4a1.5 1.5 0 0 0 1.3-2l-5-9V3M8 15h8"/></symbol>
     <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></symbol>
-    <symbol id="i-frame" viewBox="0 0 24 24"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4M8 12h8m-4-4v8"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
     <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h4l2-3h4l2 3h4a1 1 0 0 1 1 1v11H3V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3"/></symbol>
     <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 16v4h16v-4"/></symbol>
 </svg>
-<a class="skip" href="#workspace">Към картата</a>
+<a class="skip" href="#workspace">Към атласа</a>
 <div class="app-shell">
     <aside class="rail">
         <a class="brand" th:href="@{/}">
@@ -46,65 +45,60 @@
           th:data-measurements-url="@{/api/measurements(kind='real')}"
           th:data-analysis-url="@{/api/seagrass/analysis}">
         <header class="masthead">
-            <div>
-                <h1>Атлас на морските ливади</h1>
-                <p>Изследвай морските треви по българското Черноморие.</p>
-            </div>
-            <a class="button secondary desktop-action" href="#footage">
-                <svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg> Подводни кадри
-            </a>
+            <div><h1>Морски атлас</h1><p>Морски ливади по българското Черноморие</p></div>
+            <span class="archive-count" id="archive-status" role="status">Зареждане на архива…</span>
         </header>
+        <div class="atlas-toolbar">
+            <div class="site-selector">
+                <label for="site-select">Участък</label>
+                <select id="site-select" disabled><option>Зареждане…</option></select>
+            </div>
+            <div class="toolbar-actions">
+                <a class="button secondary" href="#footage"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg> Подводни кадри</a>
+                <button type="button" id="run-report" class="button primary" aria-controls="report" aria-expanded="false" disabled>Разследвай <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            </div>
+        </div>
+        <section id="site-details" class="site-overview" aria-label="Показатели за избрания участък" hidden>
+            <dl class="site-stats">
+                <div><dt>Площ по архив</dt><dd id="site-area"></dd><dd class="metric-context" id="site-date"></dd></div>
+                <div><dt>Граница в дълбочина</dt><dd id="site-depth"></dd><dd class="metric-context">Архив SEANOE</dd></div>
+                <div><dt>Мътност</dt><dd id="water-turbidity"></dd><dd class="metric-context" id="turbidity-month"></dd></div>
+                <div><dt>Хлорофил-а</dt><dd id="water-chlorophyll"></dd><dd class="metric-context" id="chlorophyll-month"></dd></div>
+            </dl>
+        </section>
         <div class="atlas-grid">
-            <section class="evidence-panel" aria-label="Данни за избрания участък">
-                <div class="site-selector">
-                    <label for="site-select">Избери участък</label>
-                    <select id="site-select" disabled><option>Зареждане…</option></select>
-                </div>
-                <div id="site-details" hidden>
-                    <header class="site-heading">
-                        <h2 id="site-title"></h2>
-                        <p id="site-date"></p>
-                    </header>
-                    <dl class="site-stats">
-                        <div><dt>Площ по архив</dt><dd id="site-area"></dd></div>
-                        <div><dt>Граница в дълбочина</dt><dd id="site-depth"></dd></div>
-                    </dl>
-                    <section class="water-panel" aria-labelledby="water-title">
-                        <div class="water-heading">
-                            <h3 id="water-title">Водата около участъка</h3>
-                            <a href="https://doi.org/10.48670/moi-00087" aria-label="Източник Copernicus Marine">Copernicus</a>
-                        </div>
-                        <p id="water-status" role="status"></p>
-                        <dl class="site-stats water-stats" id="water-values" hidden>
-                            <div><dt>Мътност</dt><dd id="water-turbidity"></dd></div>
-                            <div><dt>Хлорофил-а</dt><dd id="water-chlorophyll"></dd></div>
-                        </dl>
-                        <details id="water-details" hidden>
-                            <summary>Качество и предишни месеци</summary>
-                            <p id="water-meta"></p>
-                            <ul id="water-history"></ul>
-                        </details>
-                    </section>
-                    <button type="button" id="run-report" class="button primary" aria-controls="report">
-                        Разследвай участъка <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
-                    </button>
-                </div>
-            </section>
-            <section class="chart-panel" aria-labelledby="map-title">
-                <header class="chart-toolbar">
-                    <div class="map-heading">
-                        <h2 id="map-title">Черноморие</h2>
-                        <p id="archive-status" role="status">Зареждане на архива…</p>
+            <section class="panel trends-panel" aria-labelledby="water-title">
+                <header class="chart-toolbar trends-toolbar">
+                    <div><h2 id="water-title">Водни показатели</h2><p id="water-status" role="status">Зареждане на сателитните данни…</p></div>
+                    <div class="metric-switch" id="metric-switch" role="group" aria-label="Показател на графиката" hidden>
+                        <button type="button" data-metric="turbidity" aria-pressed="true">Мътност</button>
+                        <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил-а</button>
                     </div>
+                </header>
+                <figure id="water-figure" hidden>
+                    <div id="water-chart" class="water-chart">
+                        <svg aria-hidden="true"></svg>
+                    </div>
+                    <figcaption id="water-point" class="chart-caption" aria-live="polite"></figcaption>
+                </figure>
+                <details id="water-details" class="water-details" hidden>
+                    <summary>Данни и качество</summary>
+                    <p id="water-meta"></p>
+                    <table>
+                        <thead><tr><th scope="col">Месец</th><th scope="col">Мътност (FNU)</th><th scope="col">Хлорофил-а (mg/m³)</th></tr></thead>
+                        <tbody id="water-history"></tbody>
+                    </table>
+                </details>
+            </section>
+            <section class="panel map-panel" aria-labelledby="map-title">
+                <header class="chart-toolbar">
+                    <div><h2 id="map-title">Карта</h2><p id="site-title">Черноморие</p></div>
                     <button type="button" id="reset-map" class="button secondary" disabled>
-                        <svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Цялото крайбрежие
+                        <svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Цялата карта
                     </button>
                 </header>
                 <div class="map-frame">
                     <div id="map" aria-label="Интерактивна карта на морските ливади"></div>
-                    <div id="map-summary" class="map-summary" hidden>
-                        <span class="map-swatch selection"></span><strong id="map-selection"></strong>
-                    </div>
                 </div>
                 <p id="map-status" class="map-status" role="status" hidden></p>
                 <footer class="chart-footer">
@@ -133,7 +127,7 @@
                 <header class="section-heading">
                     <div>
                         <h2 id="footage-title">Подводни кадри</h2>
-                        <p>Добави снимка или видео, за да получиш първичен прочит на видимото по дъното.</p>
+                        <p>Качи снимка или видео за локален AI анализ.</p>
                     </div>
                 </header>
                 <div class="footage-actions">

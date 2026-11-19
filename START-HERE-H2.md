@@ -21,7 +21,7 @@ If IntelliJ has an existing Active profiles or Program arguments setting for `my
 
 ## Hackathon demo
 
-Open **Морски атлас**, select **Равда, юг 1** or another archival site, and click **Разследвай участъка**. The report combines historical evidence, monthly satellite context, and manually entered measurements within 2 km of the center of the polygon's bounding box. H2's seeded synthetic records are excluded. Assessing current seagrass health requires fresh field evidence.
+Open **Морски атлас**, select **Равда, юг 1** or another archival site, and click **Разследвай**. The report combines historical evidence, monthly satellite context, and manually entered measurements within 2 km of the center of the polygon's bounding box. H2's seeded synthetic records are excluded. Assessing current seagrass health requires fresh field evidence.
 
 The 35 archived polygons are bundled locally as a format conversion from the original WGS 84 Shapefile. Geometry and source attributes are preserved. The map uses Leaflet and OpenStreetMap over the internet, and the site picker and report can run without them.
 
@@ -37,4 +37,4 @@ To refresh the snapshot, install `numpy` and `numcodecs` in a Python virtual env
 
 With a recent [llama.cpp](https://github.com/ggml-org/llama.cpp) installed, run `sh scripts/serve_local_ai.sh` in a separate terminal. The first launch downloads the approximately 1.5 GB Qwen3-VL weights. When the model is listening on port 18121, click **Пробвай с кадър от Равда**, or choose a JPG, PNG, WebP, MP4, or WebM file up to 100 MB. A video is sampled at up to three positions in the browser. Only those JPEG frames are sent to the local Spring app and inference process, and no uploads are saved.
 
-The model screens for visible vegetation forms, bottom type, and visibility. Its output is an aid for field review. The demonstration image is an archival view near Ravda, with no verified link to a specific polygon. Photo from Berov, Klayn, Deyanova and Karamfilov (2022), [figure 4](https://doi.org/10.3897/BDJ.10.e78942.figure4), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), resized and recompressed. Manrope and Literata are bundled under their respective SIL Open Font Licenses.
+The model screens for visible vegetation forms, bottom type, and visibility. Its output is an aid for field review. The demonstration image is an archival view near Ravda, with no verified link to a specific polygon. Photo from Berov, Klayn, Deyanova and Karamfilov (2022), [figure 4](https://doi.org/10.3897/BDJ.10.e78942.figure4), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), resized and recompressed. Manrope is bundled under the SIL Open Font License.

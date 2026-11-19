@@ -1,4 +1,5 @@
 import { setupFootage } from './seagrass-footage.js';
+import { setupWaterChart } from './seagrass-chart.js';
 
 const workspace = document.getElementById('workspace');
 const byId = id => document.getElementById(id);
@@ -33,6 +34,7 @@ let map;
 let selected;
 let reportRequest;
 const footage = setupFootage(workspace.dataset.analysisUrl);
+const waterChart = setupWaterChart(byId('water-figure'), byId('metric-switch'));
 
 function nameOf(feature) {
     return siteNames[feature.properties.NAME] ?? feature.properties.NAME;
@@ -52,6 +54,10 @@ function formatMonth(value) {
 
 function setMetric(id, value, unit) {
     const element = byId(id);
+    if (!Number.isFinite(value)) {
+        element.textContent = '—';
+        return;
+    }
     const label = document.createElement('small');
     label.textContent = unit;
     element.replaceChildren(number.format(value), ' ', label);
@@ -65,9 +71,9 @@ function showMapStatus(message) {
 function footprintStyle(feature) {
     const active = feature.id === selected?.id;
     return {
-        color: active ? '#884018' : '#2c684d',
+        color: active ? '#9c542d' : '#396f66',
         weight: active ? 3 : 1.65,
-        fillColor: active ? '#eda85c' : '#80aa78',
+        fillColor: active ? '#e6a368' : '#85b5a5',
         fillOpacity: active ? .75 : .54
     };
 }
@@ -99,7 +105,7 @@ function initMap(archive) {
 
     const dots = L.layerGroup(archive.features.map(feature => {
         const center = layers.get(feature.id).getBounds().getCenter();
-        const dot = L.circleMarker(center, {radius: 4, weight: 1.5, color: '#fff', fillColor: '#286147', fillOpacity: 1});
+        const dot = L.circleMarker(center, {radius: 4, weight: 1.5, color: '#fff', fillColor: '#396f66', fillOpacity: 1});
         dot.on('click', () => selectSite(feature));
         return dot;
     }));
@@ -128,24 +134,30 @@ function siteCenter(feature) {
 function renderSatellite(feature) {
     const rows = snapshot?.sites[String(feature.id)] ?? [];
     const latest = rows[0];
-    byId('water-values').hidden = !latest;
     const details = byId('water-details');
     details.hidden = !latest;
     details.open = false;
+    waterChart(rows);
+    setMetric('water-turbidity', latest?.turbidity, 'FNU');
+    setMetric('water-chlorophyll', latest?.chlorophyll, 'mg/m³');
+    const monthLabel = latest ? formatMonth(latest.month) : 'Няма стойност';
+    setText('turbidity-month', monthLabel);
+    setText('chlorophyll-month', monthLabel);
     if (!latest) {
         setText('water-status', snapshot ? 'Няма валидна сателитна клетка за този участък.' : 'Сателитните данни са недостъпни.');
         return;
     }
-    setText('water-status', `Месечна оценка · ${formatMonth(latest.month)}`);
-    setMetric('water-turbidity', latest.turbidity, 'FNU');
-    setMetric('water-chlorophyll', latest.chlorophyll, 'mg/m³');
+    setText('water-status', 'Месечни оценки · Copernicus Marine');
     setText('water-meta', `Клетка ${snapshot.resolutionM} м, на ${latest.distanceM} м от центъра. ` +
         `Включени дневни наблюдения за мътност: ${latest.turbidityCount}, за хлорофил: ${latest.chlorophyllCount}. ` +
         'Най-близката валидна клетка може да е различна във всеки месец.');
-    const history = rows.slice(1).map(row => {
-        const li = document.createElement('li');
-        li.textContent = `${formatMonth(row.month)} · ${formatValue(row.turbidity, 'FNU')} · ${formatValue(row.chlorophyll, 'mg/m³')}`;
-        return li;
+    const history = rows.map(row => {
+        const tr = document.createElement('tr');
+        [formatMonth(row.month), number.format(row.turbidity), number.format(row.chlorophyll)].forEach(value => {
+            const cell = tr.insertCell();
+            cell.textContent = value;
+        });
+        return tr;
     });
     byId('water-history').replaceChildren(...history);
 }
@@ -153,6 +165,7 @@ function renderSatellite(feature) {
 function selectSite(feature) {
     reportRequest?.abort();
     report.hidden = true;
+    byId('run-report').setAttribute('aria-expanded', 'false');
     const previousLayer = layers.get(selected?.id);
     selected = feature;
     const selectedLayer = layers.get(feature.id);
@@ -160,14 +173,12 @@ function selectSite(feature) {
         previousLayer?.setStyle(footprintStyle(previousLayer.feature));
         selectedLayer.setStyle(footprintStyle(feature)).bringToFront();
         map.fitBounds(selectedLayer.getBounds(), {padding: [72, 56], maxZoom: 14, animate: false});
-        setText('map-selection', nameOf(feature));
-        byId('map-summary').hidden = false;
     }
     const site = feature.properties;
     const center = siteCenter(feature);
     picker.value = String(feature.id);
     setText('site-title', nameOf(feature));
-    setText('site-date', `Архивно картографиране · ${formatMonth(site.Sat_date)}`);
+    setText('site-date', formatMonth(site.Sat_date));
     setMetric('site-area', site.area_ha, 'ха');
     setMetric('site-depth', site.depthlimit, 'м');
     setText('site-coordinates', `${center.latitude.toFixed(4)}° N  /  ${center.longitude.toFixed(4)}° E`);
@@ -206,6 +217,7 @@ async function runReport() {
     setText('report-measurements', 'Проверяваме записите…');
     byId('report-latest').hidden = true;
     report.hidden = false;
+    byId('run-report').setAttribute('aria-expanded', 'true');
     byId('report-title').focus();
 
     try {
@@ -245,6 +257,7 @@ async function loadAtlas() {
         snapshot = await loadingSnapshot;
         picker.replaceChildren(...features.map(feature => new Option(nameOf(feature), feature.id)));
         picker.disabled = false;
+        byId('run-report').disabled = false;
         picker.addEventListener('change', () => selectSite(features.find(feature => String(feature.id) === picker.value)));
         byId('run-report').addEventListener('click', runReport);
         setText('archive-status', `${number.format(features.length)} картографирани участъка`);
