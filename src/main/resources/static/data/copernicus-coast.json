@@ -1,0 +1,2181 @@
+{
+  "source": "https://doi.org/10.48670/moi-00087",
+  "dataset": "cmems_obs-oc_blk_bgc-tur-spm-chl_nrt_l4-hr-mosaic_P1M-m_202511",
+  "resolutionM": 100,
+  "radiusM": 750,
+  "firstMonth": "2026-05",
+  "lastMonth": "2026-10",
+  "retrievedOn": "2026-11-19",
+  "sites": {
+    "1": [
+      {
+        "month": "2026-10",
+        "latitude": 42.441204,
+        "longitude": 27.528439,
+        "distanceM": 76,
+        "turbidity": 3.5062270164489746,
+        "chlorophyll": 9.319110870361328,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.441204,
+        "longitude": 27.528439,
+        "distanceM": 76,
+        "turbidity": 3.389646291732788,
+        "chlorophyll": 8.212193489074707,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.441204,
+        "longitude": 27.528439,
+        "distanceM": 76,
+        "turbidity": 2.0977582931518555,
+        "chlorophyll": 3.2382287979125977,
+        "turbidityCount": 12,
+        "chlorophyllCount": 12
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.441204,
+        "longitude": 27.528439,
+        "distanceM": 76,
+        "turbidity": 1.5909807682037354,
+        "chlorophyll": 1.2310810089111328,
+        "turbidityCount": 10,
+        "chlorophyllCount": 10
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.441204,
+        "longitude": 27.528439,
+        "distanceM": 76,
+        "turbidity": 3.0020382404327393,
+        "chlorophyll": 2.289454936981201,
+        "turbidityCount": 13,
+        "chlorophyllCount": 13
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.441204,
+        "longitude": 27.528439,
+        "distanceM": 76,
+        "turbidity": 2.8830766677856445,
+        "chlorophyll": 2.320925712585449,
+        "turbidityCount": 9,
+        "chlorophyllCount": 9
+      }
+    ],
+    "2": [
+      {
+        "month": "2026-10",
+        "latitude": 42.433796,
+        "longitude": 27.51918,
+        "distanceM": 55,
+        "turbidity": 7.379927158355713,
+        "chlorophyll": 8.8507080078125,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.433796,
+        "longitude": 27.51918,
+        "distanceM": 55,
+        "turbidity": 2.95564603805542,
+        "chlorophyll": 8.361071586608887,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.433796,
+        "longitude": 27.51918,
+        "distanceM": 55,
+        "turbidity": 2.1497585773468018,
+        "chlorophyll": 3.1005008220672607,
+        "turbidityCount": 12,
+        "chlorophyllCount": 12
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.433796,
+        "longitude": 27.51918,
+        "distanceM": 55,
+        "turbidity": 1.4355902671813965,
+        "chlorophyll": 1.1575262546539307,
+        "turbidityCount": 10,
+        "chlorophyllCount": 10
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.433796,
+        "longitude": 27.51918,
+        "distanceM": 55,
+        "turbidity": 2.9211902618408203,
+        "chlorophyll": 2.0892210006713867,
+        "turbidityCount": 12,
+        "chlorophyllCount": 11
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.433796,
+        "longitude": 27.51918,
+        "distanceM": 55,
+        "turbidity": 2.8888440132141113,
+        "chlorophyll": 2.4010634422302246,
+        "turbidityCount": 10,
+        "chlorophyllCount": 10
+      }
+    ],
+    "3": [
+      {
+        "month": "2026-10",
+        "latitude": 42.330093,
+        "longitude": 27.75463,
+        "distanceM": 46,
+        "turbidity": 2.4475791454315186,
+        "chlorophyll": 3.166090965270996,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.330093,
+        "longitude": 27.75463,
+        "distanceM": 46,
+        "turbidity": 1.83710515499115,
+        "chlorophyll": 1.6825200319290161,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.330093,
+        "longitude": 27.75463,
+        "distanceM": 46,
+        "turbidity": 1.959581732749939,
+        "chlorophyll": 1.4807169437408447,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.330093,
+        "longitude": 27.75463,
+        "distanceM": 46,
+        "turbidity": 1.9284478425979614,
+        "chlorophyll": 1.5434967279434204,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.330093,
+        "longitude": 27.75463,
+        "distanceM": 46,
+        "turbidity": 3.3369998931884766,
+        "chlorophyll": 2.0386016368865967,
+        "turbidityCount": 5,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.330093,
+        "longitude": 27.75463,
+        "distanceM": 46,
+        "turbidity": 3.1272192001342773,
+        "chlorophyll": 2.2821924686431885,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      }
+    ],
+    "4": [
+      {
+        "month": "2026-10",
+        "latitude": 42.703241,
+        "longitude": 27.779762,
+        "distanceM": 57,
+        "turbidity": 1.826751947402954,
+        "chlorophyll": 1.2194714546203613,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.703241,
+        "longitude": 27.779762,
+        "distanceM": 57,
+        "turbidity": 1.421149492263794,
+        "chlorophyll": 1.175318717956543,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.703241,
+        "longitude": 27.779762,
+        "distanceM": 57,
+        "turbidity": 1.4475654363632202,
+        "chlorophyll": 0.9194262027740479,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.703241,
+        "longitude": 27.779762,
+        "distanceM": 57,
+        "turbidity": 1.3567968606948853,
+        "chlorophyll": 0.8725461959838867,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.703241,
+        "longitude": 27.779762,
+        "distanceM": 57,
+        "turbidity": 2.09574294090271,
+        "chlorophyll": 1.1687853336334229,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.703241,
+        "longitude": 27.779762,
+        "distanceM": 57,
+        "turbidity": 3.7905468940734863,
+        "chlorophyll": 1.2228344678878784,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      }
+    ],
+    "5": [
+      {
+        "month": "2026-10",
+        "latitude": 42.700463,
+        "longitude": 27.799603,
+        "distanceM": 65,
+        "turbidity": 1.8310520648956299,
+        "chlorophyll": 1.1647427082061768,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.700463,
+        "longitude": 27.799603,
+        "distanceM": 65,
+        "turbidity": 1.4950578212738037,
+        "chlorophyll": 1.2302701473236084,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.700463,
+        "longitude": 27.799603,
+        "distanceM": 65,
+        "turbidity": 1.4848891496658325,
+        "chlorophyll": 0.8719478845596313,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.700463,
+        "longitude": 27.799603,
+        "distanceM": 65,
+        "turbidity": 1.3395522832870483,
+        "chlorophyll": 0.7976698875427246,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.700463,
+        "longitude": 27.799603,
+        "distanceM": 65,
+        "turbidity": 2.280369997024536,
+        "chlorophyll": 1.1324138641357422,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.700463,
+        "longitude": 27.799603,
+        "distanceM": 65,
+        "turbidity": 4.005309581756592,
+        "chlorophyll": 1.3944091796875,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      }
+    ],
+    "6": [
+      {
+        "month": "2026-10",
+        "latitude": 42.701389,
+        "longitude": 27.824735,
+        "distanceM": 62,
+        "turbidity": 1.5074777603149414,
+        "chlorophyll": 1.094797134399414,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.701389,
+        "longitude": 27.824735,
+        "distanceM": 62,
+        "turbidity": 1.3103587627410889,
+        "chlorophyll": 1.0164196491241455,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.701389,
+        "longitude": 27.824735,
+        "distanceM": 62,
+        "turbidity": 1.4090906381607056,
+        "chlorophyll": 0.8106856346130371,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.701389,
+        "longitude": 27.824735,
+        "distanceM": 62,
+        "turbidity": 1.3334465026855469,
+        "chlorophyll": 0.7782011032104492,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.701389,
+        "longitude": 27.824735,
+        "distanceM": 62,
+        "turbidity": 2.5200743675231934,
+        "chlorophyll": 1.0327683687210083,
+        "turbidityCount": 5,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.701389,
+        "longitude": 27.824735,
+        "distanceM": 62,
+        "turbidity": 3.727992296218872,
+        "chlorophyll": 1.258508563041687,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      }
+    ],
+    "7": [
+      {
+        "month": "2026-10",
+        "latitude": 42.699537,
+        "longitude": 27.852513,
+        "distanceM": 37,
+        "turbidity": 2.121507406234741,
+        "chlorophyll": 1.6705150604248047,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.699537,
+        "longitude": 27.852513,
+        "distanceM": 37,
+        "turbidity": 2.078714609146118,
+        "chlorophyll": 1.6278724670410156,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.699537,
+        "longitude": 27.852513,
+        "distanceM": 37,
+        "turbidity": 2.041069269180298,
+        "chlorophyll": 1.1652251482009888,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.699537,
+        "longitude": 27.852513,
+        "distanceM": 37,
+        "turbidity": 2.0887179374694824,
+        "chlorophyll": 1.1154592037200928,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.699537,
+        "longitude": 27.852513,
+        "distanceM": 37,
+        "turbidity": 2.9145619869232178,
+        "chlorophyll": 1.381532907485962,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.699537,
+        "longitude": 27.852513,
+        "distanceM": 37,
+        "turbidity": 3.732165575027466,
+        "chlorophyll": 1.1643415689468384,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      }
+    ],
+    "8": [
+      {
+        "month": "2026-10",
+        "latitude": 42.703241,
+        "longitude": 27.732143,
+        "distanceM": 23,
+        "turbidity": 3.0801548957824707,
+        "chlorophyll": 2.1629862785339355,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.703241,
+        "longitude": 27.732143,
+        "distanceM": 23,
+        "turbidity": 1.7669111490249634,
+        "chlorophyll": 1.566717505455017,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.703241,
+        "longitude": 27.732143,
+        "distanceM": 23,
+        "turbidity": 1.4724434614181519,
+        "chlorophyll": 1.0427241325378418,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.703241,
+        "longitude": 27.732143,
+        "distanceM": 23,
+        "turbidity": 1.5834261178970337,
+        "chlorophyll": 0.9970402717590332,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.703241,
+        "longitude": 27.732143,
+        "distanceM": 23,
+        "turbidity": 2.3143560886383057,
+        "chlorophyll": 1.1483240127563477,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.703241,
+        "longitude": 27.732143,
+        "distanceM": 23,
+        "turbidity": 4.190020561218262,
+        "chlorophyll": 1.534382939338684,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      }
+    ],
+    "9": [
+      {
+        "month": "2026-10",
+        "latitude": 42.446759,
+        "longitude": 27.617063,
+        "distanceM": 35,
+        "turbidity": 3.9132144451141357,
+        "chlorophyll": 2.6458890438079834,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.446759,
+        "longitude": 27.617063,
+        "distanceM": 35,
+        "turbidity": 1.571635127067566,
+        "chlorophyll": 1.5118370056152344,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.446759,
+        "longitude": 27.617063,
+        "distanceM": 35,
+        "turbidity": 1.4260135889053345,
+        "chlorophyll": 1.0861477851867676,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.446759,
+        "longitude": 27.617063,
+        "distanceM": 35,
+        "turbidity": 1.1439218521118164,
+        "chlorophyll": 0.8212426900863647,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.446759,
+        "longitude": 27.617063,
+        "distanceM": 35,
+        "turbidity": 2.995642900466919,
+        "chlorophyll": 1.2101166248321533,
+        "turbidityCount": 7,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.446759,
+        "longitude": 27.617063,
+        "distanceM": 35,
+        "turbidity": 3.238119125366211,
+        "chlorophyll": 1.770145058631897,
+        "turbidityCount": 6,
+        "chlorophyllCount": 3
+      }
+    ],
+    "10": [
+      {
+        "month": "2026-10",
+        "latitude": 42.453241,
+        "longitude": 27.460979,
+        "distanceM": 63,
+        "turbidity": 9.579683303833008,
+        "chlorophyll": 12.085074424743652,
+        "turbidityCount": 5,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.453241,
+        "longitude": 27.460979,
+        "distanceM": 63,
+        "turbidity": 3.355142116546631,
+        "chlorophyll": 12.256795883178711,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.453241,
+        "longitude": 27.460979,
+        "distanceM": 63,
+        "turbidity": 2.7577261924743652,
+        "chlorophyll": 4.928612232208252,
+        "turbidityCount": 13,
+        "chlorophyllCount": 13
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.453241,
+        "longitude": 27.460979,
+        "distanceM": 63,
+        "turbidity": 1.689934253692627,
+        "chlorophyll": 2.488024950027466,
+        "turbidityCount": 12,
+        "chlorophyllCount": 12
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.453241,
+        "longitude": 27.460979,
+        "distanceM": 63,
+        "turbidity": 4.07213020324707,
+        "chlorophyll": 5.1849188804626465,
+        "turbidityCount": 13,
+        "chlorophyllCount": 13
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.453241,
+        "longitude": 27.460979,
+        "distanceM": 63,
+        "turbidity": 3.098660469055176,
+        "chlorophyll": 3.610419511795044,
+        "turbidityCount": 11,
+        "chlorophyllCount": 11
+      }
+    ],
+    "11": [
+      {
+        "month": "2026-10",
+        "latitude": 42.426389,
+        "longitude": 27.650132,
+        "distanceM": 31,
+        "turbidity": 2.709277868270874,
+        "chlorophyll": 1.6173286437988281,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.426389,
+        "longitude": 27.650132,
+        "distanceM": 31,
+        "turbidity": 1.4236921072006226,
+        "chlorophyll": 1.1908574104309082,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.426389,
+        "longitude": 27.650132,
+        "distanceM": 31,
+        "turbidity": 1.3549071550369263,
+        "chlorophyll": 1.003853440284729,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.426389,
+        "longitude": 27.650132,
+        "distanceM": 31,
+        "turbidity": 1.1336956024169922,
+        "chlorophyll": 0.8837903738021851,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.426389,
+        "longitude": 27.650132,
+        "distanceM": 31,
+        "turbidity": 2.7479207515716553,
+        "chlorophyll": 1.0928858518600464,
+        "turbidityCount": 7,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.426389,
+        "longitude": 27.650132,
+        "distanceM": 31,
+        "turbidity": 3.0497705936431885,
+        "chlorophyll": 1.617392897605896,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      }
+    ],
+    "12": [
+      {
+        "month": "2026-10",
+        "latitude": 42.414352,
+        "longitude": 27.683201,
+        "distanceM": 38,
+        "turbidity": 2.222456455230713,
+        "chlorophyll": 1.9753401279449463,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.414352,
+        "longitude": 27.683201,
+        "distanceM": 38,
+        "turbidity": 1.4387321472167969,
+        "chlorophyll": 1.3238096237182617,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.414352,
+        "longitude": 27.683201,
+        "distanceM": 38,
+        "turbidity": 1.3661344051361084,
+        "chlorophyll": 1.0199981927871704,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.414352,
+        "longitude": 27.683201,
+        "distanceM": 38,
+        "turbidity": 1.3020803928375244,
+        "chlorophyll": 0.8453308343887329,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.414352,
+        "longitude": 27.683201,
+        "distanceM": 38,
+        "turbidity": 2.6013166904449463,
+        "chlorophyll": 1.10052490234375,
+        "turbidityCount": 7,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.414352,
+        "longitude": 27.683201,
+        "distanceM": 38,
+        "turbidity": 2.9782683849334717,
+        "chlorophyll": 1.47403883934021,
+        "turbidityCount": 6,
+        "chlorophyllCount": 4
+      }
+    ],
+    "13": [
+      {
+        "month": "2026-10",
+        "latitude": 42.40787,
+        "longitude": 27.713624,
+        "distanceM": 65,
+        "turbidity": 0.7164821624755859,
+        "chlorophyll": 1.484500527381897,
+        "turbidityCount": 1,
+        "chlorophyllCount": 1
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.40787,
+        "longitude": 27.713624,
+        "distanceM": 65,
+        "turbidity": 0.7674639225006104,
+        "chlorophyll": 1.5691664218902588,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.40787,
+        "longitude": 27.713624,
+        "distanceM": 65,
+        "turbidity": 1.1544196605682373,
+        "chlorophyll": 1.0676387548446655,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.40787,
+        "longitude": 27.713624,
+        "distanceM": 65,
+        "turbidity": 0.8057421445846558,
+        "chlorophyll": 0.5906857848167419,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.40787,
+        "longitude": 27.713624,
+        "distanceM": 65,
+        "turbidity": 1.2266895771026611,
+        "chlorophyll": 0.7624475955963135,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.406944,
+        "longitude": 27.712302,
+        "distanceM": 92,
+        "turbidity": 2.3495543003082275,
+        "chlorophyll": 1.102311611175537,
+        "turbidityCount": 1,
+        "chlorophyllCount": 1
+      }
+    ],
+    "14": [
+      {
+        "month": "2026-10",
+        "latitude": 42.411574,
+        "longitude": 27.669974,
+        "distanceM": 47,
+        "turbidity": 3.1563189029693604,
+        "chlorophyll": 1.7680795192718506,
+        "turbidityCount": 3,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.411574,
+        "longitude": 27.669974,
+        "distanceM": 47,
+        "turbidity": 1.3020702600479126,
+        "chlorophyll": 1.2216356992721558,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.411574,
+        "longitude": 27.669974,
+        "distanceM": 47,
+        "turbidity": 1.3277946710586548,
+        "chlorophyll": 1.0017659664154053,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.411574,
+        "longitude": 27.669974,
+        "distanceM": 47,
+        "turbidity": 1.0426926612854004,
+        "chlorophyll": 0.7261120080947876,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.411574,
+        "longitude": 27.669974,
+        "distanceM": 47,
+        "turbidity": 2.5264828205108643,
+        "chlorophyll": 1.0377613306045532,
+        "turbidityCount": 7,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.411574,
+        "longitude": 27.669974,
+        "distanceM": 47,
+        "turbidity": 3.0725319385528564,
+        "chlorophyll": 1.5424798727035522,
+        "turbidityCount": 6,
+        "chlorophyllCount": 4
+      }
+    ],
+    "15": [
+      {
+        "month": "2026-10",
+        "latitude": 42.415278,
+        "longitude": 27.656746,
+        "distanceM": 25,
+        "turbidity": 1.8338885307312012,
+        "chlorophyll": 1.6649092435836792,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.415278,
+        "longitude": 27.656746,
+        "distanceM": 25,
+        "turbidity": 1.733358383178711,
+        "chlorophyll": 1.5854719877243042,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.415278,
+        "longitude": 27.656746,
+        "distanceM": 25,
+        "turbidity": 1.6127880811691284,
+        "chlorophyll": 1.2425132989883423,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.415278,
+        "longitude": 27.656746,
+        "distanceM": 25,
+        "turbidity": 1.3978372812271118,
+        "chlorophyll": 0.920279324054718,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.415278,
+        "longitude": 27.656746,
+        "distanceM": 25,
+        "turbidity": 2.530195951461792,
+        "chlorophyll": 1.1661717891693115,
+        "turbidityCount": 6,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.415278,
+        "longitude": 27.656746,
+        "distanceM": 25,
+        "turbidity": 3.0997188091278076,
+        "chlorophyll": 1.6037746667861938,
+        "turbidityCount": 6,
+        "chlorophyllCount": 3
+      }
+    ],
+    "16": [
+      {
+        "month": "2026-10",
+        "latitude": 42.645833,
+        "longitude": 27.704365,
+        "distanceM": 127,
+        "turbidity": 1.8281062841415405,
+        "chlorophyll": 2.0864109992980957,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.645833,
+        "longitude": 27.704365,
+        "distanceM": 127,
+        "turbidity": 1.605923056602478,
+        "chlorophyll": 1.702934741973877,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.645833,
+        "longitude": 27.704365,
+        "distanceM": 127,
+        "turbidity": 1.7641290426254272,
+        "chlorophyll": 1.3204691410064697,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.645833,
+        "longitude": 27.704365,
+        "distanceM": 127,
+        "turbidity": 1.7582381963729858,
+        "chlorophyll": 1.3169580698013306,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.645833,
+        "longitude": 27.704365,
+        "distanceM": 127,
+        "turbidity": 2.60189151763916,
+        "chlorophyll": 1.3786523342132568,
+        "turbidityCount": 5,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.645833,
+        "longitude": 27.704365,
+        "distanceM": 127,
+        "turbidity": 4.036737442016602,
+        "chlorophyll": 1.637078881263733,
+        "turbidityCount": 4,
+        "chlorophyllCount": 3
+      }
+    ],
+    "17": [
+      {
+        "month": "2026-10",
+        "latitude": 42.648611,
+        "longitude": 27.697751,
+        "distanceM": 36,
+        "turbidity": 2.119602680206299,
+        "chlorophyll": 2.308162212371826,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.648611,
+        "longitude": 27.697751,
+        "distanceM": 36,
+        "turbidity": 1.6517492532730103,
+        "chlorophyll": 1.6465939283370972,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.648611,
+        "longitude": 27.697751,
+        "distanceM": 36,
+        "turbidity": 1.782950520515442,
+        "chlorophyll": 1.2743473052978516,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.648611,
+        "longitude": 27.697751,
+        "distanceM": 36,
+        "turbidity": 1.7069305181503296,
+        "chlorophyll": 1.2600427865982056,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.648611,
+        "longitude": 27.697751,
+        "distanceM": 36,
+        "turbidity": 2.5222702026367188,
+        "chlorophyll": 1.4218443632125854,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.648611,
+        "longitude": 27.697751,
+        "distanceM": 36,
+        "turbidity": 3.476531505584717,
+        "chlorophyll": 1.2930816411972046,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      }
+    ],
+    "18": [
+      {
+        "month": "2026-10",
+        "latitude": 42.646759,
+        "longitude": 27.691138,
+        "distanceM": 56,
+        "turbidity": 2.0348997116088867,
+        "chlorophyll": 2.4558002948760986,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.646759,
+        "longitude": 27.691138,
+        "distanceM": 56,
+        "turbidity": 1.7309259176254272,
+        "chlorophyll": 1.7915951013565063,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.646759,
+        "longitude": 27.691138,
+        "distanceM": 56,
+        "turbidity": 1.9674415588378906,
+        "chlorophyll": 1.44078528881073,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.646759,
+        "longitude": 27.691138,
+        "distanceM": 56,
+        "turbidity": 1.702792763710022,
+        "chlorophyll": 1.2726384401321411,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.646759,
+        "longitude": 27.691138,
+        "distanceM": 56,
+        "turbidity": 2.3014535903930664,
+        "chlorophyll": 1.332288384437561,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.646759,
+        "longitude": 27.691138,
+        "distanceM": 56,
+        "turbidity": 3.9787278175354004,
+        "chlorophyll": 1.373490810394287,
+        "turbidityCount": 4,
+        "chlorophyllCount": 2
+      }
+    ],
+    "19": [
+      {
+        "month": "2026-10",
+        "latitude": 42.635648,
+        "longitude": 27.675265,
+        "distanceM": 141,
+        "turbidity": 4.364202499389648,
+        "chlorophyll": 4.512004375457764,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.635648,
+        "longitude": 27.675265,
+        "distanceM": 141,
+        "turbidity": 4.508189678192139,
+        "chlorophyll": 4.288702487945557,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.635648,
+        "longitude": 27.675265,
+        "distanceM": 141,
+        "turbidity": 4.437570571899414,
+        "chlorophyll": 3.5771682262420654,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.635648,
+        "longitude": 27.675265,
+        "distanceM": 141,
+        "turbidity": 4.312729835510254,
+        "chlorophyll": 3.5243654251098633,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.635648,
+        "longitude": 27.675265,
+        "distanceM": 141,
+        "turbidity": 4.813995838165283,
+        "chlorophyll": 3.2455661296844482,
+        "turbidityCount": 4,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.635648,
+        "longitude": 27.675265,
+        "distanceM": 141,
+        "turbidity": 5.043616771697998,
+        "chlorophyll": 3.0102696418762207,
+        "turbidityCount": 3,
+        "chlorophyllCount": 1
+      }
+    ],
+    "20": [
+      {
+        "month": "2026-10",
+        "latitude": 42.447685,
+        "longitude": 27.492725,
+        "distanceM": 12,
+        "turbidity": 5.388952255249023,
+        "chlorophyll": 9.042634010314941,
+        "turbidityCount": 5,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.447685,
+        "longitude": 27.492725,
+        "distanceM": 12,
+        "turbidity": 3.576615333557129,
+        "chlorophyll": 7.368601322174072,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.447685,
+        "longitude": 27.492725,
+        "distanceM": 12,
+        "turbidity": 3.206496477127075,
+        "chlorophyll": 4.110830307006836,
+        "turbidityCount": 12,
+        "chlorophyllCount": 12
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.447685,
+        "longitude": 27.492725,
+        "distanceM": 12,
+        "turbidity": 1.944541335105896,
+        "chlorophyll": 1.7437368631362915,
+        "turbidityCount": 12,
+        "chlorophyllCount": 12
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.447685,
+        "longitude": 27.492725,
+        "distanceM": 12,
+        "turbidity": 4.052251815795898,
+        "chlorophyll": 3.1850810050964355,
+        "turbidityCount": 12,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.447685,
+        "longitude": 27.492725,
+        "distanceM": 12,
+        "turbidity": 3.144939422607422,
+        "chlorophyll": 2.813452959060669,
+        "turbidityCount": 9,
+        "chlorophyllCount": 9
+      }
+    ],
+    "21": [
+      {
+        "month": "2026-10",
+        "latitude": 42.846759,
+        "longitude": 27.888228,
+        "distanceM": 41,
+        "turbidity": 9.578309059143066,
+        "chlorophyll": 4.409122467041016,
+        "turbidityCount": 3,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.846759,
+        "longitude": 27.888228,
+        "distanceM": 41,
+        "turbidity": 1.737841248512268,
+        "chlorophyll": 1.2909878492355347,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.846759,
+        "longitude": 27.888228,
+        "distanceM": 41,
+        "turbidity": 3.42040753364563,
+        "chlorophyll": 1.3495588302612305,
+        "turbidityCount": 7,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.846759,
+        "longitude": 27.888228,
+        "distanceM": 41,
+        "turbidity": 1.9610697031021118,
+        "chlorophyll": 1.1622025966644287,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.846759,
+        "longitude": 27.888228,
+        "distanceM": 41,
+        "turbidity": 3.245821475982666,
+        "chlorophyll": 1.2586021423339844,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.846759,
+        "longitude": 27.888228,
+        "distanceM": 41,
+        "turbidity": 5.600794792175293,
+        "chlorophyll": 2.5017805099487305,
+        "turbidityCount": 4,
+        "chlorophyllCount": 2
+      }
+    ],
+    "22": [
+      {
+        "month": "2026-10",
+        "latitude": 42.559722,
+        "longitude": 27.621032,
+        "distanceM": 35,
+        "turbidity": 2.1417577266693115,
+        "chlorophyll": 3.3294267654418945,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.559722,
+        "longitude": 27.621032,
+        "distanceM": 35,
+        "turbidity": 2.8453450202941895,
+        "chlorophyll": 2.99436616897583,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.559722,
+        "longitude": 27.621032,
+        "distanceM": 35,
+        "turbidity": 3.3803446292877197,
+        "chlorophyll": 2.1584863662719727,
+        "turbidityCount": 11,
+        "chlorophyllCount": 9
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.559722,
+        "longitude": 27.621032,
+        "distanceM": 35,
+        "turbidity": 1.8528504371643066,
+        "chlorophyll": 1.2580702304840088,
+        "turbidityCount": 9,
+        "chlorophyllCount": 9
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.559722,
+        "longitude": 27.621032,
+        "distanceM": 35,
+        "turbidity": 3.3924849033355713,
+        "chlorophyll": 1.4078983068466187,
+        "turbidityCount": 11,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.559722,
+        "longitude": 27.621032,
+        "distanceM": 35,
+        "turbidity": 4.620038032531738,
+        "chlorophyll": 2.362518310546875,
+        "turbidityCount": 5,
+        "chlorophyllCount": 3
+      }
+    ],
+    "23": [
+      {
+        "month": "2026-10",
+        "latitude": 42.561574,
+        "longitude": 27.587963,
+        "distanceM": 62,
+        "turbidity": 3.629969358444214,
+        "chlorophyll": 6.125008583068848,
+        "turbidityCount": 5,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.561574,
+        "longitude": 27.587963,
+        "distanceM": 62,
+        "turbidity": 2.497035026550293,
+        "chlorophyll": 4.2161359786987305,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.561574,
+        "longitude": 27.587963,
+        "distanceM": 62,
+        "turbidity": 2.3847081661224365,
+        "chlorophyll": 2.2242794036865234,
+        "turbidityCount": 12,
+        "chlorophyllCount": 11
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.561574,
+        "longitude": 27.587963,
+        "distanceM": 62,
+        "turbidity": 1.3613924980163574,
+        "chlorophyll": 1.3418354988098145,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.561574,
+        "longitude": 27.587963,
+        "distanceM": 62,
+        "turbidity": 2.530381441116333,
+        "chlorophyll": 1.2879834175109863,
+        "turbidityCount": 12,
+        "chlorophyllCount": 11
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.561574,
+        "longitude": 27.587963,
+        "distanceM": 62,
+        "turbidity": 2.6398231983184814,
+        "chlorophyll": 1.630949854850769,
+        "turbidityCount": 7,
+        "chlorophyllCount": 6
+      }
+    ],
+    "24": [
+      {
+        "month": "2026-10",
+        "latitude": 42.544907,
+        "longitude": 27.525794,
+        "distanceM": 47,
+        "turbidity": 3.792773485183716,
+        "chlorophyll": 4.508327007293701,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.544907,
+        "longitude": 27.525794,
+        "distanceM": 47,
+        "turbidity": 2.9112982749938965,
+        "chlorophyll": 3.996403932571411,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.544907,
+        "longitude": 27.525794,
+        "distanceM": 47,
+        "turbidity": 3.1810073852539062,
+        "chlorophyll": 2.572528600692749,
+        "turbidityCount": 12,
+        "chlorophyllCount": 10
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.544907,
+        "longitude": 27.525794,
+        "distanceM": 47,
+        "turbidity": 2.7453715801239014,
+        "chlorophyll": 2.245990753173828,
+        "turbidityCount": 14,
+        "chlorophyllCount": 14
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.544907,
+        "longitude": 27.525794,
+        "distanceM": 47,
+        "turbidity": 3.5771124362945557,
+        "chlorophyll": 2.142775535583496,
+        "turbidityCount": 11,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.544907,
+        "longitude": 27.525794,
+        "distanceM": 47,
+        "turbidity": 3.4274158477783203,
+        "chlorophyll": 2.1703524589538574,
+        "turbidityCount": 8,
+        "chlorophyllCount": 5
+      }
+    ],
+    "25": [
+      {
+        "month": "2026-10",
+        "latitude": 42.4375,
+        "longitude": 27.527116,
+        "distanceM": 53,
+        "turbidity": 6.287616729736328,
+        "chlorophyll": 9.333785057067871,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.4375,
+        "longitude": 27.527116,
+        "distanceM": 53,
+        "turbidity": 2.620863914489746,
+        "chlorophyll": 9.453937530517578,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.4375,
+        "longitude": 27.527116,
+        "distanceM": 53,
+        "turbidity": 1.511401653289795,
+        "chlorophyll": 2.2661802768707275,
+        "turbidityCount": 12,
+        "chlorophyllCount": 12
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.4375,
+        "longitude": 27.527116,
+        "distanceM": 53,
+        "turbidity": 1.0337480306625366,
+        "chlorophyll": 0.9730679392814636,
+        "turbidityCount": 10,
+        "chlorophyllCount": 10
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.4375,
+        "longitude": 27.527116,
+        "distanceM": 53,
+        "turbidity": 1.8941102027893066,
+        "chlorophyll": 1.6245081424713135,
+        "turbidityCount": 13,
+        "chlorophyllCount": 13
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.4375,
+        "longitude": 27.527116,
+        "distanceM": 53,
+        "turbidity": 4.60263204574585,
+        "chlorophyll": 4.353825092315674,
+        "turbidityCount": 9,
+        "chlorophyllCount": 9
+      }
+    ],
+    "26": [
+      {
+        "month": "2026-10",
+        "latitude": 42.446759,
+        "longitude": 27.535053,
+        "distanceM": 52,
+        "turbidity": 3.0805504322052,
+        "chlorophyll": 5.570652961730957,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.446759,
+        "longitude": 27.535053,
+        "distanceM": 52,
+        "turbidity": 2.814025402069092,
+        "chlorophyll": 6.065327167510986,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.446759,
+        "longitude": 27.535053,
+        "distanceM": 52,
+        "turbidity": 1.5233417749404907,
+        "chlorophyll": 2.0239245891571045,
+        "turbidityCount": 12,
+        "chlorophyllCount": 12
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.446759,
+        "longitude": 27.535053,
+        "distanceM": 52,
+        "turbidity": 1.1481728553771973,
+        "chlorophyll": 0.9284992218017578,
+        "turbidityCount": 11,
+        "chlorophyllCount": 11
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.446759,
+        "longitude": 27.535053,
+        "distanceM": 52,
+        "turbidity": 2.435899019241333,
+        "chlorophyll": 1.6943058967590332,
+        "turbidityCount": 13,
+        "chlorophyllCount": 13
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.446759,
+        "longitude": 27.535053,
+        "distanceM": 52,
+        "turbidity": 2.3311164379119873,
+        "chlorophyll": 1.813284993171692,
+        "turbidityCount": 9,
+        "chlorophyllCount": 9
+      }
+    ],
+    "27": [
+      {
+        "month": "2026-10",
+        "latitude": 42.447685,
+        "longitude": 27.569444,
+        "distanceM": 47,
+        "turbidity": 3.733365058898926,
+        "chlorophyll": 7.542438983917236,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.447685,
+        "longitude": 27.569444,
+        "distanceM": 47,
+        "turbidity": 2.343287229537964,
+        "chlorophyll": 5.8550591468811035,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.447685,
+        "longitude": 27.569444,
+        "distanceM": 47,
+        "turbidity": 2.1664974689483643,
+        "chlorophyll": 2.8722219467163086,
+        "turbidityCount": 12,
+        "chlorophyllCount": 12
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.447685,
+        "longitude": 27.569444,
+        "distanceM": 47,
+        "turbidity": 1.9938099384307861,
+        "chlorophyll": 1.4259709119796753,
+        "turbidityCount": 13,
+        "chlorophyllCount": 13
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.447685,
+        "longitude": 27.569444,
+        "distanceM": 47,
+        "turbidity": 3.5471699237823486,
+        "chlorophyll": 2.313819408416748,
+        "turbidityCount": 13,
+        "chlorophyllCount": 10
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.447685,
+        "longitude": 27.569444,
+        "distanceM": 47,
+        "turbidity": 3.1748671531677246,
+        "chlorophyll": 2.049730062484741,
+        "turbidityCount": 10,
+        "chlorophyllCount": 8
+      }
+    ],
+    "28": [
+      {
+        "month": "2026-10",
+        "latitude": 42.450463,
+        "longitude": 27.638228,
+        "distanceM": 91,
+        "turbidity": 1.5611441135406494,
+        "chlorophyll": 1.596671223640442,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.450463,
+        "longitude": 27.638228,
+        "distanceM": 91,
+        "turbidity": 1.0460878610610962,
+        "chlorophyll": 1.0552247762680054,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.450463,
+        "longitude": 27.638228,
+        "distanceM": 91,
+        "turbidity": 1.2275371551513672,
+        "chlorophyll": 1.0479931831359863,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.450463,
+        "longitude": 27.638228,
+        "distanceM": 91,
+        "turbidity": 1.1134134531021118,
+        "chlorophyll": 0.8032091856002808,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.449537,
+        "longitude": 27.638228,
+        "distanceM": 49,
+        "turbidity": 1.2629287242889404,
+        "chlorophyll": 0.814199686050415,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.449537,
+        "longitude": 27.638228,
+        "distanceM": 49,
+        "turbidity": 2.260681629180908,
+        "chlorophyll": 1.24424409866333,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      }
+    ],
+    "29": [
+      {
+        "month": "2026-10",
+        "latitude": 42.851389,
+        "longitude": 27.897487,
+        "distanceM": 366,
+        "turbidity": 4.618719577789307,
+        "chlorophyll": 2.9097015857696533,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.851389,
+        "longitude": 27.897487,
+        "distanceM": 366,
+        "turbidity": 6.154891014099121,
+        "chlorophyll": 1.2193325757980347,
+        "turbidityCount": 4,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.851389,
+        "longitude": 27.897487,
+        "distanceM": 366,
+        "turbidity": 2.9855921268463135,
+        "chlorophyll": 1.3834810256958008,
+        "turbidityCount": 7,
+        "chlorophyllCount": 6
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.851389,
+        "longitude": 27.897487,
+        "distanceM": 366,
+        "turbidity": 1.7997413873672485,
+        "chlorophyll": 1.148013949394226,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.851389,
+        "longitude": 27.897487,
+        "distanceM": 366,
+        "turbidity": 2.7255148887634277,
+        "chlorophyll": 1.233496069908142,
+        "turbidityCount": 4,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.851389,
+        "longitude": 27.897487,
+        "distanceM": 366,
+        "turbidity": 4.826818943023682,
+        "chlorophyll": 2.716489791870117,
+        "turbidityCount": 3,
+        "chlorophyllCount": 1
+      }
+    ],
+    "30": [
+      {
+        "month": "2026-10",
+        "latitude": 42.65787,
+        "longitude": 27.728175,
+        "distanceM": 62,
+        "turbidity": 2.159498691558838,
+        "chlorophyll": 2.4134349822998047,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.65787,
+        "longitude": 27.728175,
+        "distanceM": 62,
+        "turbidity": 1.4756511449813843,
+        "chlorophyll": 1.7717941999435425,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.65787,
+        "longitude": 27.728175,
+        "distanceM": 62,
+        "turbidity": 1.0836174488067627,
+        "chlorophyll": 1.099360466003418,
+        "turbidityCount": 5,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.65787,
+        "longitude": 27.728175,
+        "distanceM": 62,
+        "turbidity": 1.2246007919311523,
+        "chlorophyll": 1.3095242977142334,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.65787,
+        "longitude": 27.728175,
+        "distanceM": 62,
+        "turbidity": 1.7403030395507812,
+        "chlorophyll": 1.3105617761611938,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.65787,
+        "longitude": 27.728175,
+        "distanceM": 62,
+        "turbidity": 2.5113182067871094,
+        "chlorophyll": 1.455864667892456,
+        "turbidityCount": 5,
+        "chlorophyllCount": 5
+      }
+    ],
+    "31": [
+      {
+        "month": "2026-10",
+        "latitude": 42.168981,
+        "longitude": 27.855159,
+        "distanceM": 21,
+        "turbidity": 5.260993957519531,
+        "chlorophyll": 4.384940147399902,
+        "turbidityCount": 4,
+        "chlorophyllCount": 4
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.168981,
+        "longitude": 27.855159,
+        "distanceM": 21,
+        "turbidity": 1.1153641939163208,
+        "chlorophyll": 1.4402027130126953,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.168981,
+        "longitude": 27.855159,
+        "distanceM": 21,
+        "turbidity": 1.4951393604278564,
+        "chlorophyll": 1.1326916217803955,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.168981,
+        "longitude": 27.855159,
+        "distanceM": 21,
+        "turbidity": 0.9654232859611511,
+        "chlorophyll": 0.6892502307891846,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.168981,
+        "longitude": 27.855159,
+        "distanceM": 21,
+        "turbidity": 2.0967867374420166,
+        "chlorophyll": 1.0637691020965576,
+        "turbidityCount": 6,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.168981,
+        "longitude": 27.855159,
+        "distanceM": 21,
+        "turbidity": 2.8527400493621826,
+        "chlorophyll": 1.5087409019470215,
+        "turbidityCount": 6,
+        "chlorophyllCount": 6
+      }
+    ],
+    "32": [
+      {
+        "month": "2026-10",
+        "latitude": 42.398611,
+        "longitude": 27.712302,
+        "distanceM": 45,
+        "turbidity": 1.2790637016296387,
+        "chlorophyll": 1.1974823474884033,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.398611,
+        "longitude": 27.712302,
+        "distanceM": 45,
+        "turbidity": 1.5128790140151978,
+        "chlorophyll": 1.1445658206939697,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.398611,
+        "longitude": 27.712302,
+        "distanceM": 45,
+        "turbidity": 1.4636791944503784,
+        "chlorophyll": 0.9298166632652283,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.398611,
+        "longitude": 27.712302,
+        "distanceM": 45,
+        "turbidity": 1.4834023714065552,
+        "chlorophyll": 0.8876031637191772,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.398611,
+        "longitude": 27.712302,
+        "distanceM": 45,
+        "turbidity": 2.2748820781707764,
+        "chlorophyll": 1.0970309972763062,
+        "turbidityCount": 5,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.398611,
+        "longitude": 27.712302,
+        "distanceM": 45,
+        "turbidity": 3.6132330894470215,
+        "chlorophyll": 1.4792885780334473,
+        "turbidityCount": 5,
+        "chlorophyllCount": 2
+      }
+    ],
+    "33": [
+      {
+        "month": "2026-10",
+        "latitude": 42.168981,
+        "longitude": 27.857804,
+        "distanceM": 167,
+        "turbidity": 4.034656524658203,
+        "chlorophyll": 3.936948537826538,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.168981,
+        "longitude": 27.857804,
+        "distanceM": 167,
+        "turbidity": 1.067323088645935,
+        "chlorophyll": 1.2064013481140137,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.168981,
+        "longitude": 27.857804,
+        "distanceM": 167,
+        "turbidity": 1.5335021018981934,
+        "chlorophyll": 1.106705665588379,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.168981,
+        "longitude": 27.857804,
+        "distanceM": 167,
+        "turbidity": 1.0405545234680176,
+        "chlorophyll": 0.7306638956069946,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.168981,
+        "longitude": 27.857804,
+        "distanceM": 167,
+        "turbidity": 2.363205671310425,
+        "chlorophyll": 1.156146764755249,
+        "turbidityCount": 6,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.168981,
+        "longitude": 27.857804,
+        "distanceM": 167,
+        "turbidity": 3.0010900497436523,
+        "chlorophyll": 1.5537798404693604,
+        "turbidityCount": 6,
+        "chlorophyllCount": 5
+      }
+    ],
+    "34": [
+      {
+        "month": "2026-10",
+        "latitude": 42.166204,
+        "longitude": 27.856481,
+        "distanceM": 51,
+        "turbidity": 3.1449038982391357,
+        "chlorophyll": 3.4891700744628906,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-09",
+        "latitude": 42.166204,
+        "longitude": 27.856481,
+        "distanceM": 51,
+        "turbidity": 0.9805569052696228,
+        "chlorophyll": 1.1999156475067139,
+        "turbidityCount": 3,
+        "chlorophyllCount": 3
+      },
+      {
+        "month": "2026-08",
+        "latitude": 42.166204,
+        "longitude": 27.856481,
+        "distanceM": 51,
+        "turbidity": 1.4476898908615112,
+        "chlorophyll": 1.13161039352417,
+        "turbidityCount": 7,
+        "chlorophyllCount": 7
+      },
+      {
+        "month": "2026-07",
+        "latitude": 42.166204,
+        "longitude": 27.856481,
+        "distanceM": 51,
+        "turbidity": 1.0268956422805786,
+        "chlorophyll": 0.6915437579154968,
+        "turbidityCount": 8,
+        "chlorophyllCount": 8
+      },
+      {
+        "month": "2026-06",
+        "latitude": 42.166204,
+        "longitude": 27.856481,
+        "distanceM": 51,
+        "turbidity": 2.1052515506744385,
+        "chlorophyll": 1.0944838523864746,
+        "turbidityCount": 6,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-05",
+        "latitude": 42.166204,
+        "longitude": 27.856481,
+        "distanceM": 51,
+        "turbidity": 2.7674543857574463,
+        "chlorophyll": 1.415687918663025,
+        "turbidityCount": 5,
+        "chlorophyllCount": 5
+      }
+    ],
+    "35": [
+      {
+        "month": "2026-10",
+        "latitude": 43.409722,
+        "longitude": 28.355159,
+        "distanceM": 269,
+        "turbidity": 2.985191583633423,
+        "chlorophyll": 3.5942587852478027,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-09",
+        "latitude": 43.409722,
+        "longitude": 28.355159,
+        "distanceM": 269,
+        "turbidity": 3.035595178604126,
+        "chlorophyll": 2.8591151237487793,
+        "turbidityCount": 2,
+        "chlorophyllCount": 2
+      },
+      {
+        "month": "2026-08",
+        "latitude": 43.409722,
+        "longitude": 28.355159,
+        "distanceM": 269,
+        "turbidity": 3.6031405925750732,
+        "chlorophyll": 2.763573169708252,
+        "turbidityCount": 5,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-07",
+        "latitude": 43.409722,
+        "longitude": 28.355159,
+        "distanceM": 269,
+        "turbidity": 4.651449680328369,
+        "chlorophyll": 1.5543891191482544,
+        "turbidityCount": 7,
+        "chlorophyllCount": 5
+      },
+      {
+        "month": "2026-06",
+        "latitude": 43.409722,
+        "longitude": 28.355159,
+        "distanceM": 269,
+        "turbidity": 4.846141338348389,
+        "chlorophyll": 2.514634132385254,
+        "turbidityCount": 5,
+        "chlorophyllCount": 1
+      },
+      {
+        "month": "2026-05",
+        "latitude": 43.409722,
+        "longitude": 28.355159,
+        "distanceM": 269,
+        "turbidity": 6.229176044464111,
+        "chlorophyll": 1.444732904434204,
+        "turbidityCount": 3,
+        "chlorophyllCount": 1
+      }
+    ]
+  }
+}

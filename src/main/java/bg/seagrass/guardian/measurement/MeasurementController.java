@@ -16,6 +16,9 @@ public class MeasurementController {
     }
 
     @GetMapping("/")
+    public String landing() { return "redirect:/seagrass"; }
+
+    @GetMapping("/overview")
     public String home(Model model) {
         model.addAttribute("count", repository.count());
         model.addAttribute("recent", repository.findAllByOrderByObservedAtDesc().stream().limit(5).toList());

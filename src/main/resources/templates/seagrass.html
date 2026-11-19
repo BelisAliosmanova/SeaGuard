@@ -3,93 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Морски ливади | SeaGuard</title>
+    <meta name="theme-color" content="#122624">
+    <title>Морски атлас | SeaGuard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" th:href="@{/css/seagrass.css}">
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script defer th:src="@{/js/seagrass.js}"></script>
+    <script type="module" th:src="@{/js/seagrass.js}"></script>
 </head>
 <body>
-<header class="topbar">
-    <div class="frame topbar-inner">
-        <a class="brand" th:href="@{/}">SeaGuard</a>
+<svg xmlns="http://www.w3.org/2000/svg" class="symbols" aria-hidden="true">
+    <symbol id="i-brand" viewBox="0 0 24 24"><path d="M3 13c2.1 0 2.3-2 4.5-2s2.4 2 4.5 2 2.3-2 4.5-2 2.4 2 4.5 2M3 18c2.1 0 2.3-2 4.5-2s2.4 2 4.5 2 2.3-2 4.5-2 2.4 2 4.5 2M12 6v3m4.2-5.5L14 7M7.8 3.5 10 7"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-5 4 2 5-6"/></symbol>
+    <symbol id="i-water" viewBox="0 0 24 24"><path d="M2 8c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2M2 13c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2M2 18c2 0 2-2 5-2s3 2 5 2 2-2 5-2 3 2 5 2"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6m-5 0v7L5 19a1.5 1.5 0 0 0 1.3 2h11.4a1.5 1.5 0 0 0 1.3-2l-5-9V3M8 15h8"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></symbol>
+    <symbol id="i-frame" viewBox="0 0 24 24"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4M8 12h8m-4-4v8"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h4l2-3h4l2 3h4a1 1 0 0 1 1 1v11H3V8a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 16v4h16v-4"/></symbol>
+</svg>
+<a class="skip" href="#workspace">Към картата</a>
+<div class="app-shell">
+    <aside class="rail">
+        <a class="brand" th:href="@{/}">
+            <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-brand"/></svg></span>
+            <span>SeaGuard</span>
+        </a>
         <nav aria-label="Основна навигация">
-            <a th:href="@{/seagrass}" aria-current="page">Морски ливади</a>
-            <a th:href="@{/dashboard}">Мониторинг</a>
-            <a th:href="@{/marine-live}">Морски условия</a>
-            <a th:href="@{/lab}">Dive Lab</a>
+            <a th:href="@{/seagrass}" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>Морски атлас</a>
+            <a th:href="@{/dashboard}"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Мониторинг</a>
+            <a th:href="@{/marine-live}"><svg class="icon" aria-hidden="true"><use href="#i-water"/></svg>Морски условия</a>
+            <a th:href="@{/lab}"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Dive Lab</a>
         </nav>
-    </div>
-</header>
-<main class="frame" id="workspace"
-      th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
-      th:data-measurements-url="@{/api/measurements(kind='real')}">
-    <header class="page-title">
-        <h1>Морски ливади</h1>
-        <p>Исторически карти на морските треви <i>Zostera</i> по българското Черноморие.</p>
-    </header>
-    <div class="workspace-grid">
-        <section class="map-panel" aria-labelledby="map-title">
-            <header class="panel-heading">
-                <div>
-                    <h2 id="map-title">Карта на крайбрежието</h2>
-                    <p id="archive-status" role="status">Зареждане на архива…</p>
+        <a class="rail-link" href="#sources">Източници на данни</a>
+    </aside>
+    <main id="workspace" class="workspace"
+          th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
+          th:data-satellite-url="@{/data/copernicus-coast.json}"
+          th:data-measurements-url="@{/api/measurements(kind='real')}"
+          th:data-analysis-url="@{/api/seagrass/analysis}">
+        <header class="masthead">
+            <div>
+                <h1>Атлас на морските ливади</h1>
+                <p>Изследвай морските треви по българското Черноморие.</p>
+            </div>
+            <a class="button secondary desktop-action" href="#footage">
+                <svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg> Подводни кадри
+            </a>
+        </header>
+        <div class="atlas-grid">
+            <section class="evidence-panel" aria-label="Данни за избрания участък">
+                <div class="site-selector">
+                    <label for="site-select">Избери участък</label>
+                    <select id="site-select" disabled><option>Зареждане…</option></select>
                 </div>
-                <button type="button" id="reset-map" class="secondary" disabled>Цялото крайбрежие</button>
-            </header>
-            <div id="map" aria-label="Интерактивна карта на морските ливади"></div>
-            <p id="map-status" class="map-status" role="status" hidden></p>
-            <footer class="legend">
-                <span><i class="swatch" aria-hidden="true"></i> Картографиран участък</span>
-                <span><i class="swatch selected" aria-hidden="true"></i> Избран участък</span>
-            </footer>
-        </section>
-        <aside class="site-panel" aria-labelledby="site-title">
-            <label for="site-select">Участък от архива</label>
-            <select id="site-select" disabled><option>Зареждане…</option></select>
-            <section id="site-details" hidden>
-                <h2 id="site-title"></h2>
-                <div class="site-stats">
-                    <div><span>Площ</span><strong id="site-area"></strong></div>
-                    <div><span>Граница в дълбочина</span><strong id="site-depth"></strong></div>
+                <div id="site-details" hidden>
+                    <header class="site-heading">
+                        <h2 id="site-title"></h2>
+                        <p id="site-date"></p>
+                    </header>
+                    <dl class="site-stats">
+                        <div><dt>Площ по архив</dt><dd id="site-area"></dd></div>
+                        <div><dt>Граница в дълбочина</dt><dd id="site-depth"></dd></div>
+                    </dl>
+                    <section class="water-panel" aria-labelledby="water-title">
+                        <div class="water-heading">
+                            <h3 id="water-title">Водата около участъка</h3>
+                            <a href="https://doi.org/10.48670/moi-00087" aria-label="Източник Copernicus Marine">Copernicus</a>
+                        </div>
+                        <p id="water-status" role="status"></p>
+                        <dl class="site-stats water-stats" id="water-values" hidden>
+                            <div><dt>Мътност</dt><dd id="water-turbidity"></dd></div>
+                            <div><dt>Хлорофил-а</dt><dd id="water-chlorophyll"></dd></div>
+                        </dl>
+                        <details id="water-details" hidden>
+                            <summary>Качество и предишни месеци</summary>
+                            <p id="water-meta"></p>
+                            <ul id="water-history"></ul>
+                        </details>
+                    </section>
+                    <button type="button" id="run-report" class="button primary" aria-controls="report">
+                        Разследвай участъка <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
+                    </button>
                 </div>
-                <dl class="site-meta">
-                    <div><dt>Сателитни снимки</dt><dd id="satellite-date"></dd></div>
-                    <div><dt>Метод на картографиране</dt><dd id="mapping-method"></dd></div>
-                    <div><dt>Теренна проверка по архив</dt><dd id="field-check"></dd></div>
-                </dl>
-                <p class="site-note">За оценка на сегашното състояние са нужни нови теренни наблюдения.</p>
-                <button type="button" id="run-report" aria-controls="report">Направи екологично разследване</button>
             </section>
-        </aside>
-    </div>
-    <section id="report" class="report" aria-labelledby="report-title" hidden>
-        <h2 id="report-title" tabindex="-1">Екологично разследване <span id="report-site"></span></h2>
-        <div class="report-grid">
-            <article>
-                <h3>Доказателства от архива</h3>
-                <p id="report-archive"></p>
-            </article>
-            <article>
-                <h3>Въведени измервания наблизо</h3>
-                <p id="report-measurements" role="status"></p>
-                <p id="report-latest" hidden></p>
-                <p class="small">Обхватът е 2 км от центъра на рамката около участъка. Източникът на тези записи се посочва от подателя.</p>
-            </article>
-            <article>
-                <h3>Теренна проверка</h3>
-                <p id="report-action"></p>
-            </article>
+            <section class="chart-panel" aria-labelledby="map-title">
+                <header class="chart-toolbar">
+                    <div class="map-heading">
+                        <h2 id="map-title">Черноморие</h2>
+                        <p id="archive-status" role="status">Зареждане на архива…</p>
+                    </div>
+                    <button type="button" id="reset-map" class="button secondary" disabled>
+                        <svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Цялото крайбрежие
+                    </button>
+                </header>
+                <div class="map-frame">
+                    <div id="map" aria-label="Интерактивна карта на морските ливади"></div>
+                    <div id="map-summary" class="map-summary" hidden>
+                        <span class="map-swatch selection"></span><strong id="map-selection"></strong>
+                    </div>
+                </div>
+                <p id="map-status" class="map-status" role="status" hidden></p>
+                <footer class="chart-footer">
+                    <span><i class="map-swatch" aria-hidden="true"></i> Исторически граници</span>
+                    <span id="site-coordinates"></span>
+                </footer>
+            </section>
         </div>
-    </section>
-    <footer class="source">
-        <span>Картографски данни от Berov и съавт. (2022), преобразувани от Shapefile в GeoJSON.</span>
-        <a href="https://doi.org/10.17882/79590">Архив SEANOE</a>
-        <a href="https://doi.org/10.3897/BDJ.10.e78942">Методология</a>
-        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
-    </footer>
-</main>
+        <section id="report" class="report" aria-labelledby="report-title" hidden>
+            <header class="section-heading">
+                <div><h2 id="report-title" tabindex="-1">Разследване</h2><p id="report-site"></p></div>
+                <a class="button secondary" href="#footage"><svg class="icon" aria-hidden="true"><use href="#i-camera"/></svg> Анализирай кадри</a>
+            </header>
+            <dl class="findings">
+                <div><dt>Историческа карта</dt><dd id="report-archive"></dd></div>
+                <div><dt>Сателитни данни</dt><dd id="report-satellite"></dd></div>
+                <div>
+                    <dt>Измервания в радиус 2 км</dt>
+                    <dd><span id="report-measurements" role="status"></span><span id="report-latest" hidden></span></dd>
+                </div>
+                <div><dt>Следваща теренна проверка</dt><dd id="report-action"></dd></div>
+            </dl>
+        </section>
+        <section id="footage" class="footage" aria-labelledby="footage-title">
+            <div class="footage-body">
+                <header class="section-heading">
+                    <div>
+                        <h2 id="footage-title">Подводни кадри</h2>
+                        <p>Добави снимка или видео, за да получиш първичен прочит на видимото по дъното.</p>
+                    </div>
+                </header>
+                <div class="footage-actions">
+                    <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
+                    <input id="footage-file" class="file-input" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
+                    <button id="analyze-example" class="button secondary" type="button" disabled>Пробвай с кадър от Равда</button>
+                </div>
+                <p id="footage-formats" class="fine-print">JPG, PNG, WebP, MP4 или WebM. До три кадъра от видео. Обработка на тази машина.</p>
+                <div id="frame-preview" class="frame-preview" hidden></div>
+                <button id="analyze-file" class="button primary" type="button" hidden>Анализирай кадрите</button>
+                <p id="analysis-status" class="analysis-status" role="status"></p>
+            </div>
+            <figure class="sample-figure">
+                <img src="/media/ravda-berov.jpg" th:src="@{/media/ravda-berov.jpg}" width="1000" height="666"
+                     alt="Морски треви и скалисто дъно край Равда">
+                <figcaption>Подводен кадър край Равда <a href="https://doi.org/10.3897/BDJ.10.e78942.figure4">Berov и съавт.</a></figcaption>
+            </figure>
+            <section id="analysis-result" class="analysis-result" aria-labelledby="analysis-title" hidden>
+                <h3 id="analysis-title" tabindex="-1">Първичен AI прочит</h3>
+                <p id="analysis-provenance" class="fine-print"></p>
+                <dl class="findings">
+                    <div><dt>Видимо в кадрите</dt><dd><ol id="analysis-frames"></ol></dd></div>
+                    <div><dt>Обобщение и несигурност</dt><dd id="analysis-summary"></dd></div>
+                    <div><dt>Теренна проверка</dt><dd id="analysis-next"></dd></div>
+                </dl>
+            </section>
+        </section>
+        <footer id="sources" class="sources">
+            <span>Източници</span>
+            <a href="https://doi.org/10.17882/79590">Исторически граници · SEANOE</a>
+            <a href="https://doi.org/10.48670/moi-00087">Сателитни данни · Copernicus Marine</a>
+            <a href="https://doi.org/10.3897/BDJ.10.e78942">Теренна методология</a>
+            <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">Лиценз на картографските данни</a>
+        </footer>
+    </main>
+</div>
 </body>
 </html>
