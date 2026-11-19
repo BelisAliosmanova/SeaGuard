@@ -2,6 +2,8 @@
 <html lang="bg" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:replace="~{fragments/layout :: head('AI еколог')}"></th:block>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" th:href="@{/css/ecologist.css}">
 </head>
 <body>
@@ -9,7 +11,8 @@
 <a class="skip" href="#workspace">Към разследването</a>
 <div class="app-shell">
     <aside th:replace="~{fragments/layout :: rail('ecologist')}"></aside>
-    <main id="workspace" class="workspace" th:data-provider="${aiProvider}">
+    <main id="workspace" class="workspace" th:data-provider="${aiProvider}"
+          th:data-archive-url="@{/data/zostera-bulgaria.geojson}">
         <header class="masthead">
             <div>
                 <h1>AI еколог</h1>
@@ -56,6 +59,16 @@
                 <figcaption id="profile-caption">Колко светлина стига до дъното на ливадата</figcaption>
             </figure>
         </section>
+
+        <figure class="panel section meadow-map" aria-labelledby="meadow-map-title">
+            <figcaption class="panel-head">
+                <div><h2 id="meadow-map-title">Граница на ливадата</h2><p>Картиран контур от архива на SEANOE</p></div>
+            </figcaption>
+            <p id="meadow-map-status" class="empty" role="status">Зареждаме картата…</p>
+            <div class="map-shell" id="meadow-map-shell" hidden>
+                <div id="meadow-map" class="seamap" aria-label="Сателитна карта на избрания участък"></div>
+            </div>
+        </figure>
 
         <section class="panel section" aria-labelledby="fresh-title">
             <header class="panel-head">
@@ -129,13 +142,41 @@
                         <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
                     </div>
                 </header>
-                <div class="panel-body"><div class="trend-wrap"><canvas id="trend" aria-label="Месечна графика"></canvas></div></div>
+                <div class="panel-body">
+                    <p id="trend-status" class="empty" role="status">Избери участък, за да видиш месечните данни.</p>
+                    <div class="trend-wrap" hidden><canvas id="trend" aria-label="Месечна графика"></canvas></div>
+                </div>
             </section>
             <section class="panel" aria-labelledby="gaps-title">
                 <header class="panel-head"><div><h2 id="gaps-title">Какво не знаем</h2><p>Данни, които биха променили извода</p></div></header>
                 <ul id="gaps" class="gaps panel-body"></ul>
             </section>
         </div>
+
+        <section id="footage" class="panel section footage" th:data-endpoint="@{/api/seagrass/analysis}" aria-labelledby="footage-title">
+            <header class="panel-head">
+                <div><h2 id="footage-title">Подводни кадри</h2><p>Качи снимка или видео от избрания участък за локален AI анализ.</p></div>
+            </header>
+            <div class="panel-body">
+                <div class="footage-actions">
+                    <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
+                    <input id="footage-file" class="file-input" type="file" disabled accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
+                </div>
+                <p id="footage-formats" class="footage-formats">JPG, PNG, WebP, MP4 или WebM до 100 MB. При видео се анализират до три кадъра.</p>
+                <div id="frame-preview" class="frame-preview" hidden></div>
+                <button id="analyze-file" class="button primary" type="button" hidden>Анализирай кадрите</button>
+                <p id="analysis-status" class="analysis-status" role="status"></p>
+            </div>
+            <section id="analysis-result" class="panel-body analysis-result" aria-labelledby="analysis-title" hidden>
+                <h3 id="analysis-title" tabindex="-1">Първичен AI прочит</h3>
+                <p id="analysis-provenance" class="analysis-provenance"></p>
+                <dl class="findings">
+                    <div><dt>Видимо в кадрите</dt><dd><ol id="analysis-frames"></ol></dd></div>
+                    <div><dt>Обобщение и несигурност</dt><dd id="analysis-summary"></dd></div>
+                    <div><dt>Теренна проверка</dt><dd id="analysis-next"></dd></div>
+                </dl>
+            </section>
+        </section>
 
         <details class="panel section sources">
             <summary><span>Източници на данните</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
@@ -145,10 +186,14 @@
         <p class="page-foot"><span>Оценката е скрининг.</span> Намеси в морето изискват потвърждение от морски биолог.</p>
     </main>
 </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script th:src="@{/js/seamap.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script th:src="@{/js/charts.js}"></script>
 <script th:src="@{/js/site-picker.js}"></script>
 <script th:src="@{/js/depth-profile.js}"></script>
+<script th:src="@{/js/seagrass-footage.js}"></script>
 <script th:src="@{/js/ecologist.js}"></script>
 </body>
 </html>

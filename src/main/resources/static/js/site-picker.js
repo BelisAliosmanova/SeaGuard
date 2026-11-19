@@ -16,7 +16,7 @@ window.SitePicker = (() => {
     return e;
   }
 
-  function create(root, {sites, onSelect}) {
+  function create(root, {sites, onSelect, allLabel, label}) {
     let current = null, open = false, active = -1, rows = [];
     root.classList.add('picker');
     const trigger = el('button', 'picker-trigger');
@@ -24,11 +24,12 @@ window.SitePicker = (() => {
     trigger.setAttribute('aria-haspopup', 'listbox');
     trigger.setAttribute('aria-expanded', 'false');
     const dot = el('i', 'picker-dot');
-    const name = el('span', 'picker-name', 'Избери участък');
+    const name = el('span', 'picker-name', allLabel || 'Избери участък');
     const score = el('span', 'picker-score');
     const chevron = el('span', 'picker-chevron');
     chevron.innerHTML = '<svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg>';
     trigger.append(dot, name, score, chevron);
+    if (label) trigger.setAttribute('aria-label', `${label} · ${name.textContent}`);
 
     const pop = el('div', 'picker-pop');
     pop.hidden = true;
@@ -45,6 +46,16 @@ window.SitePicker = (() => {
       const q = search.value.trim().toLocaleLowerCase('bg');
       list.replaceChildren();
       rows = [];
+      if (allLabel && !q) {
+        const all = el('button', 'picker-row', allLabel);
+        all.type = 'button';
+        all.classList.add('picker-all');
+        all.setAttribute('role', 'option');
+        all.setAttribute('aria-selected', String(current == null));
+        all.addEventListener('click', () => choose(null));
+        list.append(all);
+        rows.push(all);
+      }
       for (const g of GROUPS) {
         const items = sites.filter(s => g.keys.includes(s.statusKey) && (!q || s.name.toLocaleLowerCase('bg').includes(q)));
         if (!items.length) continue;
@@ -65,14 +76,20 @@ window.SitePicker = (() => {
           rows.push(row);
         }
       }
-      if (!rows.length) list.append(el('p', 'picker-empty', 'Няма участък с това име.'));
+      if (!rows.length) list.append(el('p', 'picker-empty', 'Няма съвпадения. Промени търсенето или го изчисти.'));
       highlight(Math.max(0, rows.findIndex(r => r.getAttribute('aria-selected') === 'true')));
     }
 
     function highlight(i) {
       rows.forEach((r, j) => r.classList.toggle('is-active', j === i));
       active = i;
-      rows[i]?.scrollIntoView({block: 'nearest'});
+      const row = rows[i];
+      if (!row) return;
+      const top = row.offsetTop - list.offsetTop;
+      if (top < list.scrollTop) list.scrollTop = top;
+      else if (top + row.offsetHeight > list.scrollTop + list.clientHeight) {
+        list.scrollTop = top + row.offsetHeight - list.clientHeight;
+      }
     }
 
     function setOpen(state) {
@@ -91,11 +108,12 @@ window.SitePicker = (() => {
 
     function set(id) {
       const s = sites.find(x => x.id === id);
-      if (!s) return;
+      if (!s && id != null) return;
       current = id;
-      name.textContent = s.name;
-      dot.style.background = COLOR[s.statusKey];
-      score.textContent = s.riskScore + '/100';
+      name.textContent = s?.name || allLabel || 'Избери участък';
+      dot.style.background = s ? COLOR[s.statusKey] : '';
+      score.textContent = s ? s.riskScore + '/100' : '';
+      if (label) trigger.setAttribute('aria-label', `${label} · ${name.textContent}`);
     }
 
     trigger.addEventListener('click', () => setOpen(!open));

@@ -7,13 +7,13 @@ import java.util.List;
  * and the context it reasons with. These are screening rules for prioritising field checks, not validated
  * ecological thresholds; each one names where it comes from so a marine biologist can adjust it.
  */
-final class EcologistKnowledge {
+public final class EcologistKnowledge {
     private EcologistKnowledge() {}
 
     // Light: Zostera marina needs roughly 11-20 % of surface irradiance at its depth limit
     // (Duarte 1991; Dennison et al. 1993). Below ~11 % meadows recede.
-    static final double LIGHT_OK = 0.20;
-    static final double LIGHT_CRITICAL = 0.11;
+    public static final double LIGHT_OK = 0.20;
+    public static final double LIGHT_CRITICAL = 0.11;
 
     /**
      * Rough empirical attenuation from satellite turbidity: Kd(PAR) ~= 0.12 + 0.065 * TUR (FNU).
@@ -26,8 +26,8 @@ final class EcologistKnowledge {
     }
 
     // Chlorophyll-a as a eutrophication proxy, coastal Black Sea (screening bands, mg/m3).
-    static final double CHL_MODERATE = 3.0;
-    static final double CHL_HIGH = 6.0;
+    public static final double CHL_MODERATE = 3.0;
+    public static final double CHL_HIGH = 6.0;
 
     // Heat: Z. marina growth declines above ~25 C and mortality rises with prolonged >28 C (Nejrup & Pedersen 2008).
     static final double HEAT_MODERATE = 25.0;

@@ -72,7 +72,7 @@ window.SeaMap = (() => {
     const Tools = L.Control.extend({
       onAdd() {
         const box = L.DomUtil.create('div', 'seamap-tools');
-        box.append(button(ICONS.home, 'Цялото крайбрежие', () => {
+        box.append(button(ICONS.home, options.resetLabel || 'Цялото крайбрежие', () => {
           if (options.onReset) options.onReset(map); else map.fitBounds(options.bounds || BLACK_SEA_BG);
         }));
         const toggle = button(ICONS.expand, 'Цял екран', () => setFull(!shell.classList.contains('is-fullscreen')));

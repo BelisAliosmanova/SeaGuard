@@ -162,3 +162,24 @@
 .task.is-done strong { text-decoration: line-through; color: var(--muted); }
 .task-del { border: 0; background: none; color: var(--faint); font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px; }
 .task-del:hover { color: var(--risk-high); }
+
+.meadow-map .map-shell { height: 240px; margin: 0 12px 12px; }
+.meadow-map .map-shell.is-fullscreen { margin: 0; }
+.meadow-map .seamap { min-height: 0; }
+
+.footage .file-label { cursor: pointer; }
+.footage-actions:has(.file-input:disabled) .file-label { opacity: .55; cursor: default; }
+.file-input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.footage-actions:has(.file-input:focus-visible) .file-label { outline: 2px solid var(--accent); outline-offset: 3px; }
+.footage-formats, .analysis-status, .analysis-provenance { color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+.analysis-status:empty { display: none; }
+.frame-preview { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.frame-preview figure { width: 90px; }
+.frame-preview img { width: 90px; height: 58px; display: block; object-fit: cover; border-radius: 5px; }
+.frame-preview figcaption { color: var(--muted); font-size: 12px; }
+.analysis-result dl { display: grid; gap: 8px; margin-top: 8px; }
+.analysis-result dl > div { padding-top: 8px; border-top: 1px solid var(--border); }
+.analysis-result dt { font-weight: 600; }
+.analysis-result dd { color: var(--muted); overflow-wrap: anywhere; }
+.analysis-result ol { padding-left: 19px; }
+.analysis-result li + li { margin-top: 4px; }

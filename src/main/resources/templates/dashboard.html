@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="bg" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:replace="~{fragments/layout :: head('Мониторинг')}"></th:block>
+    <th:block th:replace="~{fragments/layout :: head('Преглед')}"></th:block>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
@@ -11,18 +11,20 @@
 <a class="skip" href="#workspace">Към съдържанието</a>
 <div class="app-shell">
     <aside th:replace="~{fragments/layout :: rail('dashboard')}"></aside>
-    <main id="workspace" class="workspace">
+    <main id="workspace" class="workspace"
+          th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
+          th:data-sites-url="@{/api/ecologist/sites}"
+          th:data-water-url="@{/api/ecologist/water}"
+          th:data-marine-url="@{/api/marine-live}"
+          th:data-measurements-url="@{/api/measurements}">
         <header class="masthead">
             <div>
-                <h1>Мониторинг</h1>
-                <p>Състоянието на 35-те морски ливади по крайбрежието и измерванията на екипа. Кликни участък на картата, за да видиш какво го застрашава.</p>
-            </div>
-            <div class="masthead-actions">
-                <a class="button primary" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Ново измерване</a>
+                <h1>Преглед</h1>
+                <p>Рискът за морските ливади и условията по българското крайбрежие. Избери участък на картата, за да видиш какво го застрашава.</p>
             </div>
         </header>
 
-        <section class="overview" aria-label="Карта на риска">
+        <section id="risk-map" class="overview" aria-label="Карта на риска">
             <div class="map-shell">
                 <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
                 <div class="map-legend-box" aria-hidden="true">
@@ -36,8 +38,8 @@
             </div>
 
             <aside class="panel site-card" id="site-card" aria-live="polite">
-                <label class="site-card-hint" for="sc-picker">Участък</label>
-                <div id="sc-picker"></div>
+                <span class="site-card-hint">Участък</span>
+                <div id="sc-picker"><p class="muted" role="status" id="sc-loading">Зареждаме участъците…</p></div>
                 <div class="sc-row"><span id="sc-status" class="badge risk-unknown">—</span><span id="sc-area" class="muted"></span></div>
                 <div class="sc-score">
                     <div><strong id="sc-score">—</strong><span>/100 риск</span></div>
@@ -50,9 +52,9 @@
                 </dl>
                 <div class="sc-fresh">
                     <span class="sc-fresh-title">Колко нови са данните</span>
-                    <ul id="sc-fresh"></ul>
+                    <ul id="sc-fresh"><li class="muted">Зареждаме източниците…</li></ul>
                 </div>
-                <a id="sc-link" class="button primary sc-cta" th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Пълно разследване</a>
+                <a id="sc-link" class="button primary sc-cta" hidden th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Пълно разследване</a>
             </aside>
         </section>
 
@@ -63,83 +65,62 @@
             <div><dt><i class="dot" style="background:#0071e3"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd><dd class="context">Въведени от екипа</dd></div>
         </dl>
 
+        <section class="panel section" aria-labelledby="marine-title">
+            <header class="panel-head">
+                <div><h2 id="marine-title">Морето днес</h2><p>Последни налични моделни стойности в открито море · Open-Meteo Marine</p></div>
+            </header>
+            <div id="marine-cards" class="marine-cards panel-body" aria-live="polite">
+                <p class="empty">Зареждаме морските условия…</p>
+            </div>
+            <p class="marine-anomaly"><strong>Средна температурна аномалия по крайбрежието за 30 дни</strong>
+                <span id="marine-anomaly" role="status">Зареждаме…</span>
+            </p>
+        </section>
+
         <section class="panel section" aria-labelledby="queue-title">
             <header class="panel-head">
                 <div>
                     <h2 id="queue-title">Ред за теренни проверки</h2>
                     <p>Къде да отиде екипът първо. Рискът (0–100) обединява светлина до дъното, хранителни вещества, топлина, мътност и близост до пристанища.</p>
                 </div>
-                <a class="button ghost small" th:href="@{/ecologist}">Всички 35 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
             </header>
             <div class="table-wrap">
                 <table class="table queue">
-                    <thead><tr><th>#</th><th>Участък</th><th>Риск</th><th>Главна заплаха</th><th>Най-вероятна причина</th><th></th></tr></thead>
+                    <thead><tr><th>#</th><th>Участък</th><th>Риск</th><th>Главна заплаха</th><th>Най-вероятна причина</th><th scope="col">Действие</th></tr></thead>
                     <tbody id="queue"><tr><td colspan="6" class="empty">Зареждане…</td></tr></tbody>
                 </table>
             </div>
         </section>
 
-        <section class="panel section" aria-labelledby="team-tasks-title">
+        <section class="panel section" aria-labelledby="water-title" id="water"
+                 th:data-light-ok="${lightOk}" th:data-light-critical="${lightCritical}"
+                 th:data-chlorophyll-moderate="${chlorophyllModerate}" th:data-chlorophyll-high="${chlorophyllHigh}">
             <header class="panel-head">
-                <div><h2 id="team-tasks-title">План за терена</h2><p>Всички задачи на екипа. Добавят се от страницата на AI еколога.</p></div>
-            </header>
-            <ul id="team-tasks" class="team-tasks"><li class="empty">Зареждане…</li></ul>
-        </section>
-
-        <section class="section measurements" aria-labelledby="meas-title">
-            <header class="section-head">
                 <div>
-                    <h2 id="meas-title">Теренни измервания</h2>
-                    <p>Стойности, измерени на място от екипа: термометър, сонда, Secchi диск. AI екологът ги използва, когато са до 2 km от ливада.</p>
+                    <h2 id="water-title">Водата по крайбрежието</h2>
+                    <p>Месечни данни от Copernicus Marine. Избери ред, за да намериш участъка на картата.</p>
                 </div>
-                <a class="button secondary" th:href="@{/measurements/export}"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>CSV</a>
+                <div class="segmented" id="water-switch" role="group" aria-label="Показател">
+                    <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина до дъното</button>
+                    <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
+                    <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил-а</button>
+                </div>
             </header>
-
-            <div id="meas-empty" class="panel empty-card" hidden>
-                <svg class="icon" aria-hidden="true"><use href="#i-table"/></svg>
-                <h3>Още няма измервания</h3>
-                <p>Първото измерване с координати се появява на картата като синя точка и влиза в оценката на най-близката ливада.</p>
-                <a class="button primary" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Добави измерване</a>
-            </div>
-
-            <div id="meas-content" hidden>
-                <div class="grid-2">
-                    <section class="panel" aria-labelledby="trend-title">
-                        <header class="panel-head">
-                            <div><h2 id="trend-title">Как се променят стойностите</h2><p>По място във времето</p></div>
-                            <div class="segmented" id="metric-switch" role="group" aria-label="Показател">
-                                <button type="button" data-metric="temperature" aria-pressed="true">Температура</button>
-                                <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
-                                <button type="button" data-metric="salinity" aria-pressed="false">Соленост</button>
-                            </div>
-                        </header>
-                        <div class="panel-body"><div class="chart-wrap"><canvas id="trend" aria-label="Графика на избрания показател"></canvas></div></div>
-                    </section>
-                    <section class="panel alerts-panel" aria-labelledby="alerts-title">
-                        <header class="panel-head"><div><h2 id="alerts-title">Необичайни стойности</h2><p>Последното измерване се отклонява с над 20 % от средното за мястото</p></div></header>
-                        <div id="alerts" class="alerts" aria-live="polite"></div>
-                    </section>
+            <p id="water-status" class="empty" role="status">Зареждаме месечните данни…</p>
+            <div id="water-content" hidden>
+                <p id="water-legend" class="water-legend" aria-live="polite"></p>
+                <div class="table-wrap water-wrap" tabindex="0" role="region" aria-labelledby="water-title">
+                    <table class="table water-table" aria-describedby="water-legend">
+                        <thead id="water-months"></thead>
+                        <tbody id="water-sites"></tbody>
+                    </table>
                 </div>
-                <section class="panel section" aria-labelledby="rows-title">
-                    <header class="panel-head">
-                        <div><h2 id="rows-title">Последни измервания</h2></div>
-                        <a class="button ghost small" th:href="@{/measurements}">Всички <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-                    </header>
-                    <div class="table-wrap">
-                        <table class="table">
-                            <thead><tr><th>Място</th><th>Дата</th><th class="num">Температура</th><th class="num">Мътност</th><th class="num">Соленост</th><th>Източник</th></tr></thead>
-                            <tbody id="rows"></tbody>
-                        </table>
-                    </div>
-                </section>
             </div>
         </section>
     </main>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script th:src="@{/js/charts.js}"></script>
 <script th:src="@{/js/seamap.js}"></script>
 <script th:src="@{/js/site-picker.js}"></script>
 <script th:src="@{/js/dashboard.js}"></script>

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,17 @@ public class EcologistController {
         model.addAttribute("aiModel", ai.model());
         model.addAttribute("aiProvider", ai.provider());
         return "ecologist";
+    }
+
+    @GetMapping("/seagrass")
+    public String atlasRedirect(@RequestParam(required = false) String site, RedirectAttributes redirect) {
+        if (site != null) redirect.addAttribute("site", site);
+        return "redirect:/ecologist";
+    }
+
+    @GetMapping("/api/ecologist/water") @ResponseBody
+    public Water water() {
+        return engine.water();
     }
 
     /** Every archive site ranked by screened risk. */

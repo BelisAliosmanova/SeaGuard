@@ -5,7 +5,15 @@
   const PRIORITY = {'Спешно': 'p-urgent', 'Висок': 'p-high', 'Среден': 'p-mid', 'Рутинно': 'p-routine'};
   const FRESH = {live: 'На живо', recent: 'Актуални', old: 'Стари', missing: 'Няма'};
   const MONTHS = ['яну', 'фев', 'мар', 'апр', 'май', 'юни', 'юли', 'авг', 'сеп', 'окт', 'ное', 'дек'];
-  const provider = document.querySelector('[data-provider]')?.dataset.provider || 'rules';
+  const workspace = $('workspace');
+  const provider = workspace.dataset.provider || 'rules';
+  const footage = window.setupFootage($('footage').dataset.endpoint);
+  let meadowMap, meadowOutline, meadowBounds, selection;
+  const archive = typeof L === 'undefined' ? Promise.resolve(null) :
+    fetch(workspace.dataset.archiveUrl).then(response => {
+      if (!response.ok) throw new Error();
+      return response.json();
+    }).catch(() => null);
   let sites = [], current = null, chart = null, trendMetric = 'lightAtDepth', history = [], lastReport = null, picker;
 
   const el = (tag, text, cls) => {
@@ -17,27 +25,95 @@
   const fmt = (v, d = 1) => v == null ? '—' : Number(v).toLocaleString('bg-BG', {minimumFractionDigits: d, maximumFractionDigits: d});
 
   async function init() {
-    const data = await (await fetch('/api/ecologist/sites')).json();
-    sites = data.sites;
-    picker = SitePicker.create($('picker'), {sites, onSelect: select});
-    const wanted = Number(new URLSearchParams(location.search).get('site'));
-    select(sites.some(s => s.id === wanted) ? wanted : sites[0].id);
+    try {
+      const response = await fetch('/api/ecologist/sites');
+      if (!response.ok) throw new Error();
+      ({sites} = await response.json());
+      if (!sites.length) throw new Error();
+      picker = SitePicker.create($('picker'), {sites, onSelect: select});
+      const wanted = Number(new URLSearchParams(location.search).get('site'));
+      select(sites.some(s => s.id === wanted) ? wanted : sites[0].id);
+    } catch {
+      const message = 'Участъците не се заредиха. Презареди страницата, за да опиташ отново.';
+      $('verdict-headline').textContent = message;
+      $('meadow-map-status').textContent = message;
+    }
   }
 
   async function select(id) {
+    const site = sites.find(item => item.id === id);
+    if (!site) return;
+    selection = id;
     picker.set(id);
-    const r = await fetch('/api/ecologist/assessment/' + id);
-    if (!r.ok) return;
-    current = await r.json();
-    history = []; lastReport = null;
-    $('chat').replaceChildren();
-    $('report-body').replaceChildren();
-    $('copy-report').hidden = true;
+    footage.selectSite(id, site.name);
+    renderMeadowMap(id).catch(() => {
+      if (selection !== id) return;
+      const status = $('meadow-map-status');
+      $('meadow-map-shell').hidden = true;
+      status.hidden = false;
+      status.textContent = 'Картата не се зареди. Презареди страницата или избери друг участък.';
+    });
+    $('map-link').href = '/dashboard?site=' + id;
     const url = new URL(location.href);
     url.searchParams.set('site', id);
     window.history.replaceState(null, '', url);
-    $('map-link').href = '/dashboard?site=' + id;
-    renderVerdict(); renderFreshness(); renderThreats(); renderCauses(); renderActions(); renderGaps(); renderEvidence(); renderTrend(); loadTasks();
+    current = null;
+    history = [];
+    lastReport = null;
+    $('chat').replaceChildren();
+    $('report-body').replaceChildren();
+    $('copy-report').hidden = true;
+    $('write-report').disabled = true;
+    $('verdict-headline').textContent = 'Зареждаме оценката…';
+    $('tasks').replaceChildren(el('li', 'Зареждаме задачите…', 'empty'));
+    try {
+      const response = await fetch('/api/ecologist/assessment/' + id);
+      if (!response.ok) throw new Error();
+      const assessment = await response.json();
+      if (selection !== id) return;
+      current = assessment;
+      renderVerdict(); renderFreshness(); renderThreats(); renderCauses(); renderActions(); renderGaps(); renderEvidence(); renderTrend();
+      $('write-report').disabled = false;
+      loadTasks();
+    } catch {
+      if (selection !== id) return;
+      $('verdict-headline').textContent = 'Оценката не се зареди. Избери участъка отново.';
+      $('tasks').replaceChildren(el('li', 'Избери участъка отново, за да видиш задачите.', 'empty'));
+    }
+  }
+
+  function fitMeadow(map) {
+    map.fitBounds(meadowBounds, {padding: [42, 36], maxZoom: 18, animate: false});
+  }
+
+  async function renderMeadowMap(id) {
+    const status = $('meadow-map-status');
+    const shell = $('meadow-map-shell');
+    const data = await archive;
+    if (selection !== id) return;
+    const feature = data?.features?.find(item => Number(item.id) === id);
+    if (!feature) {
+      if (meadowMap) meadowMap.removeLayer(meadowOutline);
+      shell.hidden = true;
+      status.hidden = false;
+      status.textContent = typeof L === 'undefined' ?
+        'Картата е недостъпна. Провери интернет връзката и презареди страницата.' :
+        'Границата не се зареди. Презареди страницата или избери друг участък.';
+      return;
+    }
+    const outline = L.geoJSON(feature, {style: {color: '#5bcaff', weight: 3, fillOpacity: .28}});
+    meadowBounds = outline.getBounds();
+    shell.hidden = false;
+    status.hidden = true;
+    if (!meadowMap) {
+      ({map: meadowMap} = SeaMap.create('meadow-map', {
+        base: 'satellite', bounds: meadowBounds, resetLabel: 'Покажи границата на ливадата', onReset: fitMeadow
+      }));
+    } else {
+      meadowMap.removeLayer(meadowOutline);
+    }
+    meadowOutline = outline.addTo(meadowMap);
+    fitMeadow(meadowMap);
   }
 
   function renderVerdict() {
@@ -103,8 +179,9 @@
       add.type = 'button';
       add.addEventListener('click', async () => {
         add.disabled = true;
-        await addTask({title: a.title, priority: a.priority, reason: a.why, origin: 'user'});
-        add.textContent = '✓ Добавено';
+        const saved = await addTask({title: a.title, priority: a.priority, reason: a.why, origin: 'user'});
+        add.textContent = saved ? '✓ Добавено' : 'Опитай да добавиш отново';
+        add.disabled = saved;
       });
       li.append(top, el('p', a.why), el('p', a.verify, 'verify'), add);
       return li;
@@ -125,13 +202,24 @@
   }
 
   function renderTrend() {
-    if (typeof Chart === 'undefined') return;
+    if (!current) return;
+    const status = $('trend-status');
+    const container = $('trend').parentElement;
+    chart?.destroy();
+    const available = current.trend.some(point => point[trendMetric] != null);
+    container.hidden = !available || typeof Chart === 'undefined';
+    status.hidden = !container.hidden;
+    if (container.hidden) {
+      status.textContent = available ?
+        'Графиката е недостъпна. Провери интернет връзката и презареди страницата.' :
+        'Няма месечни стойности за този показател. Избери друг показател или участък.';
+      return;
+    }
     const cfg = {
       lightAtDepth: {label: '% светлина на дъното', color: '#0071e3', min: 0},
       turbidity: {label: 'Мътност, FNU', color: '#5e5ce6'},
       chlorophyll: {label: 'Хлорофил-а, mg/m³', color: '#248a3d'}
     }[trendMetric];
-    if (chart) chart.destroy();
     chart = new Chart($('trend'), {
       type: 'line',
       data: {labels: current.trend.map(p => MONTHS[Number(p.month.slice(5, 7)) - 1]),
@@ -158,16 +246,24 @@
   const modeLabel = m => m === 'claude' ? 'Claude' : m === 'gemini' ? 'Gemini' : 'Експертна система';
 
   async function writeReport() {
+    if (!current) return;
+    const site = current.site.id;
     $('write-report').disabled = true;
     $('report-body').replaceChildren(el('p', provider === 'rules' ? 'Експертната система съставя доклада…' : modeLabel(provider) + ' анализира участъка…', 'thinking'));
     try {
-      const r = await fetch('/api/ecologist/report/' + current.site.id, {method: 'POST'});
+      const r = await fetch('/api/ecologist/report/' + site, {method: 'POST'});
       if (!r.ok) throw new Error();
-      lastReport = await r.json();
+      const report = await r.json();
+      if (current?.site.id !== site) return;
+      lastReport = report;
       renderReport(lastReport);
-    } catch (e) {
-      $('report-body').replaceChildren(el('p', 'Докладът не се генерира. Провери дали сървърът работи и опитай отново.', 'empty'));
-    } finally { $('write-report').disabled = false; }
+    } catch {
+      if (current?.site.id === site) {
+        $('report-body').replaceChildren(el('p', 'Докладът не се генерира. Провери дали сървърът работи и опитай отново.', 'empty'));
+      }
+    } finally {
+      if (current?.site.id === site) $('write-report').disabled = false;
+    }
   }
 
   function renderReport(rep) {
@@ -198,17 +294,33 @@
   }
 
   // ---------------------------------------------------------------- field tasks
-  async function addTask(t) {
-    const r = await fetch('/api/tasks', {method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({siteId: current.site.id, ...t})});
-    if (r.ok) loadTasks();
-    return r.ok;
+  async function addTask(task) {
+    if (!current) return false;
+    const site = current.site.id;
+    try {
+      const response = await fetch('/api/tasks', {method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({siteId: site, ...task})});
+      if (response.ok && current?.site.id === site) loadTasks();
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 
   async function loadTasks() {
     const site = current.site.id;
-    const tasks = await (await fetch('/api/tasks?siteId=' + site)).json();
-    if (current.site.id !== site) return;
+    let tasks;
+    try {
+      const response = await fetch('/api/tasks?siteId=' + site);
+      if (!response.ok) throw new Error();
+      tasks = await response.json();
+    } catch {
+      if (current?.site.id === site) {
+        $('tasks').replaceChildren(el('li', 'Задачите не се заредиха. Избери участъка отново.', 'empty'));
+      }
+      return;
+    }
+    if (current?.site.id !== site) return;
     $('tasks-count').textContent = tasks.filter(t => !t.done).length + ' отворени';
     const list = $('tasks');
     list.replaceChildren();
@@ -219,18 +331,33 @@
       box.type = 'checkbox';
       box.checked = t.done;
       box.setAttribute('aria-label', 'Изпълнена');
-      box.addEventListener('change', async () => {
-        await fetch('/api/tasks/' + t.id, {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({done: box.checked})});
-        loadTasks();
-      });
+      async function updateTask(method, body) {
+        box.disabled = del.disabled = true;
+        notice.textContent = '';
+        try {
+          const response = await fetch('/api/tasks/' + t.id, {
+            method, body, headers: body ? {'Content-Type': 'application/json'} : undefined
+          });
+          if (!response.ok) throw new Error();
+          if (current?.site.id === site) loadTasks();
+        } catch {
+          box.checked = t.done;
+          notice.textContent = 'Промяната не се запази. Опитай отново.';
+        } finally {
+          box.disabled = del.disabled = false;
+        }
+      }
+      box.addEventListener('change', () => updateTask('PATCH', JSON.stringify({done: box.checked})));
       const text = el('div', null, 'task-text');
       text.append(el('strong', t.title));
       const meta = el('span', `${t.priority || 'Среден'} · ${t.origin === 'ai' ? 'предложено от AI' : 'добавено ръчно'} · ${new Date(t.createdAt).toLocaleDateString('bg-BG', {day: 'numeric', month: 'short'})}`);
-      text.append(meta);
+      const notice = el('span');
+      notice.setAttribute('role', 'status');
+      text.append(meta, notice);
       const del = el('button', '×', 'task-del');
       del.type = 'button';
       del.setAttribute('aria-label', 'Изтрий задачата');
-      del.addEventListener('click', async () => { await fetch('/api/tasks/' + t.id, {method: 'DELETE'}); loadTasks(); });
+      del.addEventListener('click', () => updateTask('DELETE'));
       li.append(box, text, del);
       list.append(li);
     }
@@ -301,6 +428,7 @@
 
   async function ask(question) {
     if (!current || !question.trim()) return;
+    const assessment = current;
     const chat = $('chat');
     chat.append(el('div', question, 'msg user'));
     const pending = el('div', null, 'msg assistant pending');
@@ -313,6 +441,7 @@
         body: JSON.stringify({siteId: current.site.id, question, history})});
       if (!r.ok) throw new Error();
       const ans = await r.json();
+      if (current !== assessment) return;
       pending.className = 'msg assistant';
       pending.replaceChildren(el('p', ans.text));
       if (ans.used?.length) {
@@ -351,8 +480,12 @@
   $('write-report').addEventListener('click', writeReport);
   $('copy-report').addEventListener('click', async () => {
     if (!lastReport) return;
-    await navigator.clipboard.writeText(reportText(lastReport));
-    $('copy-report').textContent = 'Копирано';
+    try {
+      await navigator.clipboard.writeText(reportText(lastReport));
+      $('copy-report').textContent = 'Копирано';
+    } catch {
+      $('copy-report').textContent = 'Копирай ръчно';
+    }
     setTimeout(() => { $('copy-report').textContent = 'Копирай'; }, 1600);
   });
   $('ask-form').addEventListener('submit', e => { e.preventDefault(); ask($('question').value); });

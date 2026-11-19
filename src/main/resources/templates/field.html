@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Теренна работа')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/forms.css}">
+    <link rel="stylesheet" th:href="@{/css/field.css}">
+</head>
+<body>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<a class="skip" href="#workspace">Към съдържанието</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/layout :: rail('field')}"></aside>
+    <main id="workspace" class="workspace" th:data-sites-url="@{/api/ecologist/sites}"
+          th:data-tasks-url="@{/api/tasks}" th:data-ecologist-url="@{/ecologist}"
+          th:data-measurements-url="@{/api/measurements}" th:data-insights-url="@{/api/insights}">
+        <header class="masthead">
+            <div>
+                <h1>Теренна работа</h1>
+                <p>Планирай проверките на екипа и записвай измерените на терен стойности.</p>
+            </div>
+        </header>
+
+        <div th:if="${success}" class="callout ok section" role="status">
+            <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span th:text="${success}"></span>
+        </div>
+
+        <section class="panel section" aria-labelledby="field-plan-title">
+            <header class="panel-head">
+                <div>
+                    <h2 id="field-plan-title">План за терена</h2>
+                    <p>Задачи на екипа и потвърдени предложения от AI еколога.</p>
+                </div>
+                <div id="task-filter" class="filter"></div>
+            </header>
+            <div class="panel-body">
+                <form id="task-form" class="task-form" hidden>
+                    <h3>Добави задача</h3>
+                    <div class="field">
+                        <span class="field-label">Участък</span>
+                        <div id="task-site"></div>
+                    </div>
+                    <div class="field">
+                        <label for="task-title">Заглавие</label>
+                        <input id="task-title" class="input" maxlength="300" required placeholder="Какво да провери екипът?">
+                    </div>
+                    <div class="field">
+                        <label for="task-priority">Приоритет</label>
+                        <select id="task-priority" class="input">
+                            <option>Спешно</option>
+                            <option>Висок</option>
+                            <option selected>Среден</option>
+                            <option>Рутинно</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="button primary">Добави задача</button>
+                </form>
+                <p id="task-site-status" class="task-status muted" role="status">Зареждаме участъците…</p>
+                <p id="task-status" class="task-status muted" role="status">Зареждаме задачите…</p>
+                <div class="task-groups" id="task-groups" hidden>
+                    <section aria-labelledby="open-tasks-title">
+                        <h3 id="open-tasks-title">Отворени</h3>
+                        <ul id="open-tasks" class="field-tasks"></ul>
+                    </section>
+                    <section aria-labelledby="done-tasks-title">
+                        <h3 id="done-tasks-title">Изпълнени</h3>
+                        <ul id="done-tasks" class="field-tasks"></ul>
+                    </section>
+                </div>
+            </div>
+        </section>
+
+        <section id="measurements" class="section" aria-labelledby="measurements-title">
+            <div class="panel">
+                <header class="panel-head">
+                    <div>
+                        <h2 id="measurements-title">Измервания</h2>
+                        <p>Записи от терена, подредени от най-новия. Посочи източника при въвеждане.</p>
+                    </div>
+                    <div class="masthead-actions">
+                        <a class="button secondary" th:href="@{/measurements/export}" aria-label="Изтегли измерванията като CSV"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>CSV</a>
+                        <a class="button primary" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Ново измерване</a>
+                    </div>
+                </header>
+                <div class="measurement-search panel-body" th:unless="${#lists.isEmpty(measurements)}">
+                    <div class="filter">
+                        <label class="field-label" for="filter">Търси</label>
+                        <input id="filter" class="input" type="search" placeholder="Място или източник" autocomplete="off" disabled>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(measurements)}" class="empty">
+                    Все още няма измервания. <a th:href="@{/measurements/new}">Добави първото</a> с посочен реален източник.
+                </div>
+                <div class="table-wrap" th:unless="${#lists.isEmpty(measurements)}">
+                    <table class="table" id="measurements-table">
+                        <thead>
+                        <tr>
+                            <th>Място</th><th>Дата и час</th><th class="num">Темп., °C</th><th class="num">Мътност, NTU</th>
+                            <th class="num">Соленост, PSU</th><th>Източник</th><th>Бележки</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="m : ${measurements}">
+                            <td class="strong" th:text="${m.locationName}"></td>
+                            <td class="muted num" th:text="${#temporals.format(m.observedAt,'dd.MM.yyyy HH:mm')}"></td>
+                            <td class="num" th:text="${m.temperatureC}"></td>
+                            <td class="num" th:text="${m.turbidityNtu != null ? m.turbidityNtu : '—'}"></td>
+                            <td class="num" th:text="${m.salinityPsu != null ? m.salinityPsu : '—'}"></td>
+                            <td class="muted clip" th:text="${m.source}" th:title="${m.source}"></td>
+                            <td class="muted clip" th:text="${m.notes}" th:title="${m.notes}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p id="no-match" class="empty" role="status" hidden>Няма съвпадения. Опитай с друго име или изчисти търсенето.</p>
+                </div>
+            </div>
+            <div class="grid-2 section" id="measurement-summary" th:unless="${#lists.isEmpty(measurements)}">
+                <section class="panel" aria-labelledby="trend-title">
+                    <header class="panel-head">
+                        <div><h2 id="trend-title">Как се променят стойностите</h2><p>По място във времето</p></div>
+                        <div class="segmented" id="metric-switch" role="group" aria-label="Показател">
+                            <button type="button" data-metric="temperature" aria-pressed="true">Температура</button>
+                            <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
+                            <button type="button" data-metric="salinity" aria-pressed="false">Соленост</button>
+                        </div>
+                    </header>
+                    <div class="panel-body">
+                        <p id="trend-status" class="empty" role="status">Зареждаме измерванията…</p>
+                        <div class="chart-wrap" hidden><canvas id="trend" aria-label="Графика на избрания показател"></canvas></div>
+                    </div>
+                </section>
+                <section class="panel alerts-panel" aria-labelledby="alerts-title">
+                    <header class="panel-head"><div><h2 id="alerts-title">Необичайни стойности</h2><p>Последното измерване се отклонява с над 20 % от средното за мястото</p></div></header>
+                    <div id="alerts" class="alerts" aria-live="polite"><p class="empty">Проверяваме записите…</p></div>
+                </section>
+            </div>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/site-picker.js}"></script>
+<script th:src="@{/js/field.js}"></script>
+<script th:if="${!#lists.isEmpty(measurements)}" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script th:if="${!#lists.isEmpty(measurements)}" th:src="@{/js/charts.js}"></script>
+</body>
+</html>

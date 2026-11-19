@@ -39,7 +39,7 @@ public class FieldTaskController {
         task.setSiteId(site.id());
         task.setSiteName(site.name());
         task.setTitle(body.title().trim());
-        task.setPriority(PRIORITIES.contains(body.priority()) ? body.priority() : "Среден");
+        task.setPriority(body.priority() != null && PRIORITIES.contains(body.priority()) ? body.priority() : "Среден");
         task.setReason(body.reason() == null ? null : body.reason().substring(0, Math.min(600, body.reason().length())));
         task.setOrigin("ai".equals(body.origin()) ? "ai" : "user");
         return repository.save(task);

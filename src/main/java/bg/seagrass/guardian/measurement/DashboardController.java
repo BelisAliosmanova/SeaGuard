@@ -6,30 +6,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static bg.seagrass.guardian.ecologist.EcologistKnowledge.*;
 
 @Controller
 public class DashboardController {
     private final MeasurementRepository repository;
     public DashboardController(MeasurementRepository repository) { this.repository = repository; }
 
-    @GetMapping("/seagrass")
-    public String seagrass() { return "seagrass"; }
+    @GetMapping({"/", "/overview"})
+    public String landing() { return "redirect:/dashboard"; }
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        var all = repository.findAllByOrderByObservedAtDesc();
-        model.addAttribute("count", all.size());
-        model.addAttribute("places", all.stream().map(Measurement::getLocationName).distinct().count());
+        model.addAttribute("count", repository.countByDemoFalse());
+        model.addAttribute("lightOk", LIGHT_OK * 100);
+        model.addAttribute("lightCritical", LIGHT_CRITICAL * 100);
+        model.addAttribute("chlorophyllModerate", CHL_MODERATE);
+        model.addAttribute("chlorophyllHigh", CHL_HIGH);
         return "dashboard";
     }
 
     @GetMapping("/api/measurements") @ResponseBody
     public List<Map<String,Object>> data() {
-        return repository.findAllByOrderByObservedAtDesc().stream()
+        return repository.findByDemoFalseOrderByObservedAtDesc().stream()
           .map(m -> {
               Map<String,Object> r = new LinkedHashMap<>();
               r.put("id", m.getId()); r.put("place",m.getLocationName());
@@ -44,7 +46,7 @@ public class DashboardController {
     // Descriptive, transparent screening, not a validated ecological diagnosis.
     @GetMapping("/api/insights") @ResponseBody
     public List<Map<String,Object>> insights() {
-        var grouped = repository.findAllByOrderByObservedAtDesc().stream()
+        var grouped = repository.findByDemoFalseOrderByObservedAtDesc().stream()
             .collect(Collectors.groupingBy(Measurement::getLocationName));
         List<Map<String,Object>> out = new ArrayList<>();
         for (var group : grouped.values()) {
@@ -82,7 +84,7 @@ public class DashboardController {
     @GetMapping(value="/measurements/export",produces="text/csv")
     public ResponseEntity<byte[]> export() {
         StringBuilder csv = new StringBuilder("id,place,observed_at,temperature_c,turbidity_ntu,salinity_psu,latitude,longitude,source\n");
-        for (var m : repository.findAllByOrderByObservedAtDesc()) {
+        for (var m : repository.findByDemoFalseOrderByObservedAtDesc()) {
             Object[] fields = {m.getId(),m.getLocationName(),m.getObservedAt(),m.getTemperatureC(),m.getTurbidityNtu(),m.getSalinityPsu(),m.getLatitude(),m.getLongitude(),m.getSource()};
             csv.append(Arrays.stream(fields).map(this::csvField).collect(Collectors.joining(","))).append('\n');
         }

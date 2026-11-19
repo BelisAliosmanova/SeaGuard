@@ -8,11 +8,11 @@
 <svg th:replace="~{fragments/layout :: symbols}"></svg>
 <a class="skip" href="#workspace">Към формата</a>
 <div class="app-shell">
-    <aside th:replace="~{fragments/layout :: rail('measurements')}"></aside>
+    <aside th:replace="~{fragments/layout :: rail('field')}"></aside>
     <main id="workspace" class="workspace">
         <header class="masthead">
             <div>
-                <a class="back-link" th:href="@{/measurements}">← Измервания</a>
+                <a class="back-link" th:href="@{/field}">← Теренна работа</a>
                 <h1>Ново измерване</h1>
                 <p>Въвеждай само действително измерени стойности и посочи откъде идват.</p>
             </div>
@@ -94,7 +94,7 @@
                 </fieldset>
 
                 <div class="form-actions">
-                    <a class="button ghost" th:href="@{/measurements}">Отказ</a>
+                    <a class="button ghost" th:href="@{/field}">Отказ</a>
                     <button class="button primary" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Запази измерването</button>
                 </div>
             </form>

@@ -31,9 +31,6 @@ public class MarineLiveController {
     private final ObjectMapper mapper;
     public MarineLiveController(ObjectMapper mapper) { this.mapper = mapper; }
 
-    @GetMapping("/marine-live")
-    public String page() { return "marine-live"; }
-
     @GetMapping("/api/marine-live")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> data(@RequestParam(defaultValue = "sozopol") String area) {

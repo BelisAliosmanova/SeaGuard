@@ -18,22 +18,12 @@ public class MeasurementController {
         this.engine = engine;
     }
 
-    @GetMapping("/")
-    public String landing() { return "redirect:/ecologist"; }
-
-    /** The old overview page is folded into the dashboard. */
-    @GetMapping("/overview")
-    public String overview() { return "redirect:/dashboard"; }
-
     /** Clients must never set the id (that would overwrite a record) or flag their data as synthetic. */
     @InitBinder("measurement")
     void restrictFields(WebDataBinder binder) { binder.setDisallowedFields("id", "demo"); }
 
     @GetMapping("/measurements")
-    public String measurements(Model model) {
-        model.addAttribute("measurements", repository.findAllByOrderByObservedAtDesc());
-        return "measurements";
-    }
+    public String measurementsRedirect() { return "redirect:/field"; }
 
     @GetMapping("/measurements/new")
     public String newMeasurement(@RequestParam(required = false) Integer site, Model model) {
@@ -55,6 +45,6 @@ public class MeasurementController {
         measurement.setDemo(false);
         repository.save(measurement);
         redirectAttributes.addFlashAttribute("success", "Измерването е записано успешно.");
-        return "redirect:/measurements";
+        return "redirect:/field";
     }
 }

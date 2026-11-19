@@ -40,7 +40,14 @@ public final class Ecology {
 
     /** Compact row for the ranking of all sites. */
     public record SiteRisk(int id, String name, double latitude, double longitude, String status, String statusKey,
-                           int riskScore, String topThreat, Double areaHa, String topCause, String firstAction) {}
+                           int riskScore, String topThreat, Double areaHa, String topCause, String firstAction,
+                           Double anomaly30C) {}
+
+    public record Water(List<String> months, List<WaterSite> sites) {}
+
+    public record WaterSite(int id, String name, String statusKey, WaterValues values) {}
+
+    public record WaterValues(List<Double> lightAtDepth, List<Double> turbidity, List<Double> chlorophyll) {}
 
     /** The narrative report. Same shape whether Claude or the rules engine wrote it. */
     public record Report(String mode, String model, String headline, String summary, List<Finding> findings,

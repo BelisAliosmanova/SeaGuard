@@ -65,7 +65,6 @@ public class SeagrassAnalysisController {
     private final Semaphore slot = new Semaphore(1);
     private final HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build();
     private final ObjectMapper mapper;
-    private final Resource demoImage;
     private final JsonNode features;
     private final JsonNode satellite;
     private final URI inferenceEndpoint;
@@ -75,12 +74,10 @@ public class SeagrassAnalysisController {
         ObjectMapper mapper,
         @Value("classpath:static/data/zostera-bulgaria.geojson") Resource archive,
         @Value("classpath:static/data/copernicus-coast.json") Resource snapshot,
-        @Value("classpath:static/media/ravda-berov.jpg") Resource demoImage,
         @Value("${seaguard.vision.endpoint}") URI inferenceEndpoint,
         @Value("${seaguard.vision.model}") String model
     ) throws IOException {
         this.mapper = mapper;
-        this.demoImage = demoImage;
         this.inferenceEndpoint = inferenceEndpoint;
         this.model = model;
         try (InputStream input = archive.getInputStream(); InputStream coast = snapshot.getInputStream()) {
@@ -93,12 +90,11 @@ public class SeagrassAnalysisController {
         headers = "X-SeaGuard-Analysis=1")
     public Analysis analyze(
         @RequestParam int siteId,
-        @RequestParam(defaultValue = "false") boolean example,
         @RequestParam(required = false) List<MultipartFile> frames
     ) {
         JsonNode site = findSite(siteId);
         int frameCount = frames == null ? 0 : frames.size();
-        if (example ? frameCount != 0 : frameCount == 0 || frameCount > 3) {
+        if (frameCount == 0 || frameCount > 3) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Избери от един до три кадъра.");
         }
         if (!slot.tryAcquire()) {
@@ -112,24 +108,17 @@ public class SeagrassAnalysisController {
                 + ". Ground check flag: " + site.path("groundtrth").asText()
                 + ". Near-site Copernicus data (TUR in FNU, CHL in mg/m³): "
                 + (latest.isMissingNode() ? "unavailable." : latest.toString())
-                + (example ? "\nImage: independently published historical example from Ravda, exact polygon unverified."
-                : "\nImages: user-supplied, unverified location and date.");
+                + "\nImages: user-supplied, unverified location and date.";
             content.add(Map.of("type", "text", "text", context));
-            if (example) {
-                try (InputStream input = demoImage.getInputStream()) {
-                    content.add(imagePart(input.readAllBytes()));
-                }
-            } else {
-                for (MultipartFile frame : frames) {
-                    content.add(imagePart(validatedJpeg(frame)));
-                }
+            for (MultipartFile frame : frames) {
+                content.add(imagePart(validatedJpeg(frame)));
             }
             return infer(content);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Анализът беше прекъснат.");
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Локалният AI модел е недостъпен. Опитай отново.");
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Локалният сървър llama.cpp е недостъпен. Стартирай го със scripts/serve_local_ai.sh и опитай отново.");
         } finally {
             slot.release();
         }

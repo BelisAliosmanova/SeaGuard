@@ -41,22 +41,19 @@
     <symbol id="i-current" viewBox="0 0 24 24"><path d="M3 8h13l-3-3M21 16H8l3 3"/></symbol>
 </svg>
 
-<!-- Left navigation rail. `active` is one of: ecologist, atlas, dashboard, marine, measurements. -->
+<!-- Left navigation rail. `active` is one of: dashboard, ecologist, field. -->
 <aside th:fragment="rail(active)" class="rail">
     <a class="brand" th:href="@{/}">
         <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-brand"/></svg></span>
         <span>SeaGuard</span>
     </a>
     <nav aria-label="Основна навигация">
-        <a class="nav-ai" th:href="@{/ecologist}" th:attr="aria-current=${active == 'ecologist'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>AI еколог</a>
-        <span class="rail-label">Данни</span>
-        <a th:href="@{/seagrass}" th:attr="aria-current=${active == 'atlas'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>Морски атлас</a>
-        <a th:href="@{/dashboard}" th:attr="aria-current=${active == 'dashboard'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Мониторинг</a>
-        <a th:href="@{/marine-live}" th:attr="aria-current=${active == 'marine'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-water"/></svg>Морски условия</a>
-        <a th:href="@{/measurements}" th:attr="aria-current=${active == 'measurements'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-table"/></svg>Измервания</a>
+        <a th:href="@{/dashboard}" th:attr="aria-current=${active == 'dashboard'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Преглед</a>
+        <a th:href="@{/ecologist}" th:attr="aria-current=${active == 'ecologist'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Участък</a>
+        <a th:href="@{/field}" th:attr="aria-current=${active == 'field'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-table"/></svg>Теренна работа</a>
     </nav>
     <div class="rail-foot">
-        <a class="button primary rail-cta" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Ново измерване</a>
+        <a class="button primary rail-cta" aria-label="Ново измерване" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Ново измерване</a>
         <p class="rail-note">Морски треви на Черно море</p>
     </div>
 </aside>

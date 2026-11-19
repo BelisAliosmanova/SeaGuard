@@ -29,15 +29,17 @@ class SeaTemperatureClient {
     private static final int FIRST_YEAR = 2023;
     private static final double HEATWAVE_DELTA = 2.0;
     private static final Duration TTL = Duration.ofHours(1);
+    private static final Duration RETRY_DELAY = Duration.ofMinutes(1);
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
     private final ObjectMapper mapper;
     private volatile Map<Integer, HeatStats> cache = Map.of();
-    private volatile Instant fetchedAt = Instant.EPOCH;
+    private Instant refreshAfter = Instant.EPOCH;
 
     SeaTemperatureClient(ObjectMapper mapper) { this.mapper = mapper; }
 
     synchronized Map<Integer, HeatStats> forSites(List<Ecology.Site> sites) {
-        if (!cache.isEmpty() && Instant.now().isBefore(fetchedAt.plus(TTL))) return cache;
+        if (Instant.now().isBefore(refreshAfter)) return cache;
+        refreshAfter = Instant.now().plus(RETRY_DELAY);
         try {
             String coords = coordinates(sites);
             JsonNode recent = fetch(coords + "&past_days=92&forecast_days=1");
@@ -62,8 +64,10 @@ class SeaTemperatureClient {
                 HeatStats stats = stats(recent.get(i), baseline, years, now);
                 if (stats != null) result.put(sites.get(i).id(), stats);
             }
-            cache = Map.copyOf(result);
-            fetchedAt = now;
+            if (!result.isEmpty()) {
+                cache = Map.copyOf(result);
+                refreshAfter = now.plus(TTL);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception e) {

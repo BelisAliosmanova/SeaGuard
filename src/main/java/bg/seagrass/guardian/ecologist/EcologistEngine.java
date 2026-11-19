@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.time.YearMonth;
 import java.util.*;
 
 import static bg.seagrass.guardian.ecologist.EcologistKnowledge.*;
@@ -24,10 +25,55 @@ import static bg.seagrass.guardian.ecologist.EcologistKnowledge.*;
 @Service
 public class EcologistEngine {
     private static final double FIELD_RADIUS_KM = 2.0;
+    private static final double DEFAULT_DEPTH_M = 5.0;
     private static final Locale BG = Locale.forLanguageTag("bg");
+
+    private static final Map<String, String> SITE_NAMES = Map.ofEntries(
+        Map.entry("Otmanli2", "Отманли 2"),
+        Map.entry("Otmanli3_4", "Отманли 3–4"),
+        Map.entry("Ropotamo", "Ропотамо"),
+        Map.entry("SvVlas1", "Свети Влас 1"),
+        Map.entry("SvVlas2", "Свети Влас 2"),
+        Map.entry("SvVlas3", "Свети Влас 3"),
+        Map.entry("SvVlas4", "Свети Влас 4"),
+        Map.entry("SlBriagN", "Слънчев бряг, север"),
+        Map.entry("Vromos", "Вромос"),
+        Map.entry("Poda", "Пода"),
+        Map.entry("Gradina", "Градина"),
+        Map.entry("Konski_zaliv1", "Конски залив"),
+        Map.entry("Raiski_zaliv", "Райски залив"),
+        Map.entry("Zlatna_ribka", "Златна рибка 1"),
+        Map.entry("Zlatna_ribka2", "Златна рибка 2"),
+        Map.entry("RavdaS1", "Равда, юг 1"),
+        Map.entry("RavdaS2a", "Равда, юг 2а"),
+        Map.entry("RavdaS3a", "Равда, юг 3а"),
+        Map.entry("RavdaS4", "Равда, юг 4"),
+        Map.entry("Kraimorie", "Крайморие"),
+        Map.entry("BialaS", "Бяла, юг"),
+        Map.entry("Pomorie_E", "Поморие, изток"),
+        Map.entry("Pomorie", "Поморие"),
+        Map.entry("Sarafovo", "Сарафово"),
+        Map.entry("OtmanliRibarsko", "Рибарско селище"),
+        Map.entry("Otmanli1", "Отманли 1"),
+        Map.entry("Atia", "Атия"),
+        Map.entry("Chernomorets", "Черноморец"),
+        Map.entry("BialaN", "Бяла, север"),
+        Map.entry("Nesebar_S_1", "Несебър, юг 1"),
+        Map.entry("Tzarevo_1", "Царево 1"),
+        Map.entry("Kavaci", "Каваци"),
+        Map.entry("Tzarevo_2", "Царево 2"),
+        Map.entry("Tzarevo_3", "Царево 3"),
+        Map.entry("Kavarna", "Каварна"));
+    private static final Map<String, String> MAPPING_METHODS = Map.of(
+        "satellite", "сателитни снимки",
+        "diving", "водолазно обследване",
+        "multibeam", "многолъчев сонар",
+        "drone", "дрон",
+        "dropcamera", "спускаема камера");
 
     private final List<Site> sites;
     private final Map<Integer, List<JsonNode>> satellite = new HashMap<>();
+    private final List<String> satelliteMonths;
     private final String satelliteDataset;
     private final String satelliteRetrieved;
     private final SeaTemperatureClient temperatures;
@@ -43,6 +89,15 @@ public class EcologistEngine {
             for (JsonNode feature : mapper.readTree(a).path("features")) loaded.add(toSite(feature));
             this.sites = List.copyOf(loaded);
             JsonNode snapshot = mapper.readTree(c);
+            List<String> months = new ArrayList<>();
+            if (snapshot.hasNonNull("firstMonth") && snapshot.hasNonNull("lastMonth")) {
+                YearMonth first = YearMonth.parse(snapshot.path("firstMonth").asText());
+                YearMonth last = YearMonth.parse(snapshot.path("lastMonth").asText());
+                for (YearMonth month = first; !month.isAfter(last); month = month.plusMonths(1)) {
+                    months.add(month.toString());
+                }
+            }
+            this.satelliteMonths = List.copyOf(months);
             this.satelliteDataset = snapshot.path("dataset").asText();
             this.satelliteRetrieved = snapshot.path("retrievedOn").asText();
             snapshot.path("sites").fields().forEachRemaining(e -> {
@@ -62,15 +117,45 @@ public class EcologistEngine {
         var heat = temperatures.forSites(sites);
         var field = realMeasurements();
         return sites.stream().map(s -> {
-            Assessment a = assess(s, heat.get(s.id()), field);
+            var heatStats = heat.get(s.id());
+            Assessment a = assess(s, heatStats, field);
             String top = a.indicators().stream()
                 .filter(i -> i.level() == Level.HIGH || i.level() == Level.MODERATE)
                 .max(Comparator.comparing(Indicator::level)).map(Indicator::label).orElse("—");
             return new SiteRisk(s.id(), s.name(), s.latitude(), s.longitude(), a.status(), a.statusKey(),
                 a.riskScore(), top, s.areaHa(),
                 a.causes().isEmpty() ? null : a.causes().get(0).title(),
-                a.actions().isEmpty() ? null : a.actions().get(0).title());
+                a.actions().isEmpty() ? null : a.actions().get(0).title(),
+                heatStats == null ? null : heatStats.anomaly30C());
         }).sorted(Comparator.comparingInt(SiteRisk::riskScore).reversed()).toList();
+    }
+
+    public Water water() {
+        Map<Integer, Site> byId = new HashMap<>();
+        sites.forEach(site -> byId.put(site.id(), site));
+        List<WaterSite> rows = ranking().stream().map(risk -> {
+            Site site = byId.get(risk.id());
+            double depth = depthLimit(site);
+            Map<String, JsonNode> byMonth = new HashMap<>();
+            satellite.getOrDefault(site.id(), List.of()).forEach(row -> byMonth.put(row.path("month").asText(), row));
+            List<MonthPoint> points = satelliteMonths.stream()
+                .map(month -> waterPoint(month, byMonth.get(month), depth)).toList();
+            WaterValues values = new WaterValues(points.stream().map(MonthPoint::lightAtDepth).toList(),
+                points.stream().map(MonthPoint::turbidity).toList(), points.stream().map(MonthPoint::chlorophyll).toList());
+            return new WaterSite(risk.id(), risk.name(), risk.statusKey(), values);
+        }).toList();
+        return new Water(satelliteMonths, rows);
+    }
+
+    private static double depthLimit(Site site) {
+        return site.depthLimitM() == null ? DEFAULT_DEPTH_M : site.depthLimitM();
+    }
+
+    private static MonthPoint waterPoint(String month, JsonNode row, double depth) {
+        if (row == null) return new MonthPoint(month, null, null, null);
+        Double turbidity = num(row, "turbidity");
+        return new MonthPoint(month, turbidity, num(row, "chlorophyll"),
+            turbidity == null ? null : lightAtDepth(turbidity, depth) * 100);
     }
 
     public Optional<Assessment> assess(int siteId) {
@@ -84,7 +169,7 @@ public class EcologistEngine {
         List<String> gaps = new ArrayList<>();
         List<Evidence> evidence = new ArrayList<>();
         List<JsonNode> sat = satellite.getOrDefault(site.id(), List.of());
-        double depth = site.depthLimitM() != null ? site.depthLimitM() : 5.0;
+        double depth = depthLimit(site);
         if (site.depthLimitM() == null) gaps.add("Архивът няма дълбочинна граница; светлината е оценена за 5 m.");
 
         evidence.add(new Evidence("SEANOE · архив на морските треви",
@@ -110,7 +195,7 @@ public class EcologistEngine {
         if (seasonChl != null) {
             eutro = seasonChl >= CHL_HIGH ? Level.HIGH : seasonChl >= CHL_MODERATE ? Level.MODERATE : Level.LOW;
             indicators.add(new Indicator("eutrophication", "Еутрофикация", eutro,
-                "%s mg/m³ хлорофил-а".formatted(fmt(seasonChl, 1)), "<3 ниско · 3–6 умерено · >6 високо",
+                "%s mg/m³ хлорофил-а".formatted(fmt(seasonChl, 1)), "<3 ниско · 3 до под 6 умерено · ≥6 високо",
                 "Хлорофил-а е заместител на фитопланктона. Високите стойности означават излишък на хранителни вещества и допълнителна сянка над тревата.",
                 "Copernicus Marine 100 m · средна за сезона"));
         }
@@ -201,12 +286,12 @@ public class EcologistEngine {
                 note + " (" + latest.getObservedAt().toLocalDate() + ", източник: " + latest.getSource() + ").",
                 "Ръчно въведени, непроверени"));
             evidence.add(new Evidence("Теренни измервания в SeaGuard", near.size() + " записа в радиус 2 km",
-                latest.getObservedAt().toLocalDate().toString(), "/measurements"));
+                latest.getObservedAt().toLocalDate().toString(), "/field#measurements"));
         } else gaps.add("Няма теренни измервания в радиус 2 km (сонда, Secchi диск, PAR сензор).");
 
         int ageYears = archiveAge(site.mappedOn());
         if (ageYears >= 6) gaps.add("Границите на ливадата са картирани преди %d години; текущото покритие не е потвърдено.".formatted(ageYears));
-        gaps.add("Няма скорошно подводно видео (ROV/AUV) за оценка на покритието и плътността.");
+        gaps.add("Липсват потвърдени подводни наблюдения за покритието и плътността. Добави снимка или видео от участъка.");
 
         // ---------------------------------------------------------- scoring
         Map<String, Integer> weights = Map.of("light", 3, "eutrophication", 2, "heat", 2, "anomaly", 2, "trend", 1, "mechanical", 1, "field", 2);
@@ -237,11 +322,8 @@ public class EcologistEngine {
         List<Cause> causes = causes(light, eutro, heatLevel, anomalyLevel, trend, mechanical, lightFrac, seasonChl, heat, harbour.name(), harbourKm);
         List<Action> actions = actions(site, light, eutro, max(heatLevel, anomalyLevel), trend, mechanical, near.isEmpty(), ageYears);
 
-        List<MonthPoint> series = sat.stream().map(r -> {
-            Double tur = num(r, "turbidity");
-            return new MonthPoint(r.path("month").asText(), tur, num(r, "chlorophyll"),
-                tur == null ? null : round(lightAtDepth(tur, depth) * 100, 1));
-        }).toList();
+        List<MonthPoint> series = sat.stream()
+            .map(row -> waterPoint(row.path("month").asText(), row, depth)).toList();
 
         Optics optics = new Optics(depth, site.depthLimitM() == null,
             seasonTur == null ? null : round(attenuation(seasonTur), 3),
@@ -365,7 +447,7 @@ public class EcologistEngine {
     // ------------------------------------------------------------------ helpers
 
     private List<Measurement> realMeasurements() {
-        return measurements.findAllByOrderByObservedAtDesc().stream()
+        return measurements.findByDemoFalseOrderByObservedAtDesc().stream()
             .filter(m -> m.getLatitude() != null && m.getLongitude() != null).toList();
     }
 
@@ -381,9 +463,12 @@ public class EcologistEngine {
             minLat = Math.min(minLat, lat); maxLat = Math.max(maxLat, lat);
             minLon = Math.min(minLon, lon); maxLon = Math.max(maxLon, lon);
         }
-        return new Site(feature.path("id").asInt(), p.path("NAME").asText(), p.path("type").asText(),
+        String archiveName = p.path("NAME").asText();
+        String method = Arrays.stream(p.path("map_method").asText().split("_"))
+            .map(key -> MAPPING_METHODS.getOrDefault(key, key)).collect(java.util.stream.Collectors.joining(", "));
+        return new Site(feature.path("id").asInt(), SITE_NAMES.getOrDefault(archiveName, archiveName), p.path("type").asText(),
             (minLat + maxLat) / 2, (minLon + maxLon) / 2, numOrNull(p.path("area_ha")), numOrNull(p.path("depthlimit")),
-            p.path("Sat_date").asText(), p.path("map_method").asText().replace('_', ' '),
+            p.path("Sat_date").asText(), method.isBlank() ? "непосочен метод" : method,
             "yes".equalsIgnoreCase(p.path("groundtrth").asText()), p.path("EUNIS_2019").asText());
     }
 
