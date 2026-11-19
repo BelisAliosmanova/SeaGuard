@@ -4,7 +4,6 @@
   const LEVEL = {LOW: ['risk-low', 'Ниско', '#34c759'], MODERATE: ['risk-moderate', 'Умерено', '#ff9f0a'], HIGH: ['risk-high', 'Високо', '#ff3b30'], UNKNOWN: ['risk-unknown', 'Няма данни', '#c7c7cc']};
   const PRIORITY = {'Спешно': 'p-urgent', 'Висок': 'p-high', 'Среден': 'p-mid', 'Рутинно': 'p-routine'};
   const FRESH = {live: 'На живо', recent: 'Актуални', old: 'Стари', missing: 'Няма'};
-  const MONTHS = ['яну', 'фев', 'мар', 'апр', 'май', 'юни', 'юли', 'авг', 'сеп', 'окт', 'ное', 'дек'];
   const workspace = $('workspace');
   const provider = workspace.dataset.provider || 'rules';
   const footage = window.setupFootage($('footage').dataset.endpoint);
@@ -14,7 +13,7 @@
       if (!response.ok) throw new Error();
       return response.json();
     }).catch(() => null);
-  let sites = [], current = null, chart = null, trendMetric = 'lightAtDepth', history = [], lastReport = null, picker;
+  let sites = [], current = null, trendMetric = 'lightAtDepth', history = [], lastReport = null, picker;
 
   const el = (tag, text, cls) => {
     const e = document.createElement(tag);
@@ -30,13 +29,17 @@
       if (!response.ok) throw new Error();
       ({sites} = await response.json());
       if (!sites.length) throw new Error();
-      picker = SitePicker.create($('picker'), {sites, onSelect: select});
+      $('eco-picker-status').remove();
+      picker = SitePicker.create($('picker'), {sites, onSelect: select, label: 'Избран участък'});
       const wanted = Number(new URLSearchParams(location.search).get('site'));
       select(sites.some(s => s.id === wanted) ? wanted : sites[0].id);
     } catch {
       const message = 'Участъците не се заредиха. Презареди страницата, за да опиташ отново.';
       $('verdict-headline').textContent = message;
       $('meadow-map-status').textContent = message;
+      $('trend-status').textContent = message;
+      const pickerStatus = $('eco-picker-status');
+      if (pickerStatus) pickerStatus.textContent = message;
     }
   }
 
@@ -65,6 +68,8 @@
     $('copy-report').hidden = true;
     $('write-report').disabled = true;
     $('verdict-headline').textContent = 'Зареждаме оценката…';
+    $('trend-meadow').textContent = site.name;
+    renderTrend();
     $('tasks').replaceChildren(el('li', 'Зареждаме задачите…', 'empty'));
     try {
       const response = await fetch('/api/ecologist/assessment/' + id);
@@ -78,6 +83,7 @@
     } catch {
       if (selection !== id) return;
       $('verdict-headline').textContent = 'Оценката не се зареди. Избери участъка отново.';
+      $('trend-status').textContent = 'Данните за диаграмата не се заредиха. Избери участъка отново.';
       $('tasks').replaceChildren(el('li', 'Избери участъка отново, за да видиш задачите.', 'empty'));
     }
   }
@@ -202,43 +208,35 @@
   }
 
   function renderTrend() {
-    if (!current) return;
+    const chart = window.SeaGuardWaterChart;
     const status = $('trend-status');
-    const container = $('trend').parentElement;
-    chart?.destroy();
-    const available = current.trend.some(point => point[trendMetric] != null);
-    container.hidden = !available || typeof Chart === 'undefined';
-    status.hidden = !container.hidden;
-    if (container.hidden) {
-      status.textContent = available ?
-        'Графиката е недостъпна. Провери интернет връзката и презареди страницата.' :
-        'Няма месечни стойности за този показател. Избери друг показател или участък.';
+    const body = $('trend-body');
+    const canvas = $('trend');
+    const points = current?.trend || [];
+    const values = points.map(point => point[trendMetric]);
+    const latest = values.findLastIndex(Number.isFinite);
+    body.hidden = !chart || latest === -1;
+    status.hidden = !body.hidden;
+    if (body.hidden) {
+      chart?.clear(canvas);
+      if (!current) {
+        status.textContent = 'Зареждаме месечните данни…';
+      } else {
+        status.textContent = latest === -1 ?
+          'Няма месечни стойности. Избери друг показател или участък.' :
+          'Диаграмата е недостъпна. Провери интернет връзката и презареди страницата.';
+      }
       return;
     }
-    const cfg = {
-      lightAtDepth: {label: '% светлина на дъното', color: '#0071e3', min: 0},
-      turbidity: {label: 'Мътност, FNU', color: '#5e5ce6'},
-      chlorophyll: {label: 'Хлорофил-а, mg/m³', color: '#248a3d'}
-    }[trendMetric];
-    chart = new Chart($('trend'), {
-      type: 'line',
-      data: {labels: current.trend.map(p => MONTHS[Number(p.month.slice(5, 7)) - 1]),
-        datasets: [{label: cfg.label, data: current.trend.map(p => p[trendMetric]), borderColor: cfg.color, backgroundColor: cfg.color + '1f', fill: true, tension: .3, pointRadius: 3, pointBackgroundColor: cfg.color}]},
-      options: {responsive: true, maintainAspectRatio: false,
-        plugins: {legend: {display: false}, tooltip: {callbacks: {label: c => `${cfg.label}: ${fmt(c.parsed.y)}`}}},
-        scales: {x: {grid: {display: false}}, y: {suggestedMin: cfg.min, grid: {color: '#f0f0f2'}}}},
-      plugins: trendMetric === 'lightAtDepth' ? [{
-        id: 'thresholds',
-        afterDraw(c) {
-          const g = c.ctx, area = c.chartArea;
-          for (const [v, col, txt] of [[20, '#248a3d', '20 % достатъчно'], [11, '#d70015', '11 % критично']]) {
-            const y = c.scales.y.getPixelForValue(v);
-            if (y < area.top || y > area.bottom) continue;
-            g.save(); g.strokeStyle = col; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(area.left, y); g.lineTo(area.right, y); g.stroke();
-            g.fillStyle = col; g.font = '500 11px -apple-system, Inter, sans-serif'; g.fillText(txt, area.left + 6, y - 4); g.restore();
-          }
-        }
-      }] : []
+    const label = chart.metrics[trendMetric].label;
+    const date = chart.monthLabel(points[latest].month);
+    $('trend-value').textContent = chart.format(values[latest], trendMetric);
+    $('trend-detail').textContent = `${label} · ${date}`;
+    canvas.setAttribute('aria-label', `Месечна графика · ${label} · ${current.site.name}`);
+    chart.plot(canvas, {
+      months: points.map(point => point.month), metric: trendMetric,
+      primary: {label, values},
+      limits: trendMetric === 'lightAtDepth' ? [[20, '--risk-low'], [11, '--risk-high']] : []
     });
   }
 

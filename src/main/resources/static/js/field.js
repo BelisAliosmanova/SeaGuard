@@ -225,7 +225,7 @@
           label: item => `${item.dataset.label} · ${fmt(item.parsed.y)} ${units[metric]}`}}},
         scales: {x: {type: 'linear', grid: {display: false}, ticks: {maxTicksLimit: 7,
           callback: value => new Date(value).toLocaleDateString('bg-BG', {day: 'numeric', month: 'short'})}},
-          y: {title: {display: true, text: units[metric]}, grid: {color: '#f0f0f2'}}}}
+          y: {title: {display: true, text: units[metric]}, grid: {color: Chart.defaults.borderColor}}}}
     });
   }
 

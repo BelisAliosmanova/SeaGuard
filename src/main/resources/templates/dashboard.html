@@ -11,7 +11,7 @@
 <a class="skip" href="#workspace">Към съдържанието</a>
 <div class="app-shell">
     <aside th:replace="~{fragments/layout :: rail('dashboard')}"></aside>
-    <main id="workspace" class="workspace"
+    <main id="workspace" class="workspace coast-workspace"
           th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
           th:data-sites-url="@{/api/ecologist/sites}"
           th:data-water-url="@{/api/ecologist/water}"
@@ -20,30 +20,70 @@
         <header class="masthead">
             <div>
                 <h1>Преглед</h1>
-                <p>Рискът за морските ливади и условията по българското крайбрежие. Избери участък на картата, за да видиш какво го застрашава.</p>
+                <p>Риск за морските ливади и състояние на водата по българското Черноморие.</p>
             </div>
         </header>
 
-        <section id="risk-map" class="overview" aria-label="Карта на риска">
-            <div class="map-shell">
-                <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
-                <div class="map-legend-box" aria-hidden="true">
-                    <strong>Риск за ливадата</strong>
-                    <span><i style="background:#ff3b30"></i>Висок</span>
-                    <span><i style="background:#ff9f0a"></i>Повишен</span>
-                    <span><i style="background:#ffcc00"></i>Под наблюдение</span>
-                    <span><i style="background:#34c759"></i>Нисък</span>
-                    <span><i style="background:#0071e3"></i>Теренно измерване</span>
+        <dl class="stats coast-stats" aria-label="Обобщение">
+            <div><dt><i class="dot" style="background:#ff3b30"></i>Висок и повишен риск</dt><dd id="n-risk">—</dd></div>
+            <div><dt><i class="dot" style="background:#ffcc00"></i>Под наблюдение</dt><dd id="n-watch">—</dd></div>
+            <div><dt><i class="dot" style="background:#34c759"></i>Нисък риск</dt><dd id="n-low">—</dd></div>
+            <div><dt><i class="dot" style="background:#0071e3"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd></div>
+        </dl>
+
+        <section id="risk-map" class="monitor-grid section" aria-label="Карта на риска и месечна диаграма">
+            <div class="panel monitor-map coast-map">
+                <header class="panel-head">
+                    <h2>Карта на риска</h2>
+                    <div id="sc-picker"><p class="muted" role="status" id="sc-loading">Зареждаме участъците…</p></div>
+                </header>
+                <div class="map-shell">
+                    <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
+                    <div class="map-legend-box" aria-hidden="true">
+                        <strong>Риск за ливадата</strong>
+                        <span><i style="background:#ff3b30"></i>Висок</span>
+                        <span><i style="background:#ff9f0a"></i>Повишен</span>
+                        <span><i style="background:#ffcc00"></i>Под наблюдение</span>
+                        <span><i style="background:#34c759"></i>Нисък</span>
+                        <span><i style="background:#0071e3"></i>Теренно измерване</span>
+                    </div>
                 </div>
             </div>
 
-            <aside class="panel site-card" id="site-card" aria-live="polite">
-                <span class="site-card-hint">Участък</span>
-                <div id="sc-picker"><p class="muted" role="status" id="sc-loading">Зареждаме участъците…</p></div>
-                <div class="sc-row"><span id="sc-status" class="badge risk-unknown">—</span><span id="sc-area" class="muted"></span></div>
-                <div class="sc-score">
-                    <div><strong id="sc-score">—</strong><span>/100 риск</span></div>
-                    <div class="meter"><i id="sc-meter"></i></div>
+            <section class="panel monthly-panel" aria-labelledby="coast-trend-title">
+                <header class="panel-head">
+                    <div><h2 id="coast-trend-title">Водата по месеци</h2><p>Copernicus Marine</p></div>
+                    <div class="segmented" id="coast-trend-switch" role="group" aria-label="Показател на диаграмата">
+                        <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
+                        <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
+                        <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
+                    </div>
+                </header>
+                <div class="panel-body monthly-body">
+                    <p id="coast-trend-status" class="empty monthly-status" role="status">Зареждаме месечните данни…</p>
+                    <div id="coast-trend-body" hidden>
+                        <p class="monthly-readout"><strong id="coast-readout-value">—</strong><span id="coast-readout-label"></span></p>
+                        <div class="monthly-canvas"><canvas id="coast-trend" role="img" aria-label="Месечна диаграма за водата"></canvas></div>
+                    </div>
+                </div>
+                <footer class="panel-foot">
+                    <span>Средно за участъците с данни</span>
+                    <a href="#water-title">Таблица по участъци</a>
+                </footer>
+            </section>
+        </section>
+
+        <section class="panel section site-card" id="site-card" aria-labelledby="site-card-title">
+            <header class="panel-head">
+                <div><h2 id="site-card-title">Избран участък</h2><p id="sc-area"></p></div>
+                <a id="sc-link" class="button primary" hidden th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Отвори AI еколога</a>
+            </header>
+            <div class="panel-body sc-main">
+                <div class="sc-summary">
+                    <div class="sc-score">
+                        <strong id="sc-score">—</strong><span>/ 100</span>
+                    </div>
+                    <span id="sc-status" class="badge risk-unknown">Зареждаме риска…</span>
                 </div>
                 <dl class="sc-facts">
                     <div><dt>Главна заплаха</dt><dd id="sc-threat">—</dd></div>
@@ -54,16 +94,8 @@
                     <span class="sc-fresh-title">Колко нови са данните</span>
                     <ul id="sc-fresh"><li class="muted">Зареждаме източниците…</li></ul>
                 </div>
-                <a id="sc-link" class="button primary sc-cta" hidden th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Пълно разследване</a>
-            </aside>
+            </div>
         </section>
-
-        <dl class="stats section" aria-label="Обобщение">
-            <div><dt><i class="dot" style="background:#ff3b30"></i>Висок и повишен риск</dt><dd id="n-risk">—</dd><dd class="context">Участъци, които се нуждаят от проверка на терен</dd></div>
-            <div><dt><i class="dot" style="background:#ffcc00"></i>Под наблюдение</dt><dd id="n-watch">—</dd><dd class="context">Умерени сигнали, следят се</dd></div>
-            <div><dt><i class="dot" style="background:#34c759"></i>Нисък риск</dt><dd id="n-low">—</dd><dd class="context">Без силни сигнали в данните</dd></div>
-            <div><dt><i class="dot" style="background:#0071e3"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd><dd class="context">Въведени от екипа</dd></div>
-        </dl>
 
         <section class="panel section" aria-labelledby="marine-title">
             <header class="panel-head">
@@ -75,21 +107,6 @@
             <p class="marine-anomaly"><strong>Средна температурна аномалия по крайбрежието за 30 дни</strong>
                 <span id="marine-anomaly" role="status">Зареждаме…</span>
             </p>
-        </section>
-
-        <section class="panel section" aria-labelledby="queue-title">
-            <header class="panel-head">
-                <div>
-                    <h2 id="queue-title">Ред за теренни проверки</h2>
-                    <p>Къде да отиде екипът първо. Рискът (0–100) обединява светлина до дъното, хранителни вещества, топлина, мътност и близост до пристанища.</p>
-                </div>
-            </header>
-            <div class="table-wrap">
-                <table class="table queue">
-                    <thead><tr><th>#</th><th>Участък</th><th>Риск</th><th>Главна заплаха</th><th>Най-вероятна причина</th><th scope="col">Действие</th></tr></thead>
-                    <tbody id="queue"><tr><td colspan="6" class="empty">Зареждане…</td></tr></tbody>
-                </table>
-            </div>
         </section>
 
         <section class="panel section" aria-labelledby="water-title" id="water"
@@ -117,12 +134,29 @@
                 </div>
             </div>
         </section>
+
+        <section class="panel section" aria-labelledby="queue-title">
+            <header class="panel-head">
+                <div>
+                    <h2 id="queue-title">Ред за теренни проверки</h2>
+                    <p>Къде да отиде екипът първо. Рискът (0–100) обединява светлина до дъното, хранителни вещества, топлина, мътност и близост до пристанища.</p>
+                </div>
+            </header>
+            <div class="table-wrap">
+                <table class="table queue">
+                    <thead><tr><th>#</th><th>Участък</th><th>Риск</th><th>Главна заплаха</th><th>Най-вероятна причина</th><th scope="col">Действие</th></tr></thead>
+                    <tbody id="queue"><tr><td colspan="6" class="empty">Зареждане…</td></tr></tbody>
+                </table>
+            </div>
+        </section>
     </main>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script th:src="@{/js/seamap.js}"></script>
 <script th:src="@{/js/site-picker.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/charts.js}"></script>
 <script th:src="@{/js/dashboard.js}"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
   const {RISK, RISK_LABEL} = SeaMap;
   const polygons = new Map(), dots = new Map(), byId = new Map();
   let map, picker, sites = [], selected, water;
-  let metric = 'lightAtDepth';
+  let metric = 'lightAtDepth', coastMetric = 'lightAtDepth';
 
   function el(tag, text, cls) {
     const node = document.createElement(tag);
@@ -112,15 +112,18 @@
     $('sc-status').className = 'badge risk-' + site.statusKey;
     $('sc-status').textContent = RISK_LABEL[site.statusKey];
     $('sc-area').textContent = site.areaHa == null ? '' : number.format(site.areaHa) + ' ха картирана площ';
-    $('sc-score').textContent = site.riskScore;
-    $('sc-meter').style.width = site.riskScore + '%';
-    $('sc-meter').style.background = RISK[site.statusKey];
+    $('site-card-title').textContent = site.name;
+    const score = $('sc-score');
+    score.textContent = site.riskScore;
+    score.parentElement.style.setProperty('--score', site.riskScore + '%');
+    score.parentElement.style.setProperty('--score-color', RISK[site.statusKey]);
     $('sc-threat').textContent = site.topThreat === '—' ? 'Няма силна заплаха в данните' : site.topThreat;
     $('sc-cause').textContent = site.topCause || '—';
     $('sc-action').textContent = site.firstAction || '—';
     $('sc-link').href = '/ecologist?site=' + id;
     $('sc-link').hidden = false;
     updateSelection();
+    if (water) renderCoastTrend();
   }
 
   function updateSelection() {
@@ -261,18 +264,60 @@
     updateSelection();
   }
 
+  function renderCoastTrend() {
+    const chart = window.SeaGuardWaterChart;
+    const status = $('coast-trend-status');
+    const body = $('coast-trend-body');
+    const canvas = $('coast-trend');
+    const averages = water.months.map((_, index) => {
+      const values = water.sites.map(site => site.values[coastMetric][index]).filter(Number.isFinite);
+      return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+    });
+    const latest = averages.findLastIndex(Number.isFinite);
+    body.hidden = !chart || latest === -1;
+    status.hidden = !body.hidden;
+    if (body.hidden) {
+      chart?.clear(canvas);
+      status.textContent = latest === -1 ?
+        'Няма месечни стойности за този показател. Избери друг показател.' :
+        'Диаграмата е недостъпна. Презареди страницата или отвори месечната таблица.';
+      return;
+    }
+
+    const site = water.sites.find(item => item.id === selected);
+    const {label} = chart.metrics[coastMetric];
+    const date = chart.monthLabel(water.months[latest]);
+    $('coast-readout-value').textContent = chart.format(averages[latest], coastMetric);
+    $('coast-readout-label').textContent = `${label} · ${date}`;
+    canvas.setAttribute('aria-label', label + ' по месеци за крайбрежието' + (site ? ' и ' + site.name : ''));
+    const thresholds = $('water').dataset;
+    const limits = coastMetric === 'lightAtDepth'
+      ? [[Number(thresholds.lightOk), '--risk-low'], [Number(thresholds.lightCritical), '--risk-high']]
+      : [];
+    chart.plot(canvas, {
+      months: water.months, metric: coastMetric, limits,
+      primary: {label: 'Средно за крайбрежието', values: averages},
+      reference: site && {label: site.name, values: site.values[coastMetric]}
+    });
+  }
+
   async function loadWater() {
     try {
       const data = await json(urls.waterUrl);
       if (!data.months.length || !data.sites.some(site =>
         Object.values(site.values).some(values => values.some(Number.isFinite)))) {
-        $('water-status').textContent = 'Няма налични месечни данни. Провери дали архивът на Copernicus е обновен и презареди страницата.';
+        const message = 'Няма месечни данни. Провери дали архивът на Copernicus е обновен и презареди страницата.';
+        $('water-status').textContent = message;
+        $('coast-trend-status').textContent = message;
         return;
       }
       water = data;
       renderWater();
+      renderCoastTrend();
     } catch {
-      $('water-status').textContent = 'Месечните данни не се заредиха. Презареди страницата, за да опиташ отново.';
+      const message = 'Месечните данни не се заредиха. Презареди страницата, за да опиташ отново.';
+      $('water-status').textContent = message;
+      $('coast-trend-status').textContent = message;
     }
   }
 
@@ -330,6 +375,15 @@
     });
   }
 
+  const chartButtons = document.querySelectorAll('#coast-trend-switch button');
+  for (const button of chartButtons) {
+    button.addEventListener('click', () => {
+      coastMetric = button.dataset.metric;
+      chartButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      if (water) renderCoastTrend();
+    });
+  }
+
   async function init() {
     loadMarine();
     const archive = json(urls.archiveUrl).catch(() => null);
@@ -341,6 +395,7 @@
       $('sc-loading').textContent = message;
       $('queue').rows[0].cells[0].textContent = message;
       $('water-status').textContent = message;
+      $('coast-trend-status').textContent = message;
       $('marine-anomaly').textContent = 'Отклонението не се зареди. Презареди страницата.';
       $('sc-fresh').replaceChildren();
       mapMessage(message);

@@ -89,6 +89,9 @@ window.SeaMap = (() => {
       }
     });
     new Tools({position: 'topleft'}).addTo(map);
+    const resize = new ResizeObserver(() => map.invalidateSize({animate: false}));
+    resize.observe(el);
+    map.on('unload', () => resize.disconnect());
     return {map};
   }
 
