@@ -19,6 +19,9 @@ public class DashboardController {
     @GetMapping("/lab")
     public String lab() { return "lab"; }
 
+    @GetMapping("/seagrass")
+    public String seagrass() { return "seagrass"; }
+
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         var all = repository.findAllByOrderByObservedAtDesc();

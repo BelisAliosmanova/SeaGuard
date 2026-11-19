@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Морски ливади | SeaGuard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" th:href="@{/css/seagrass.css}">
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script defer th:src="@{/js/seagrass.js}"></script>
+</head>
+<body>
+<header class="topbar">
+    <div class="frame topbar-inner">
+        <a class="brand" th:href="@{/}">SeaGuard</a>
+        <nav aria-label="Основна навигация">
+            <a th:href="@{/seagrass}" aria-current="page">Морски ливади</a>
+            <a th:href="@{/dashboard}">Мониторинг</a>
+            <a th:href="@{/marine-live}">Морски условия</a>
+            <a th:href="@{/lab}">Dive Lab</a>
+        </nav>
+    </div>
+</header>
+<main class="frame" id="workspace"
+      th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
+      th:data-measurements-url="@{/api/measurements(kind='real')}">
+    <header class="page-title">
+        <h1>Морски ливади</h1>
+        <p>Исторически карти на морските треви <i>Zostera</i> по българското Черноморие.</p>
+    </header>
+    <div class="workspace-grid">
+        <section class="map-panel" aria-labelledby="map-title">
+            <header class="panel-heading">
+                <div>
+                    <h2 id="map-title">Карта на крайбрежието</h2>
+                    <p id="archive-status" role="status">Зареждане на архива…</p>
+                </div>
+                <button type="button" id="reset-map" class="secondary" disabled>Цялото крайбрежие</button>
+            </header>
+            <div id="map" aria-label="Интерактивна карта на морските ливади"></div>
+            <p id="map-status" class="map-status" role="status" hidden></p>
+            <footer class="legend">
+                <span><i class="swatch" aria-hidden="true"></i> Картографиран участък</span>
+                <span><i class="swatch selected" aria-hidden="true"></i> Избран участък</span>
+            </footer>
+        </section>
+        <aside class="site-panel" aria-labelledby="site-title">
+            <label for="site-select">Участък от архива</label>
+            <select id="site-select" disabled><option>Зареждане…</option></select>
+            <section id="site-details" hidden>
+                <h2 id="site-title"></h2>
+                <div class="site-stats">
+                    <div><span>Площ</span><strong id="site-area"></strong></div>
+                    <div><span>Граница в дълбочина</span><strong id="site-depth"></strong></div>
+                </div>
+                <dl class="site-meta">
+                    <div><dt>Сателитни снимки</dt><dd id="satellite-date"></dd></div>
+                    <div><dt>Метод на картографиране</dt><dd id="mapping-method"></dd></div>
+                    <div><dt>Теренна проверка по архив</dt><dd id="field-check"></dd></div>
+                </dl>
+                <p class="site-note">За оценка на сегашното състояние са нужни нови теренни наблюдения.</p>
+                <button type="button" id="run-report" aria-controls="report">Направи екологично разследване</button>
+            </section>
+        </aside>
+    </div>
+    <section id="report" class="report" aria-labelledby="report-title" hidden>
+        <h2 id="report-title" tabindex="-1">Екологично разследване <span id="report-site"></span></h2>
+        <div class="report-grid">
+            <article>
+                <h3>Доказателства от архива</h3>
+                <p id="report-archive"></p>
+            </article>
+            <article>
+                <h3>Въведени измервания наблизо</h3>
+                <p id="report-measurements" role="status"></p>
+                <p id="report-latest" hidden></p>
+                <p class="small">Обхватът е 2 км от центъра на рамката около участъка. Източникът на тези записи се посочва от подателя.</p>
+            </article>
+            <article>
+                <h3>Теренна проверка</h3>
+                <p id="report-action"></p>
+            </article>
+        </div>
+    </section>
+    <footer class="source">
+        <span>Картографски данни от Berov и съавт. (2022), преобразувани от Shapefile в GeoJSON.</span>
+        <a href="https://doi.org/10.17882/79590">Архив SEANOE</a>
+        <a href="https://doi.org/10.3897/BDJ.10.e78942">Методология</a>
+        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>
+    </footer>
+</main>
+</body>
+</html>
