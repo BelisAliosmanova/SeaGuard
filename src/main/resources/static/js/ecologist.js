@@ -68,7 +68,7 @@
     $('copy-report').hidden = true;
     $('write-report').disabled = true;
     $('verdict-headline').textContent = 'Зареждаме оценката…';
-    $('trend-meadow').textContent = site.name;
+    $('meadow-map-title').textContent = site.name;
     renderTrend();
     $('tasks').replaceChildren(el('li', 'Зареждаме задачите…', 'empty'));
     try {

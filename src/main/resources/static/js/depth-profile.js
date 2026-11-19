@@ -19,7 +19,7 @@ window.DepthProfile = (() => {
     const y = z => top + (z / maxZ) * (bottom - top);
     const light = z => Math.exp(-kd * z);
     const mix = (t) => { // 1 = bright shallow water, 0 = dark
-      const a = [190, 197, 174], b = [54, 74, 68];
+      const a = [215, 220, 220], b = [98, 107, 109];
       return `rgb(${a.map((v, i) => Math.round(b[i] + (v - b[i]) * t)).join(',')})`;
     };
     const defs = node('defs', {});
@@ -38,8 +38,8 @@ window.DepthProfile = (() => {
     const xAtZ = z => left + Math.pow(Math.max(0, z - 0.4) / (maxZ - 0.4), 1 / shape) * (right - left);
     const pts = [];
     for (let x = left; x <= right; x += 4) pts.push(`${x},${y(seabedZ(x)).toFixed(1)}`);
-    node('polygon', {points: `${left},${bottom + 8} ${pts.join(' ')} ${right},${bottom + 8}`, fill: '#776851'});
-    node('polyline', {points: pts.join(' '), fill: 'none', stroke: '#ab9875', 'stroke-width': 1.2});
+    node('polygon', {points: `${left},${bottom + 8} ${pts.join(' ')} ${right},${bottom + 8}`, fill: '#515859'});
+    node('polyline', {points: pts.join(' '), fill: 'none', stroke: '#353b3c', 'stroke-width': 1.2});
     // Meadow: blades along the seabed down to the depth limit, coloured by light reaching them.
     for (let x = left + 5; x < right; x += 7) {
       const z = seabedZ(x);
@@ -68,7 +68,7 @@ window.DepthProfile = (() => {
     node('circle', {cx: xLimit, cy: y(depth), r: 4.5, fill: '#fff', stroke: '#1d1d1f', 'stroke-width': 1.5});
     const tag = o.lightPct == null ? 'няма данни' : `${fmt(o.lightPct, 0)} % на ${fmt(depth, 0)} m`;
     const tx = Math.max(left + 2, Math.min(xLimit + 8, right - 94));
-    node('rect', {x: tx, y: top + 6, width: 92, height: 20, rx: 5, fill: 'var(--sidebar)'});
+    node('rect', {x: tx, y: top + 6, width: 92, height: 20, rx: 5, fill: 'var(--accent)'});
     node('text', {x: tx + 46, y: top + 20, 'text-anchor': 'middle', fill: '#fff', 'font-size': 11, 'font-weight': 600}, tag);
     node('text', {x: left + 4, y: top - 8, fill: 'var(--muted)', 'font-size': 10}, `Повърхност · Kd ≈ ${fmt(kd, 2)} m⁻¹`);
     captionEl.textContent = o.lightPct == null

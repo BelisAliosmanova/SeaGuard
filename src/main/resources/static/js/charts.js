@@ -12,7 +12,10 @@
   Chart.defaults.plugins.legend.labels.boxHeight = 10;
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
   Chart.defaults.plugins.legend.labels.padding = 14;
-  Chart.defaults.plugins.tooltip.backgroundColor = token('--sidebar');
+  Chart.defaults.plugins.tooltip.backgroundColor = token('--paper');
+  Chart.defaults.plugins.tooltip.titleColor = token('--ink');
+  Chart.defaults.plugins.tooltip.bodyColor = token('--ink');
+  Chart.defaults.plugins.tooltip.footerColor = token('--muted');
   Chart.defaults.plugins.tooltip.borderColor = token('--control');
   Chart.defaults.plugins.tooltip.borderWidth = 1;
   Chart.defaults.plugins.tooltip.padding = 10;

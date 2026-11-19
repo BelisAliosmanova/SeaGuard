@@ -24,15 +24,8 @@
             </div>
         </header>
 
-        <dl class="stats coast-stats" aria-label="Обобщение">
-            <div><dt><i class="dot" style="background:var(--marker-high)"></i>Висок и повишен риск</dt><dd id="n-risk">—</dd></div>
-            <div><dt><i class="dot" style="background:var(--marker-watch)"></i>Под наблюдение</dt><dd id="n-watch">—</dd></div>
-            <div><dt><i class="dot" style="background:var(--marker-low)"></i>Нисък риск</dt><dd id="n-low">—</dd></div>
-            <div><dt><i class="dot" style="background:var(--marker-field)"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd></div>
-        </dl>
-
-        <section id="risk-map" class="monitor-grid section" aria-label="Карта на риска и месечна диаграма">
-            <div class="panel monitor-map coast-map">
+        <section id="risk-map" class="panel monitor-grid" aria-label="Карта на риска и месечна диаграма">
+            <div class="monitor-map coast-map">
                 <header class="panel-head">
                     <h2>Карта на риска</h2>
                     <div id="sc-picker"><p class="muted" role="status" id="sc-loading">Зареждаме участъците…</p></div>
@@ -50,7 +43,7 @@
                 </div>
             </div>
 
-            <section class="panel monthly-panel" aria-labelledby="coast-trend-title">
+            <section class="monthly-panel" aria-labelledby="coast-trend-title">
                 <header class="panel-head">
                     <div><h2 id="coast-trend-title">Водата по месеци</h2><p>Copernicus Marine</p></div>
                     <div class="segmented" id="coast-trend-switch" role="group" aria-label="Показател на диаграмата">
@@ -72,6 +65,13 @@
                 </footer>
             </section>
         </section>
+
+        <dl class="stats section coast-stats" aria-label="Обобщение">
+            <div><dt><i class="dot" style="background:var(--marker-high)"></i>Висок и повишен риск</dt><dd id="n-risk">—</dd></div>
+            <div><dt><i class="dot" style="background:var(--marker-watch)"></i>Под наблюдение</dt><dd id="n-watch">—</dd></div>
+            <div><dt><i class="dot" style="background:var(--marker-low)"></i>Нисък риск</dt><dd id="n-low">—</dd></div>
+            <div><dt><i class="dot" style="background:var(--marker-field)"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd></div>
+        </dl>
 
         <section class="panel section site-card" id="site-card" aria-labelledby="site-card-title">
             <header class="panel-head">
