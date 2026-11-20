@@ -77,8 +77,25 @@
             </section>
         </div>
 
-        <div class="grid-2 section site-actions">
-            <section class="panel ai-panel" aria-labelledby="ai-title">
+
+
+
+
+        <div class="grid-2 even section">
+            <section class="panel" aria-labelledby="threats-title">
+                <header class="panel-head"><div><h2 id="threats-title">Какво застрашава ливадата</h2><p>Кликни показател за обяснение, праг и източник</p></div></header>
+                <div id="threats" class="threats"></div>
+            </section>
+            <section class="panel" aria-labelledby="causes-title">
+                <header class="panel-head"><div><h2 id="causes-title">Вероятни причини</h2><p>Процентът показва колко силни са доказателствата</p></div></header>
+                <ol id="causes" class="causes panel-body"></ol>
+            </section>
+        </div>
+            <section class="panel section" aria-labelledby="plan-title">
+                <header class="panel-head"><div><h2 id="plan-title">Какво да направим</h2><p>Стъпките са подредени по приоритет</p></div></header>
+                <ol id="actions" class="actions panel-body"></ol>
+            </section>
+            <section class="panel section ai-panel" aria-labelledby="ai-title">
                 <header class="panel-head">
                     <div><h2 id="ai-title">Попитай AI еколога</h2><p>Отговорите се опират само на данните за избрания участък</p></div>
                     <div class="masthead-actions">
@@ -118,30 +135,6 @@
                 </div>
             </section>
 
-            <section class="panel" aria-labelledby="plan-title">
-                <header class="panel-head"><div><h2 id="plan-title">Какво да направим</h2><p>Стъпките са подредени по приоритет</p></div></header>
-                <ol id="actions" class="actions panel-body"></ol>
-            </section>
-        </div>
-
-        <section class="panel section" aria-labelledby="fresh-title">
-            <header class="panel-head">
-                <div><h2 id="fresh-title">Колко нови са данните</h2><p>Водата се следи почти на живо. Самата ливада е картирана преди години, затова оценката е за условията около нея.</p></div>
-            </header>
-            <div id="freshness" class="fresh-list"></div>
-        </section>
-
-        <div class="grid-2 even section">
-            <section class="panel" aria-labelledby="threats-title">
-                <header class="panel-head"><div><h2 id="threats-title">Какво застрашава ливадата</h2><p>Кликни показател за обяснение, праг и източник</p></div></header>
-                <div id="threats" class="threats"></div>
-            </section>
-            <section class="panel" aria-labelledby="causes-title">
-                <header class="panel-head"><div><h2 id="causes-title">Вероятни причини</h2><p>Процентът показва колко силни са доказателствата</p></div></header>
-                <ol id="causes" class="causes panel-body"></ol>
-            </section>
-        </div>
-
         <section class="panel section" aria-labelledby="tasks-title">
             <header class="panel-head">
                 <div><h2 id="tasks-title">План за терена</h2><p>Задачите за този участък, добавени от теб или потвърдени от AI еколога</p></div>
@@ -149,7 +142,12 @@
             </header>
             <ul id="tasks" class="tasks"></ul>
         </section>
-
+        <section class="panel section" aria-labelledby="fresh-title">
+            <header class="panel-head">
+                <div><h2 id="fresh-title">Колко нови са данните</h2><p>Водата се следи почти на живо. Самата ливада е картирана преди години, затова оценката е за условията около нея.</p></div>
+            </header>
+            <div id="freshness" class="fresh-list"></div>
+        </section>
         <div class="grid-2 section">
             <figure class="panel profile" aria-labelledby="profile-title">
                 <h2 id="profile-title">Профил на дълбочината</h2>

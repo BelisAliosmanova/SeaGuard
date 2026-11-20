@@ -14,41 +14,41 @@
 }
 :root {
     color-scheme: light;
-    --canvas: #f3f4f4;
+    --canvas: #f5f6f8;
     --paper: #ffffff;
     --sidebar: #ffffff;
-    --well: #edf0ef;
-    --hover: #e4e7e6;
-    --ink: #1d2121;
-    --muted: #555e61;
-    --faint: #687275;
-    --border: #d8dedc;
-    --control: #b8c1c0;
+    --well: #f1f3f6;
+    --hover: #eceff3;
+    --ink: #14171c;
+    --muted: #5d6573;
+    --faint: #8a92a0;
+    --border: #e3e6eb;
+    --control: #cfd4dc;
 
     --on-accent: #ffffff;
-    --accent: #252a2a;
-    --accent-strong: #404848;
-    --accent-soft: #e8ebea;
-    --chart-light: #252a2a;
-    --chart-turbidity: #455155;
-    --chart-chlorophyll: #515759;
-    --chart-reference: #737d80;
-    --map-glass: #fffffff2;
-    --map-backdrop: #dce1e0;
-    --map-outline: #f5f7f6;
-    --marker-low: #83a58b;
-    --marker-watch: #e8c46b;
-    --marker-elevated: #dd9c68;
-    --marker-high: #dc8276;
-    --marker-field: #7fa7bb;
+    --accent: #0a6cf1;
+    --accent-strong: #0758c8;
+    --accent-soft: #eaf2fe;
+    --chart-light: #0a6cf1;
+    --chart-turbidity: #7a5af8;
+    --chart-chlorophyll: #12a150;
+    --chart-reference: #9aa3b0;
+    --map-glass: #ffffffeb;
+    --map-backdrop: #0d2a3a;
+    --map-outline: #ffffff;
+    --marker-low: #34c759;
+    --marker-watch: #ffcc00;
+    --marker-elevated: #ff9500;
+    --marker-high: #ff3b30;
+    --marker-field: #0a6cf1;
 
-    --risk-low: #345541;
-    --risk-low-soft: #e8efe9;
-    --risk-mid: #744c23;
-    --risk-mid-soft: #f4ece0;
-    --risk-high: #873c37;
-    --risk-high-soft: #f6e7e4;
-    --risk-none: #566063;
+    --risk-low: #1e8a3c;
+    --risk-low-soft: #e7f6ec;
+    --risk-mid: #b45309;
+    --risk-mid-soft: #fff3e0;
+    --risk-high: #d1242f;
+    --risk-high-soft: #ffebe9;
+    --risk-none: #6b7280;
 
     /* Aliases used by page styles */
     --action: var(--accent);
@@ -65,8 +65,10 @@
     --ok: var(--risk-low);
     --ok-soft: var(--risk-low-soft);
 
-    --sans: Inter, system-ui, sans-serif;
-    --display: var(--sans);
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "Segoe UI", system-ui, sans-serif;
+    --shadow-sm: 0 1px 2px #1018280d;
+    --shadow-md: 0 4px 16px -4px #10182814, 0 2px 4px -2px #1018280a;
+    --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, "Segoe UI", system-ui, sans-serif;
     --serif: var(--display);
     --radius: 14px;
     --radius-sm: 7px;
@@ -419,3 +421,7 @@ body.has-fullscreen-map::after { content: ""; position: fixed; inset: 0; backgro
     .monthly-panel .panel-foot { margin-top: 0; }
     .monitor-map > .map-shell { border-radius: 0 0 var(--radius) var(--radius); }
 }
+
+/* Polish */
+.brand-mark { background: linear-gradient(135deg, #0a6cf1 0%, #12b5cb 100%); }
+.panel { box-shadow: var(--shadow-sm); }

@@ -75,7 +75,7 @@
 .causes p { color: var(--muted); font-size: 12.5px; }
 
 /* Plan */
-.actions { list-style: none; margin: 0; counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.actions { list-style: none; margin: 0; counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
 .actions li { position: relative; padding: 14px 14px 14px 50px; border: 1px solid var(--border); border-radius: 9px; counter-increment: step; }
 .actions li::before { content: counter(step); position: absolute; left: 14px; top: 13px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--well); font-weight: 600; font-size: 12px; }
 .action-top { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; }

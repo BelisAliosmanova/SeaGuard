@@ -11,152 +11,129 @@
 <a class="skip" href="#workspace">Към съдържанието</a>
 <div class="app-shell">
     <aside th:replace="~{fragments/layout :: rail('dashboard')}"></aside>
-    <main id="workspace" class="workspace coast-workspace"
-          th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
-          th:data-sites-url="@{/api/ecologist/sites}"
-          th:data-water-url="@{/api/ecologist/water}"
-          th:data-marine-url="@{/api/marine-live}"
-          th:data-measurements-url="@{/api/measurements}">
-        <header class="masthead">
+    <main id="workspace" class="workspace overview-page"
+          th:data-light-ok="${lightOk}" th:data-light-critical="${lightCritical}"
+          th:data-chl-moderate="${chlorophyllModerate}" th:data-chl-high="${chlorophyllHigh}">
+
+        <header class="ov-head">
             <div>
-                <h1>Преглед</h1>
-                <p>Риск за морските ливади и състояние на водата по българското Черноморие.</p>
+                <h1>Преглед на крайбрежието</h1>
+                <p>35 морски ливади от Каварна до Царево. Цветът показва риска, изчислен от AI еколога.</p>
             </div>
+            <ul class="pulse" id="pulse" aria-label="Обобщение">
+                <li><span class="pulse-dot" style="--c:var(--marker-high)"></span><strong id="p-risk">—</strong><span>в риск</span></li>
+                <li><span class="pulse-dot" style="--c:var(--marker-watch)"></span><strong id="p-watch">—</strong><span>под наблюдение</span></li>
+                <li><span class="pulse-dot" style="--c:var(--marker-low)"></span><strong id="p-low">—</strong><span>нисък риск</span></li>
+                <li class="pulse-sep"><strong id="p-anomaly">—</strong><span>спрямо нормата</span></li>
+            </ul>
         </header>
 
-        <section id="risk-map" class="panel monitor-grid" aria-label="Карта на риска и месечна диаграма">
-            <div class="monitor-map coast-map">
-                <header class="panel-head">
-                    <h2>Карта на риска</h2>
-                    <div id="sc-picker"><p class="muted" role="status" id="sc-loading">Зареждаме участъците…</p></div>
+        <section class="ov-hero" aria-label="Карта на риска">
+            <div class="map-shell ov-map">
+                <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
+
+                <article class="map-card" id="map-card" aria-live="polite">
+                    <div class="mc-top">
+                        <span id="mc-status" class="badge risk-unknown">—</span>
+                        <span id="mc-area" class="mc-area"></span>
+                    </div>
+                    <div class="mc-title">
+                        <h2 id="mc-name">Зареждане…</h2>
+                        <div class="mc-score"><strong id="mc-score">—</strong><span>/100</span></div>
+                    </div>
+                    <div class="mc-bar"><i id="mc-bar"></i></div>
+                    <dl class="mc-facts">
+                        <div><dt>Главна заплаха</dt><dd id="mc-threat">—</dd></div>
+                        <div><dt>Вероятна причина</dt><dd id="mc-cause">—</dd></div>
+                    </dl>
+                    <div class="mc-actions">
+                        <a id="mc-link" class="button primary small" th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Разследвай с AI</a>
+                        <button id="mc-zoom" class="button secondary small" type="button"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>Приближи</button>
+                    </div>
+                </article>
+
+                <div class="map-legend-pill" aria-hidden="true">
+                    <span><i style="background:var(--marker-high)"></i>Висок</span>
+                    <span><i style="background:var(--marker-elevated)"></i>Повишен</span>
+                    <span><i style="background:var(--marker-watch)"></i>Наблюдение</span>
+                    <span><i style="background:var(--marker-low)"></i>Нисък</span>
+                </div>
+            </div>
+
+            <aside class="panel priority" aria-labelledby="priority-title">
+                <header class="priority-head">
+                    <div>
+                        <h2 id="priority-title">Къде да отиде екипът</h2>
+                        <p>Подредени по риск. Кликни, за да видиш на картата.</p>
+                    </div>
+                    <div id="picker"></div>
                 </header>
-                <div class="map-shell">
-                    <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
-                    <div class="map-legend-box" aria-hidden="true">
-                        <strong>Риск за ливадата</strong>
-                        <span><i style="background:var(--marker-high)"></i>Висок</span>
-                        <span><i style="background:var(--marker-elevated)"></i>Повишен</span>
-                        <span><i style="background:var(--marker-watch)"></i>Под наблюдение</span>
-                        <span><i style="background:var(--marker-low)"></i>Нисък</span>
-                        <span><i style="background:var(--marker-field)"></i>Теренно измерване</span>
-                    </div>
-                </div>
-            </div>
-
-            <section class="monthly-panel" aria-labelledby="coast-trend-title">
-                <header class="panel-head">
-                    <div><h2 id="coast-trend-title">Водата по месеци</h2><p>Copernicus Marine</p></div>
-                    <div class="segmented" id="coast-trend-switch" role="group" aria-label="Показател на диаграмата">
-                        <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
-                        <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
-                        <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
-                    </div>
-                </header>
-                <div class="panel-body monthly-body">
-                    <p id="coast-trend-status" class="empty monthly-status" role="status">Зареждаме месечните данни…</p>
-                    <div id="coast-trend-body" hidden>
-                        <p class="monthly-readout"><strong id="coast-readout-value">—</strong><span id="coast-readout-label"></span></p>
-                        <div class="monthly-canvas"><canvas id="coast-trend" role="img" aria-label="Месечна диаграма за водата"></canvas></div>
-                    </div>
-                </div>
-                <footer class="panel-foot">
-                    <span>Средно за участъците с данни</span>
-                    <a href="#water-title">Таблица по участъци</a>
-                </footer>
-            </section>
+                <ol id="priority-list" class="priority-list"><li class="empty">Зареждане…</li></ol>
+            </aside>
         </section>
 
-        <dl class="stats section coast-stats" aria-label="Обобщение">
-            <div><dt><i class="dot" style="background:var(--marker-high)"></i>Висок и повишен риск</dt><dd id="n-risk">—</dd></div>
-            <div><dt><i class="dot" style="background:var(--marker-watch)"></i>Под наблюдение</dt><dd id="n-watch">—</dd></div>
-            <div><dt><i class="dot" style="background:var(--marker-low)"></i>Нисък риск</dt><dd id="n-low">—</dd></div>
-            <div><dt><i class="dot" style="background:var(--marker-field)"></i>Теренни измервания</dt><dd id="n-meas" th:text="${count}">0</dd></div>
-        </dl>
-
-        <section class="panel section site-card" id="site-card" aria-labelledby="site-card-title">
-            <header class="panel-head">
-                <div><h2 id="site-card-title">Избран участък</h2><p id="sc-area"></p></div>
-                <a id="sc-link" class="button primary" hidden th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Отвори AI еколога</a>
-            </header>
-            <div class="panel-body sc-main">
-                <div class="sc-summary">
-                    <div class="sc-score">
-                        <strong id="sc-score">—</strong><span>/ 100</span>
-                    </div>
-                    <span id="sc-status" class="badge risk-unknown">Зареждаме риска…</span>
+        <section class="panel ov-insights" aria-label="Водата и морето">
+            <header class="ins-head">
+                <div class="tabs" role="tablist" aria-label="Изглед">
+                    <button type="button" role="tab" data-tab="water" aria-selected="true">Водата по месеци</button>
+                    <button type="button" role="tab" data-tab="sea" aria-selected="false">Морето днес</button>
+                    <button type="button" role="tab" data-tab="trend" aria-selected="false">Тенденция</button>
                 </div>
-                <dl class="sc-facts">
-                    <div><dt>Главна заплаха</dt><dd id="sc-threat">—</dd></div>
-                    <div><dt>Най-вероятна причина</dt><dd id="sc-cause">—</dd></div>
-                    <div><dt>Първа стъпка</dt><dd id="sc-action">—</dd></div>
-                </dl>
-                <div class="sc-fresh">
-                    <span class="sc-fresh-title">Колко нови са данните</span>
-                    <ul id="sc-fresh"><li class="muted">Зареждаме източниците…</li></ul>
-                </div>
-            </div>
-        </section>
-
-        <section class="panel section" aria-labelledby="marine-title">
-            <header class="panel-head">
-                <div><h2 id="marine-title">Морето днес</h2><p>Последни налични моделни стойности в открито море · Open-Meteo Marine</p></div>
-            </header>
-            <div id="marine-cards" class="marine-cards panel-body" aria-live="polite">
-                <p class="empty">Зареждаме морските условия…</p>
-            </div>
-            <p class="marine-anomaly"><strong>Средна температурна аномалия по крайбрежието за 30 дни</strong>
-                <span id="marine-anomaly" role="status">Зареждаме…</span>
-            </p>
-        </section>
-
-        <section class="panel section" aria-labelledby="water-title" id="water"
-                 th:data-light-ok="${lightOk}" th:data-light-critical="${lightCritical}"
-                 th:data-chlorophyll-moderate="${chlorophyllModerate}" th:data-chlorophyll-high="${chlorophyllHigh}">
-            <header class="panel-head">
-                <div>
-                    <h2 id="water-title">Водата по крайбрежието</h2>
-                    <p>Месечни данни от Copernicus Marine. Избери ред, за да намериш участъка на картата.</p>
-                </div>
-                <div class="segmented" id="water-switch" role="group" aria-label="Показател">
-                    <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина до дъното</button>
+                <div class="segmented" id="metric-switch" role="group" aria-label="Показател">
+                    <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
                     <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
-                    <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил-а</button>
+                    <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
                 </div>
             </header>
-            <p id="water-status" class="empty" role="status">Зареждаме месечните данни…</p>
-            <div id="water-content" hidden>
-                <p id="water-legend" class="water-legend" aria-live="polite"></p>
-                <div class="table-wrap water-wrap" tabindex="0" role="region" aria-labelledby="water-title">
-                    <table class="table water-table" aria-describedby="water-legend">
-                        <thead id="water-months"></thead>
-                        <tbody id="water-sites"></tbody>
+
+            <div class="tab-panel" data-panel="water">
+                <p class="ins-note" id="water-note"></p>
+                <div class="heat-wrap" role="region" aria-label="Таблица по участъци и месеци" tabindex="0">
+                    <table class="heat">
+                        <thead id="heat-head"></thead>
+                        <tbody id="heat-body"><tr><td class="empty">Зареждане…</td></tr></tbody>
                     </table>
                 </div>
+                <button id="heat-more" class="button ghost small heat-more" type="button" hidden>Покажи всички 35</button>
+            </div>
+
+            <div class="tab-panel" data-panel="sea" hidden>
+                <p class="ins-note">Моделни стойности от Open-Meteo Marine за открито море, обновяват се всеки час.</p>
+                <div id="sea-cards" class="sea-cards"><p class="empty">Зареждане…</p></div>
+            </div>
+
+            <div class="tab-panel" data-panel="trend" hidden>
+                <p class="ins-note" id="trend-note">Средно за крайбрежието и избрания участък, по месеци.</p>
+                <div class="trend-wrap"><canvas id="trend" aria-label="Месечна графика"></canvas></div>
             </div>
         </section>
 
-        <section class="panel section" aria-labelledby="queue-title">
-            <header class="panel-head">
-                <div>
-                    <h2 id="queue-title">Ред за теренни проверки</h2>
-                    <p>Къде да отиде екипът първо. Рискът (0–100) обединява светлина до дъното, хранителни вещества, топлина, мътност и близост до пристанища.</p>
+        <section class="ov-field" aria-label="Теренна работа">
+            <a class="panel field-card" th:href="@{/field}">
+                <div class="fc-icon"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></div>
+                <div class="fc-body">
+                    <h2>План за терена</h2>
+                    <p id="fc-tasks">Зареждане…</p>
                 </div>
-            </header>
-            <div class="table-wrap">
-                <table class="table queue">
-                    <thead><tr><th>#</th><th>Участък</th><th>Риск</th><th>Главна заплаха</th><th>Най-вероятна причина</th><th scope="col">Действие</th></tr></thead>
-                    <tbody id="queue"><tr><td colspan="6" class="empty">Зареждане…</td></tr></tbody>
-                </table>
-            </div>
+                <svg class="icon fc-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+            <a class="panel field-card" th:href="@{/field}">
+                <div class="fc-icon"><svg class="icon" aria-hidden="true"><use href="#i-table"/></svg></div>
+                <div class="fc-body">
+                    <h2>Теренни измервания</h2>
+                    <p id="fc-meas">Зареждане…</p>
+                </div>
+                <svg class="icon fc-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
         </section>
     </main>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script th:src="@{/js/seamap.js}"></script>
-<script th:src="@{/js/site-picker.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script th:src="@{/js/charts.js}"></script>
+<script th:src="@{/js/seamap.js}"></script>
+<script th:src="@{/js/site-picker.js}"></script>
 <script th:src="@{/js/dashboard.js}"></script>
 </body>
 </html>
