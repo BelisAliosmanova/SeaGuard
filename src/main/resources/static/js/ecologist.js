@@ -14,6 +14,7 @@
       return response.json();
     }).catch(() => null);
   const findOutline = async id => (await archive)?.features?.find(item => Number(item.id) === id);
+  const anchoring = window.setupAnchoring?.($('anchoring'), {loadOutline: findOutline, addTask});
   const fieldMission = window.setupFieldMission?.($('field-mission'), {
     loadOutline: findOutline,
     clearFootage: () => footage?.clear(),
@@ -79,6 +80,7 @@
     selection = id;
     picker.set(id);
     if (lastFootage?.siteId !== id) lastFootage = null;
+    anchoring?.selectSite(id);
     fieldMission?.selectSite(id);
     footage?.selectSite(id, site.name);
     renderMeadowMap(id).catch(() => {

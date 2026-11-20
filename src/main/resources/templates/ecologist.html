@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" th:href="@{/css/ecologist.css}">
+    <link rel="stylesheet" th:href="@{/css/anchoring.css}">
 </head>
 <body>
 <svg th:replace="~{fragments/layout :: symbols}"></svg>
@@ -19,6 +20,7 @@
             <div class="site-main">
                 <header class="site-head">
                     <div id="picker" class="eco-picker"><p class="muted" role="status" id="eco-picker-status">Зареждаме участъците…</p></div>
+                    <a class="button secondary anchoring-jump" href="#anchoring">Зона за закотвяне</a>
                     <a id="map-link" class="button secondary" th:href="@{/dashboard}"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>На картата</a>
                 </header>
         <div class="panel site-brief">
@@ -87,6 +89,67 @@
                 <section class="panel section" aria-labelledby="plan-title">
                     <header class="panel-head"><h2 id="plan-title">Какво да направим</h2></header>
                     <ol id="actions" class="actions panel-body"></ol>
+                </section>
+
+                <section id="anchoring" class="panel section anchoring" aria-labelledby="anchoring-title">
+                    <header class="panel-head">
+                        <div>
+                            <h2 id="anchoring-title">Планиране на зона за закотвяне</h2>
+                            <p>Премести зона Б и сравни колко от нея попада в архивния контур на ливадата.</p>
+                        </div>
+                    </header>
+                    <div class="panel-body">
+                        <p id="anchor-loading" role="status">Изчакваме избрания участък…</p>
+                        <div id="anchor-board" class="anchor-board" hidden>
+                            <figure class="anchor-figure">
+                                <svg id="anchor-map" viewBox="0 0 720 400" role="group" aria-label="Карта за сравнение на зони за закотвяне">
+                                    <defs>
+                                        <pattern id="anchor-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                            <path d="M40 0H0V40" fill="none" stroke="#37778e" stroke-opacity=".26"/>
+                                        </pattern>
+                                        <clipPath id="anchor-clip"><path id="anchor-clip-outline" clip-rule="evenodd"/></clipPath>
+                                    </defs>
+                                    <rect width="720" height="400" fill="url(#anchor-grid)"/>
+                                    <path id="anchor-outline" class="anchor-outline" fill-rule="evenodd"/>
+                                    <rect id="anchor-baseline" class="anchor-baseline" />
+                                    <rect id="anchor-candidate" class="anchor-candidate" tabindex="0"
+                                          aria-label="Вариант Б. Мести със стрелките по 10 метра."/>
+                                    <rect id="anchor-overlap" class="anchor-overlap" clip-path="url(#anchor-clip)" pointer-events="none"/>
+                                    <text id="anchor-label-a" class="anchor-label" pointer-events="none">А</text>
+                                    <text id="anchor-label-b" class="anchor-label" pointer-events="none">Б</text>
+                                    <g class="anchor-reference" aria-hidden="true">
+                                        <path d="M682 60V29m-7 9 7-9 7 9" fill="none"/>
+                                        <text x="682" y="23" text-anchor="middle">С</text>
+                                        <path id="anchor-scale-line" fill="none"/>
+                                        <text id="anchor-scale-label" x="22" y="360"></text>
+                                    </g>
+                                </svg>
+                                <figcaption>
+                                    <span><i class="anchor-key meadow"></i>Архивен контур</span>
+                                    <span><i class="anchor-key compare"></i>Вариант А</span>
+                                    <span><i class="anchor-key overlap"></i>Припокриване на Б</span>
+                                </figcaption>
+                            </figure>
+                            <div class="anchor-controls">
+                                <div class="anchor-results" aria-label="Сравнение на припокриването">
+                                    <div><span>Вариант А</span><strong id="anchor-area-a">—</strong><small id="anchor-share-a"></small></div>
+                                    <div><span>Вариант Б</span><strong id="anchor-area-b">—</strong><small id="anchor-share-b"></small></div>
+                                </div>
+                                <p id="anchor-difference" class="anchor-difference"></p>
+                                <label for="anchor-width">Ширина на Б <output id="anchor-width-value" for="anchor-width"></output></label>
+                                <input type="range" id="anchor-width" min="20" max="200" step="5" value="80">
+                                <label for="anchor-length">Дължина на Б <output id="anchor-length-value" for="anchor-length"></output></label>
+                                <input type="range" id="anchor-length" min="20" max="200" step="5" value="60">
+                                <div class="anchor-actions">
+                                    <button id="anchor-keep" type="button" class="button secondary small">Запази Б като вариант А</button>
+                                    <button id="anchor-reset" type="button" class="button secondary small">Върни Б до А</button>
+                                    <button id="anchor-task" type="button" class="button primary small">Добави Б за теренна проверка</button>
+                                </div>
+                                <p id="anchor-status" class="anchor-status" role="status"></p>
+                            </div>
+                            <p class="anchor-note">Зоните са предложения за проверка. Нулево припокриване показва, че зоната е извън архивния контур. Пригодността за закотвяне се проверява отделно.</p>
+                        </div>
+                    </div>
                 </section>
 
                 <section id="field-mission" class="panel section field-mission" aria-labelledby="mission-title"
@@ -227,6 +290,7 @@
 <script th:src="@{/js/depth-profile.js}"></script>
 <script th:src="@{/js/seagrass-footage.js}"></script>
 <script th:src="@{/js/field-mission.js}"></script>
+<script th:src="@{/js/anchoring.js}"></script>
 <script th:src="@{/js/ecologist.js}"></script>
 </body>
 </html>
