@@ -4,33 +4,37 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class MeasurementController {
     private final MeasurementRepository repository;
+    private final bg.seagrass.guardian.ecologist.EcologistEngine engine;
 
-    public MeasurementController(MeasurementRepository repository) {
+    public MeasurementController(MeasurementRepository repository, bg.seagrass.guardian.ecologist.EcologistEngine engine) {
         this.repository = repository;
+        this.engine = engine;
     }
 
-    @GetMapping("/")
-    public String home(Model model) {
-        model.addAttribute("count", repository.count());
-        model.addAttribute("recent", repository.findAllByOrderByObservedAtDesc().stream().limit(5).toList());
-        return "index";
-    }
+    /** Clients must never set the id (that would overwrite a record) or flag their data as synthetic. */
+    @InitBinder("measurement")
+    void restrictFields(WebDataBinder binder) { binder.setDisallowedFields("id", "demo"); }
 
     @GetMapping("/measurements")
-    public String measurements(Model model) {
-        model.addAttribute("measurements", repository.findAllByOrderByObservedAtDesc());
-        return "measurements";
-    }
+    public String measurementsRedirect() { return "redirect:/field"; }
 
     @GetMapping("/measurements/new")
-    public String newMeasurement(Model model) {
-        model.addAttribute("measurement", new Measurement());
+    public String newMeasurement(@RequestParam(required = false) Integer site, Model model) {
+        Measurement draft = new Measurement();
+        if (site != null) engine.site(site).ifPresent(s -> {
+            draft.setLocationName(s.name());
+            draft.setLatitude(Math.round(s.latitude() * 1e5) / 1e5);
+            draft.setLongitude(Math.round(s.longitude() * 1e5) / 1e5);
+        });
+        draft.setObservedAt(java.time.LocalDateTime.now().withSecond(0).withNano(0));
+        model.addAttribute("measurement", draft);
         return "measurement-form";
     }
 
@@ -41,6 +45,6 @@ public class MeasurementController {
         measurement.setDemo(false);
         repository.save(measurement);
         redirectAttributes.addFlashAttribute("success", "Измерването е записано успешно.");
-        return "redirect:/measurements";
+        return "redirect:/field";
     }
 }

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('AI еколог')}"></th:block>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" th:href="@{/css/ecologist.css}">
+</head>
+<body>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<a class="skip" href="#workspace">Към разследването</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/layout :: rail('ecologist')}"></aside>
+    <main id="workspace" class="workspace" th:data-provider="${aiProvider}"
+          th:data-archive-url="@{/data/zostera-bulgaria.geojson}">
+
+        <div class="site-layout">
+            <div class="site-main">
+                <header class="site-head">
+                    <div id="picker" class="eco-picker"><p class="muted" role="status" id="eco-picker-status">Зареждаме участъците…</p></div>
+                    <a id="map-link" class="button secondary" th:href="@{/dashboard}"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>На картата</a>
+                </header>
+        <div class="panel site-brief">
+            <figure class="brief-map" aria-labelledby="meadow-map-title">
+                <p id="meadow-map-status" class="empty" role="status">Зареждаме картата…</p>
+                <div class="map-shell" id="meadow-map-shell" hidden>
+                    <div id="meadow-map" class="seamap" aria-label="Сателитна карта на избрания участък"></div>
+                </div>
+                <figcaption class="brief-map-caption">
+                    <h2 id="meadow-map-title">Избран участък</h2>
+                    
+                </figcaption>
+            </figure>
+
+            <section class="verdict-main" aria-labelledby="verdict-title">
+                <h2 id="verdict-title" class="visually-hidden">Оценка на участъка</h2>
+                <div class="verdict-top">
+                    <span id="verdict-status" class="badge risk-unknown">Зареждаме…</span>
+                    <span id="verdict-meta" class="verdict-meta"></span>
+                </div>
+                <p id="verdict-headline" class="verdict-headline">Зареждаме оценката…</p>
+                <dl class="gauges">
+                    <div>
+                        <dt>Риск</dt>
+                        <dd><strong id="risk-score">—</strong><span>/ 100</span></dd>
+                        <dd class="gauge"><i id="risk-bar"></i></dd>
+                    </div>
+                    <div>
+                        <dt>Увереност</dt>
+                        <dd><strong id="confidence">—</strong><span>%</span></dd>
+                        <dd class="gauge confidence"><i id="confidence-bar"></i></dd>
+                    </div>
+                </dl>
+            </section>
+
+        </div>
+
+                <section class="panel section water-card" aria-labelledby="trend-title">
+                    <header class="wc-head">
+                        <div class="wc-readout">
+                            <h2 id="trend-title">Водата над ливадата</h2>
+                            <div class="wc-value"><strong id="trend-value">—</strong><span id="trend-detail"></span></div>
+                            <p class="wc-sub" id="wc-sub"></p>
+                        </div>
+                        <div class="segmented" id="trend-switch" role="group" aria-label="Показател">
+                            <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
+                            <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
+                            <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
+                        </div>
+                    </header>
+                    <p id="trend-status" class="empty" role="status">Зареждаме месечните данни…</p>
+                    <div id="trend-body" class="wc-chart" hidden><canvas id="trend" role="img" aria-label="Месечна графика"></canvas></div>
+                </section>
+
+                <div class="grid-2 even section">
+                    <section class="panel" aria-labelledby="threats-title">
+                        <header class="panel-head"><h2 id="threats-title">Заплахи</h2></header>
+                        <div id="threats" class="threats"></div>
+                    </section>
+                    <section class="panel" aria-labelledby="causes-title">
+                        <header class="panel-head"><h2 id="causes-title">Вероятни причини</h2></header>
+                        <ol id="causes" class="causes panel-body"></ol>
+                    </section>
+                </div>
+
+                <section class="panel section" aria-labelledby="plan-title">
+                    <header class="panel-head"><h2 id="plan-title">Какво да направим</h2></header>
+                    <ol id="actions" class="actions panel-body"></ol>
+                </section>
+
+                <section class="panel section" aria-labelledby="tasks-title">
+                    <header class="panel-head"><h2 id="tasks-title">План за терена</h2><span id="tasks-count" class="badge neutral">0</span></header>
+                    <ul id="tasks" class="tasks"></ul>
+                </section>
+
+                <section id="footage" class="panel section footage" th:data-endpoint="@{/api/seagrass/analysis}" aria-labelledby="footage-title">
+            <header class="panel-head">
+                <div><h2 id="footage-title">Подводни кадри</h2></div>
+            </header>
+            <div class="panel-body">
+                <div class="footage-actions">
+                    <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
+                    <input id="footage-file" class="file-input" type="file" disabled accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
+                </div>
+                <p id="footage-formats" class="footage-formats">JPG, PNG, WebP, MP4 или WebM до 100 MB. При видео се анализират до три кадъра.</p>
+                <div id="frame-preview" class="frame-preview" hidden></div>
+                <button id="analyze-file" class="button primary" type="button" hidden>Анализирай кадрите</button>
+                <p id="analysis-status" class="analysis-status" role="status"></p>
+            </div>
+            <section id="analysis-result" class="panel-body analysis-result" aria-labelledby="analysis-title" hidden>
+                <h3 id="analysis-title" tabindex="-1">Първичен AI прочит</h3>
+                <p id="analysis-provenance" class="analysis-provenance"></p>
+                <dl class="findings">
+                    <div><dt>Видимо в кадрите</dt><dd><ol id="analysis-frames"></ol></dd></div>
+                    <div><dt>Обобщение и несигурност</dt><dd id="analysis-summary"></dd></div>
+                    <div><dt>Теренна проверка</dt><dd id="analysis-next"></dd></div>
+                </dl>
+            </section>
+        </section>
+
+
+                <details class="panel section more">
+                    <summary><span>Подробности за данните</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+                    <div class="more-body">
+                        <h3>Колко нови са данните</h3>
+                        <div id="freshness" class="fresh-list"></div>
+                        <div class="more-grid">
+                            <figure class="profile">
+                                <h3>Светлина по дълбочина</h3>
+                                <svg id="depth-profile" viewBox="0 0 300 250" role="img" aria-labelledby="profile-caption"></svg>
+                                <figcaption id="profile-caption"></figcaption>
+                            </figure>
+                            <div>
+                                <h3>Какво не знаем</h3>
+                                <ul id="gaps" class="gaps"></ul>
+                            </div>
+                        </div>
+                        <h3>Източници</h3>
+                        <ul id="evidence" class="evidence"></ul>
+                    </div>
+                </details>
+            </div>
+
+            <aside class="copilot" id="copilot" aria-label="AI еколог">
+                <header class="cp-head">
+                    <span class="cp-avatar" aria-hidden="true"><svg class="icon"><use href="#i-spark"/></svg></span>
+                    <div class="cp-title">
+                        <strong>AI еколог</strong>
+                        <div class="engine-pill" th:classappend="${aiEnabled} ? 'is-ai' : 'is-rules'"
+                             th:title="${aiEnabled} ? 'Докладите и отговорите се пишат от езиков модел' : 'Няма API ключ: отговорите са от правила'">
+                            <i></i>
+                            <span th:if="${aiProvider == 'claude'}" th:text="'Claude · ' + ${aiModel}">Claude</span>
+                            <span th:if="${aiProvider == 'gemini'}" th:text="'Gemini · ' + ${aiModel}">Gemini</span>
+                            <span th:if="${aiProvider == 'rules'}">Експертна система, без AI ключ</span>
+                        </div>
+                    </div>
+                    <button id="cp-reset" class="cp-icon-btn" type="button" title="Нов разговор" aria-label="Нов разговор"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg></button>
+                    <button id="cp-close" class="cp-icon-btn cp-close" type="button" aria-label="Затвори"><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+                </header>
+                <div id="chat" class="cp-chat" aria-live="polite"></div>
+                <div class="cp-foot">
+                    <div class="cp-chips" id="suggestions"></div>
+                    <form id="ask-form" class="cp-input">
+                        <textarea id="question" rows="1" maxlength="1000" placeholder="Попитай за този участък…" aria-label="Въпрос"></textarea>
+                        <button class="cp-send" type="submit" aria-label="Изпрати"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg></button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+
+        <button id="cp-open" class="cp-fab" type="button"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Попитай AI</button>
+    </main>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script th:src="@{/js/seamap.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/charts.js}"></script>
+<script th:src="@{/js/site-picker.js}"></script>
+<script th:src="@{/js/depth-profile.js}"></script>
+<script th:src="@{/js/seagrass-footage.js}"></script>
+<script th:src="@{/js/ecologist.js}"></script>
+</body>
+</html>

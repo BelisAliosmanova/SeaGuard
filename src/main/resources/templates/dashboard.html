@@ -1,20 +1,142 @@
 <!doctype html>
 <html lang="bg" xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mission Control | SeaGuard</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
-<link rel="stylesheet" th:href="@{/css/dashboard.css}"></head>
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Преглед')}"></th:block>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
 <body>
-<nav class="navbar navbar-dark nav-custom"><div class="container-fluid px-lg-5"><a class="navbar-brand fw-bold" href="/">◈ SEA<span class="accent">GUARD</span></a><div class="d-flex gap-2"><a class="btn btn-sm btn-outline-info" href="/marine-live">◉ Реални морски данни</a><a class="btn btn-sm btn-accent" href="/lab">✦ Подводна лаборатория</a><a class="btn btn-sm btn-outline-light" href="/measurements">Данни</a><a class="btn btn-sm btn-accent" href="/measurements/new">+ Измерване</a></div></div></nav>
-<main class="container-fluid px-lg-5 py-4">
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><div class="eyebrow">BLACK SEA · ENVIRONMENTAL INTELLIGENCE</div><h1 class="display-6 fw-bold mb-1">Мониторинг център <span class="accent">◉</span></h1><p class="muted mb-0">Преглед на измерванията, пространствени данни и обясними сигнали</p></div><div class="d-flex flex-wrap gap-2 align-items-center"><select id="kind" class="form-select form-select-sm dark-select" aria-label="Филтър за тип данни"><option value="all">Всички записи</option><option value="real">Само въведени</option><option value="demo">Само синтетични</option></select><a id="csv" class="btn btn-sm btn-outline-light" href="/measurements/export">↓ CSV</a></div></div>
-<div th:if="${notice}" class="alert alert-warning" th:text="${notice}"></div>
-<div class="lab-promo mb-4"><div><strong>НОВО · DIVE LAB</strong><h2>Влез под повърхността.</h2><p>Промени температурата, мътността и човешкия натиск. Виж как се променя виртуалната морска ливада и защо.</p></div><a href="/lab" class="btn btn-accent">Отвори подводната лаборатория ↗</a></div><div class="demo-notice mb-4"><strong>Достоверност на данните:</strong> <span id="data-warning">Записите, маркирани „СИНТЕТИЧНИ“, са измислени за демонстрация. Ръчно въведените данни не са независимо проверени.</span></div>
-<div class="row g-3 mb-4"><div class="col-sm-6 col-xl-3"><div class="metric"><div class="eyebrow">ОБЩО ЗАПИСИ</div><div class="metric-value" id="total" th:text="${count}">0</div><div class="muted small">В избрания изглед</div></div></div><div class="col-sm-6 col-xl-3"><div class="metric"><div class="eyebrow">НАБЛЮДАВАНИ МЕСТА</div><div class="metric-value" id="places" th:text="${places}">0</div><div class="muted small">Уникални локации</div></div></div><div class="col-sm-6 col-xl-3"><div class="metric"><div class="eyebrow">РЪЧНО ВЪВЕДЕНИ</div><div class="metric-value" id="real" th:text="${realCount}">0</div><div class="muted small">Не са независимо проверени</div></div></div><div class="col-sm-6 col-xl-3"><div class="metric"><div class="eyebrow">СИНТЕТИЧНИ ЗАПИСИ</div><div class="metric-value warning" id="demo" th:text="${demoCount}">0</div><div class="muted small">Само за демонстрация</div></div></div></div>
-<div class="row g-3 mb-4"><div class="col-xl-7"><section class="panel"><div class="panel-head"><div><h2>Географски преглед</h2><p>Точки с въведени координати</p></div><span class="pill">OPENSTREETMAP</span></div><div id="map"></div><div class="map-footer">Точките показват местоположение на записи, не доказано разпространение на морски треви.</div></section></div><div class="col-xl-5"><section class="panel h-100"><div class="panel-head"><div><h2>Ранни сигнали</h2><p>Отклонения спрямо предишни записи</p></div><span class="pill">EXPLAINABLE</span></div><div id="alerts" class="alerts"><div class="empty">Зареждане...</div></div><div class="panel-foot">Сигналите използват предварително зададен статистически критерий (20%), а не научно валидирани екологични прагове.</div></section></div></div>
-<div class="row g-3 mb-4"><div class="col-xl-8"><section class="panel"><div class="panel-head"><div><h2>Динамика на показателите</h2><p>Времеви редове от записите в системата</p></div><select id="metric" class="form-select form-select-sm dark-select" aria-label="Показател"><option value="temperature">Температура °C</option><option value="turbidity">Мътност NTU</option><option value="salinity">Соленост PSU</option></select></div><div class="chart-wrap"><canvas id="trend"></canvas></div></section></div><div class="col-xl-4"><section class="panel h-100"><div class="panel-head"><div><h2>Сценарий за журито</h2><p>Покажи как работи системата</p></div></div><div class="p-3"><div class="scenario"><div class="eyebrow mb-2">01 / ДАННИ</div><h3>Зареди демонстрационен сценарий</h3><p>36 ясно маркирани синтетични измервания от 3 района. В Созопол има умишлено добавено отклонение.</p><form method="post" action="/demo/load"><button class="btn btn-accent w-100" type="submit">▶ Зареди DEMO сценарий</button></form></div><div class="scenario mt-3"><div class="eyebrow mb-2">02 / ПРОВЕРКА</div><h3>Проследи сигнала</h3><p>Разгледай графиката, сравнението с предходните стойности и ограниченията на анализа.</p></div><form method="post" action="/demo/clear" class="mt-3"><button class="btn btn-sm btn-outline-warning w-100" type="submit">Изчисти само синтетичните данни</button></form></div></section></div></div>
-<section class="panel mb-4"><div class="panel-head"><div><h2>Последни записи</h2><p>Проверими полета: време, място, източник и тип</p></div><a class="btn btn-sm btn-outline-light" href="/measurements">Всички записи →</a></div><div class="table-responsive"><table class="table table-dark table-hover mb-0"><thead><tr><th>МЯСТО</th><th>ДАТА</th><th>ТЕМП.</th><th>МЪТНОСТ</th><th>ТИП</th><th>ИЗТОЧНИК</th></tr></thead><tbody id="rows"><tr><td colspan="6" class="text-center muted">Няма заредени записи.</td></tr></tbody></table></div></section>
-<footer class="muted small pb-3">SeaGuard · Hackathon prototype · Мониторинг на условията, не автоматична диагноза за състоянието на морските треви.</footer>
-</main>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script><script th:src="@{/js/dashboard.js}"></script>
-</body></html>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<a class="skip" href="#workspace">Към съдържанието</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/layout :: rail('dashboard')}"></aside>
+    <main id="workspace" class="workspace overview-page"
+          th:data-light-ok="${lightOk}" th:data-light-critical="${lightCritical}"
+          th:data-chl-moderate="${chlorophyllModerate}" th:data-chl-high="${chlorophyllHigh}">
+
+        <header class="ov-head">
+            <div>
+                <h1>Преглед на крайбрежието</h1>
+                <p>35 морски ливади от Каварна до Царево. Цветът показва риска, изчислен от AI еколога.</p>
+            </div>
+            <ul class="pulse" id="pulse" aria-label="Обобщение">
+                <li><span class="pulse-dot" style="--c:var(--marker-high)"></span><strong id="p-risk">—</strong><span>в риск</span></li>
+                <li><span class="pulse-dot" style="--c:var(--marker-watch)"></span><strong id="p-watch">—</strong><span>под наблюдение</span></li>
+                <li><span class="pulse-dot" style="--c:var(--marker-low)"></span><strong id="p-low">—</strong><span>нисък риск</span></li>
+                <li class="pulse-sep"><strong id="p-anomaly">—</strong><span>спрямо нормата</span></li>
+            </ul>
+        </header>
+
+        <section class="ov-hero" aria-label="Карта на риска">
+            <div class="map-shell ov-map">
+                <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
+
+                <article class="map-card" id="map-card" aria-live="polite">
+                    <div class="mc-top">
+                        <span id="mc-status" class="badge risk-unknown">—</span>
+                        <span id="mc-area" class="mc-area"></span>
+                    </div>
+                    <div class="mc-title">
+                        <h2 id="mc-name">Зареждане…</h2>
+                        <div class="mc-score"><strong id="mc-score">—</strong><span>/100</span></div>
+                    </div>
+                    <div class="mc-bar"><i id="mc-bar"></i></div>
+                    <dl class="mc-facts">
+                        <div><dt>Главна заплаха</dt><dd id="mc-threat">—</dd></div>
+                        <div><dt>Вероятна причина</dt><dd id="mc-cause">—</dd></div>
+                    </dl>
+                    <div class="mc-actions">
+                        <a id="mc-link" class="button primary small" th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Разследвай с AI</a>
+                        <button id="mc-zoom" class="button secondary small" type="button"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>Приближи</button>
+                    </div>
+                </article>
+
+                <div class="map-legend-pill" aria-hidden="true">
+                    <span><i style="background:var(--marker-high)"></i>Висок</span>
+                    <span><i style="background:var(--marker-elevated)"></i>Повишен</span>
+                    <span><i style="background:var(--marker-watch)"></i>Наблюдение</span>
+                    <span><i style="background:var(--marker-low)"></i>Нисък</span>
+                </div>
+            </div>
+
+            <aside class="panel priority" aria-labelledby="priority-title">
+                <header class="priority-head">
+                    <div>
+                        <h2 id="priority-title">Къде да отиде екипът</h2>
+                        <p>Подредени по риск. Кликни, за да видиш на картата.</p>
+                    </div>
+                    <div id="picker"></div>
+                </header>
+                <ol id="priority-list" class="priority-list"><li class="empty">Зареждане…</li></ol>
+            </aside>
+        </section>
+
+        <section class="panel ov-insights" aria-label="Водата и морето">
+            <header class="ins-head">
+                <div class="tabs" role="tablist" aria-label="Изглед">
+                    <button type="button" role="tab" data-tab="water" aria-selected="true">Водата над ливадите</button>
+                    <button type="button" role="tab" data-tab="sea" aria-selected="false">Морето днес</button>
+                </div>
+                <div class="segmented" id="metric-switch" role="group" aria-label="Показател">
+                    <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
+                    <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
+                    <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
+                </div>
+            </header>
+
+            <div class="tab-panel water-panel" data-panel="water">
+                <div class="wv-main">
+                    <div class="wv-readout">
+                        <div>
+                            <span class="wv-site" id="wv-site">—</span>
+                            <div class="wv-value"><strong id="wv-value">—</strong><span id="wv-unit"></span></div>
+                            <span class="wv-sub" id="wv-sub"></span>
+                        </div>
+                        <span id="wv-delta" class="wv-delta"></span>
+                    </div>
+                    <div class="wv-chart"><canvas id="wv-canvas" aria-label="Месечна графика за избрания участък"></canvas></div>
+                </div>
+                <aside class="wv-strip" aria-label="Всички участъци по месеци">
+                    <header><strong>Цялото крайбрежие</strong><span id="wv-strip-months"></span></header>
+                    <div id="heat-body" class="strip-rows"></div>
+                    <footer class="strip-legend"><span><i class="good"></i>добре</span><span><i class="mid"></i>внимание</span><span><i class="bad"></i>критично</span></footer>
+                </aside>
+            </div>
+
+            <div class="tab-panel" data-panel="sea" hidden>
+                <p class="ins-note">Моделни стойности от Open-Meteo Marine за открито море, обновяват се всеки час.</p>
+                <div id="sea-cards" class="sea-cards"><p class="empty">Зареждане…</p></div>
+            </div>
+
+        </section>
+
+        <section class="ov-field" aria-label="Теренна работа">
+            <a class="panel field-card" th:href="@{/field}">
+                <div class="fc-icon"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></div>
+                <div class="fc-body">
+                    <h2>План за терена</h2>
+                    <p id="fc-tasks">Зареждане…</p>
+                </div>
+                <svg class="icon fc-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+            <a class="panel field-card" th:href="@{/field}">
+                <div class="fc-icon"><svg class="icon" aria-hidden="true"><use href="#i-table"/></svg></div>
+                <div class="fc-body">
+                    <h2>Теренни измервания</h2>
+                    <p id="fc-meas">Зареждане…</p>
+                </div>
+                <svg class="icon fc-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+        </section>
+    </main>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script th:src="@{/js/charts.js}"></script>
+<script th:src="@{/js/seamap.js}"></script>
+<script th:src="@{/js/site-picker.js}"></script>
+<script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

@@ -1,2 +1,130 @@
 <!doctype html>
-<html lang="bg" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ново измерване | SeaGuard</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" th:href="@{/css/style.css}"></head><body><nav class="navbar navbar-dark"><div class="container"><a class="navbar-brand" th:href="@{/}">🌊 SeaGuard</a></div></nav><main class="container py-4" style="max-width:800px"><h1 class="h3">Добави измерване</h1><p class="small-note">Въвеждайте само действително измерени стойности и посочвайте източника им. Не измисляйте екологични данни.</p><form th:action="@{/measurements}" th:object="${measurement}" method="post" class="card p-4 shadow-sm"><div class="row g-3"><div class="col-md-6"><label class="form-label">Място *</label><input class="form-control" th:field="*{locationName}" required maxlength="120"><div class="text-danger" th:errors="*{locationName}"></div></div><div class="col-md-6"><label class="form-label">Дата и час на измерване *</label><input class="form-control" type="datetime-local" th:field="*{observedAt}" required><div class="text-danger" th:errors="*{observedAt}"></div></div><div class="col-md-4"><label class="form-label">Температура (°C) *</label><input class="form-control" type="number" step="any" th:field="*{temperatureC}" required><div class="text-danger" th:errors="*{temperatureC}"></div></div><div class="col-md-4"><label class="form-label">Мътност (NTU)</label><input class="form-control" type="number" min="0" step="any" th:field="*{turbidityNtu}"><div class="text-danger" th:errors="*{turbidityNtu}"></div></div><div class="col-md-4"><label class="form-label">Соленост (PSU)</label><input class="form-control" type="number" min="0" max="50" step="any" th:field="*{salinityPsu}"><div class="text-danger" th:errors="*{salinityPsu}"></div></div><div class="col-md-6"><label class="form-label">Географска ширина (по желание)</label><input class="form-control" type="number" step="any" min="-90" max="90" th:field="*{latitude}" placeholder="напр. 42.415"></div><div class="col-md-6"><label class="form-label">Географска дължина (по желание)</label><input class="form-control" type="number" step="any" min="-180" max="180" th:field="*{longitude}" placeholder="напр. 27.695"></div><div class="col-12"><label class="form-label">Източник (институция, файл, URL или измервателен уред) *</label><input class="form-control" th:field="*{source}" required maxlength="200"><div class="text-danger" th:errors="*{source}"></div></div><div class="col-12"><label class="form-label">Бележки</label><textarea class="form-control" rows="3" th:field="*{notes}" maxlength="500"></textarea></div></div><div class="mt-4"><button class="btn btn-success" type="submit">Запази измерването</button> <a class="btn btn-outline-secondary" th:href="@{/measurements}">Отказ</a></div></form></main></body></html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Ново измерване')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/forms.css}">
+</head>
+<body>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<a class="skip" href="#workspace">Към формата</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/layout :: rail('field')}"></aside>
+    <main id="workspace" class="workspace">
+        <header class="masthead">
+            <div>
+                <a class="back-link" th:href="@{/field}">← Теренна работа</a>
+                <h1>Ново измерване</h1>
+                <p>Въвеждай само действително измерени стойности и посочи откъде идват.</p>
+            </div>
+        </header>
+
+        <div class="form-layout section">
+            <form th:action="@{/measurements}" th:object="${measurement}" method="post" class="panel form-card" novalidate>
+                <div th:if="${#fields.hasErrors('*')}" class="callout error" role="alert">
+                    <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+                    <span>Провери маркираните полета.</span>
+                </div>
+
+                <fieldset>
+                    <legend>Къде и кога</legend>
+                    <div class="form-grid">
+                        <div class="field span-2">
+                            <label for="locationName">Място *</label>
+                            <input class="input" th:field="*{locationName}" th:errorclass="is-invalid" required maxlength="120" placeholder="напр. Созополски залив, Буната">
+                            <span class="error" th:if="${#fields.hasErrors('locationName')}" th:errors="*{locationName}"></span>
+                        </div>
+                        <div class="field span-2">
+                            <label for="observedAt">Дата и час *</label>
+                            <input class="input date-input" type="datetime-local" th:field="*{observedAt}" th:errorclass="is-invalid" required>
+                            <span class="error" th:if="${#fields.hasErrors('observedAt')}" th:errors="*{observedAt}"></span>
+                        </div>
+                        <div class="coords-row span-2">
+                            <div class="field">
+                                <label for="latitude">Ширина</label>
+                                <input class="input" type="number" step="any" min="-90" max="90" th:field="*{latitude}" th:errorclass="is-invalid" placeholder="42.415">
+                                <span class="error" th:if="${#fields.hasErrors('latitude')}" th:errors="*{latitude}"></span>
+                            </div>
+                            <div class="field">
+                                <label for="longitude">Дължина</label>
+                                <input class="input" type="number" step="any" min="-180" max="180" th:field="*{longitude}" th:errorclass="is-invalid" placeholder="27.695">
+                                <span class="error" th:if="${#fields.hasErrors('longitude')}" th:errors="*{longitude}"></span>
+                            </div>
+                            <button type="button" id="locate" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>Моята позиция</button>
+                        </div>
+                        <span class="error span-2" th:if="${#fields.hasErrors('coordinatesComplete')}" th:errors="*{coordinatesComplete}"></span>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Стойности</legend>
+                    <div class="form-grid three">
+                        <div class="field">
+                            <label for="temperatureC">Температура *</label>
+                            <div class="unit-input"><input class="input" type="number" step="any" min="-2" max="45" th:field="*{temperatureC}" th:errorclass="is-invalid" required><span>°C</span></div>
+                            <span class="error" th:if="${#fields.hasErrors('temperatureC')}" th:errors="*{temperatureC}"></span>
+                        </div>
+                        <div class="field">
+                            <label for="turbidityNtu">Мътност</label>
+                            <div class="unit-input"><input class="input" type="number" min="0" step="any" th:field="*{turbidityNtu}" th:errorclass="is-invalid"><span>NTU</span></div>
+                            <span class="error" th:if="${#fields.hasErrors('turbidityNtu')}" th:errors="*{turbidityNtu}"></span>
+                        </div>
+                        <div class="field">
+                            <label for="salinityPsu">Соленост</label>
+                            <div class="unit-input"><input class="input" type="number" min="0" max="50" step="any" th:field="*{salinityPsu}" th:errorclass="is-invalid"><span>PSU</span></div>
+                            <span class="error" th:if="${#fields.hasErrors('salinityPsu')}" th:errors="*{salinityPsu}"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Произход</legend>
+                    <div class="form-grid">
+                        <div class="field span-2">
+                            <label for="source">Източник *</label>
+                            <input class="input" th:field="*{source}" th:errorclass="is-invalid" required maxlength="200" placeholder="Институция, уред, файл или URL">
+                            <span class="hint">Пример: „ИО-БАН, CTD сонда, станция S3“</span>
+                            <span class="error" th:if="${#fields.hasErrors('source')}" th:errors="*{source}"></span>
+                        </div>
+                        <div class="field span-2">
+                            <label for="notes">Бележки</label>
+                            <textarea class="input" rows="3" maxlength="500" th:field="*{notes}" placeholder="Дълбочина, метод, видимост, условия…"></textarea>
+                            <span class="error" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="form-actions">
+                    <a class="button ghost" th:href="@{/field}">Отказ</a>
+                    <button class="button primary" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Запази измерването</button>
+                </div>
+            </form>
+
+            <aside class="form-aside">
+                <div class="callout info">
+                    <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+                    <div><strong>Защо е важен източникът?</strong><br>Сигналите в мониторинга сравняват записи от едно място. Без проверим източник отклонението не може да се интерпретира.</div>
+                </div>
+                <div class="callout">
+                    <svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>
+                    <div><strong>Координатите</strong> са по желание, но без тях записът няма да се покаже на картата и в радиуса на участъците в морския атлас.</div>
+                </div>
+            </aside>
+        </div>
+    </main>
+</div>
+<script>
+    (() => {
+        const button = document.getElementById('locate');
+        if (!('geolocation' in navigator)) { button.hidden = true; return; }
+        button.addEventListener('click', () => {
+            button.disabled = true;
+            navigator.geolocation.getCurrentPosition(pos => {
+                document.getElementById('latitude').value = pos.coords.latitude.toFixed(5);
+                document.getElementById('longitude').value = pos.coords.longitude.toFixed(5);
+                button.disabled = false;
+            }, () => { button.disabled = false; }, {enableHighAccuracy: true, timeout: 10000});
+        });
+    })();
+</script>
+</body>
+</html>
