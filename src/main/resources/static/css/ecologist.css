@@ -350,3 +350,5 @@
   .site-brief { grid-template-columns: 1fr !important; grid-template-areas: "verdict" "map" !important; }
   .brief-map .map-shell { border-radius: 0 0 var(--radius) var(--radius) !important; }
 }
+
+.cp-footage-result-body a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }

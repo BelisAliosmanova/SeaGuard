@@ -10,6 +10,7 @@ window.setupFootage = (() => {
         canvas.width = Math.max(1, Math.round(width * ratio));
         canvas.height = Math.max(1, Math.round(height * ratio));
         const context = canvas.getContext('2d');
+        if (!context) throw new Error('Този браузър не може да подготви кадъра.');
         context.fillStyle = 'white';
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.drawImage(source, 0, 0, canvas.width, canvas.height);
@@ -30,7 +31,12 @@ window.setupFootage = (() => {
             const timer = setTimeout(failure, 8000);
             media.addEventListener(event, success, {once: true});
             media.addEventListener('error', failure, {once: true});
-            trigger();
+            try {
+                trigger();
+            } catch (error) {
+                cleanup();
+                reject(error);
+            }
         });
     }
 
@@ -40,7 +46,9 @@ window.setupFootage = (() => {
         video.preload = 'auto';
         video.playsInline = true;
         try {
-            await mediaEvent(video, 'loadeddata', () => { video.src = url; });
+            await mediaEvent(video, 'loadeddata', () => { video.src = url; }).catch(() => {
+                throw new Error('Браузърът не отвори видеото. Опитай MP4 с H.264, WebM или отделни снимки.');
+            });
             if (!Number.isFinite(video.duration) || video.duration <= 0 || !video.videoWidth) {
                 throw new Error('Видеото няма четими кадри.');
             }
@@ -58,11 +66,16 @@ window.setupFootage = (() => {
         }
     }
 
+    const isVideo = file => /^video\//.test(file.type) || /\.(mp4|webm)$/i.test(file.name);
+    const isImage = file => /^(image\/jpeg|image\/png|image\/webp)$/.test(file.type)
+        || /\.(jpe?g|png|webp)$/i.test(file.name);
+
     async function readFile(file) {
         if (file.size > MAX_FILE_SIZE) throw new Error('Избери файл до 100 MB.');
         const url = URL.createObjectURL(file);
         try {
-            if (/^video\//.test(file.type) || /\.(mp4|webm)$/i.test(file.name)) return await readVideo(url);
+            if (isVideo(file)) return await readVideo(url);
+            if (!isImage(file)) throw new Error('Избери JPG, PNG, WebP, MP4 или WebM.');
             const image = new Image();
             await mediaEvent(image, 'load', () => { image.src = url; });
             return [{blob: await captureFrame(image, image.naturalWidth, image.naturalHeight), seconds: null}];
@@ -72,20 +85,23 @@ window.setupFootage = (() => {
     }
 
     function frameLabel(frame, index) {
-        if (frame.seconds == null) return 'Снимка';
+        if (frame.seconds == null) return 'Снимка ' + (index + 1);
         const tenths = Math.round(frame.seconds * 10);
         const min = Math.floor(tenths / 600);
         const seconds = String(Math.floor(tenths / 10) % 60).padStart(2, '0');
         return `Кадър ${index + 1} · ${min}:${seconds},${tenths % 10}`;
     }
 
-    function setupFootage(endpoint) {
+    function setupFootage(endpoint, {onResult, onTask} = {}) {
         const byId = id => document.getElementById(id);
         const input = byId('footage-file');
         const analyzeButton = byId('analyze-file');
         const preview = byId('frame-preview');
         const result = byId('analysis-result');
         const status = byId('analysis-status');
+        const taskButton = byId('footage-add-task');
+        const taskStatus = byId('footage-task-status');
+        let taskContext;
         let frames = [];
         let previewUrls = [];
         let fileVersion = 0;
@@ -96,6 +112,10 @@ window.setupFootage = (() => {
             activeRequest?.abort();
             activeRequest = undefined;
             result.hidden = true;
+            taskContext = null;
+            taskStatus.textContent = '';
+            taskButton.disabled = true;
+            if (currentSite) onResult?.(currentSite.id, null);
             status.textContent = '';
             analyzeButton.disabled = !currentSite || !frames.length;
         }
@@ -128,7 +148,12 @@ window.setupFootage = (() => {
             const fileFrames = frames;
             const site = currentSite;
             analyzeButton.disabled = true;
-            status.textContent = 'Локалният модел разглежда кадрите…';
+            status.textContent = 'AI екологът преглежда ' + fileFrames.length + ' кадъра. Това може да отнеме няколко минути.';
+            const timeout = setTimeout(() => {
+                if (activeRequest !== request) return;
+                request.abort();
+                status.textContent = 'Моделът се забави. Опитай с една снимка или провери прозореца на локалния сървър.';
+            }, 195000);
             const form = new FormData();
             form.append('siteId', site.id);
             fileFrames.forEach((frame, index) => form.append('frames', frame.blob, `frame-${index + 1}.jpg`));
@@ -137,7 +162,13 @@ window.setupFootage = (() => {
                     method: 'POST', body: form, headers: {'X-SeaGuard-Analysis': '1'}, signal: request.signal
                 });
                 const data = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(data.message || 'Анализът е недостъпен. Опитай отново.');
+                if (!response.ok) throw new Error(data.message ||
+                    (response.status === 404 ? 'Тази версия на SeaGuard няма връзката за анализ. Стартирай обновения проект.' :
+                        'Анализът е недостъпен. Опитай отново.'));
+                if (!Array.isArray(data.observations) || data.observations.length !== fileFrames.length
+                    || typeof data.summary !== 'string' || typeof data.nextStep !== 'string') {
+                    throw new Error('AI екологът върна непълен анализ. Опитай отново.');
+                }
                 if (request.signal.aborted) return;
                 byId('analysis-provenance').textContent = `Участък „${site.name}“. Мястото и датата на заснемане са непотвърдени.`;
                 const items = data.observations.map((text, index) => {
@@ -150,6 +181,9 @@ window.setupFootage = (() => {
                 byId('analysis-next').textContent = data.nextStep;
                 status.textContent = '';
                 result.hidden = false;
+                taskContext = {siteId: site.id, nextStep: data.nextStep};
+                taskButton.disabled = !onTask;
+                onResult?.(site.id, data);
                 byId('analysis-title').focus();
             } catch (error) {
                 if (!request.signal.aborted) {
@@ -157,6 +191,7 @@ window.setupFootage = (() => {
                         ? 'Връзката с приложението прекъсна. Опитай отново.' : error.message;
                 }
             } finally {
+                clearTimeout(timeout);
                 if (activeRequest === request) {
                     activeRequest = undefined;
                     analyzeButton.disabled = false;
@@ -165,20 +200,27 @@ window.setupFootage = (() => {
         }
 
         input.addEventListener('change', async () => {
-            const file = input.files[0];
-            if (!file) return;
+            const files = [...input.files];
+            if (!files.length) return;
             const version = ++fileVersion;
             resetAnalysis();
             frames = [];
             renderFrames(frames);
             status.textContent = 'Подготвяме кадрите…';
             try {
-                const captured = await readFile(file);
+                if (files.length > 3 || (files.length > 1 && files.some(isVideo))) {
+                    throw new Error('Избери до три снимки или едно видео.');
+                }
+                const captured = [];
+                for (const file of files) {
+                    captured.push(...await readFile(file));
+                    if (version !== fileVersion) return;
+                }
                 if (version !== fileVersion) return;
                 frames = captured;
                 renderFrames(frames);
                 analyzeButton.disabled = !currentSite;
-                if (!activeRequest) status.textContent = 'Кадрите са готови за анализ.';
+                if (!activeRequest) status.textContent = 'Подготвени кадри: ' + frames.length + '. Прегледай ги и започни анализа.';
             } catch (error) {
                 if (version === fileVersion && !activeRequest) status.textContent = error.message;
             } finally {
@@ -186,8 +228,20 @@ window.setupFootage = (() => {
             }
         });
         analyzeButton.addEventListener('click', analyze);
+        taskButton.addEventListener('click', async () => {
+            const context = taskContext;
+            if (!context || taskButton.disabled) return;
+            taskButton.disabled = true;
+            const saved = await onTask(context.siteId, context.nextStep);
+            if (taskContext !== context) return;
+            taskStatus.textContent = saved ? 'Проверката е добавена в плана за терена.' : 'Задачата не се записа. Опитай отново.';
+            taskButton.disabled = saved;
+        });
 
         return {
+            showUnavailable(message) {
+                status.textContent = message;
+            },
             selectSite(id, name) {
                 if (currentSite?.id === id) return;
                 currentSite = id == null ? null : {id, name};
@@ -197,6 +251,7 @@ window.setupFootage = (() => {
                 frames = [];
                 renderFrames(frames);
                 resetAnalysis();
+                if (currentSite) status.textContent = 'Кадрите ще се анализират за участък „' + name + '“. ';
             }
         };
     }

@@ -5,7 +5,8 @@ window.SitePicker = (() => {
   const GROUPS = [
     {keys: ['high', 'elevated'], label: 'Висок и повишен риск'},
     {keys: ['watch'], label: 'Под наблюдение'},
-    {keys: ['low'], label: 'Нисък риск'}
+    {keys: ['low'], label: 'Нисък риск'},
+    {keys: [undefined, null, 'unknown'], label: 'Участъци без заредена оценка'}
   ];
 
   function el(tag, cls, text) {
@@ -65,7 +66,7 @@ window.SitePicker = (() => {
           row.setAttribute('role', 'option');
           row.setAttribute('aria-selected', String(s.id === current));
           const d = el('i', 'picker-dot');
-          d.style.background = `var(--marker-${s.statusKey})`;
+          if (s.statusKey) d.style.background = `var(--marker-${s.statusKey})`;
           const text = el('span', 'picker-text');
           text.append(el('strong', null, s.name), el('small', null, s.topThreat && s.topThreat !== '—' ? s.topThreat : s.status));
           row.append(d, text, el('span', 'picker-row-score', s.riskScore));
@@ -110,8 +111,8 @@ window.SitePicker = (() => {
       if (!s && id != null) return;
       current = id;
       name.textContent = s?.name || allLabel || 'Избери участък';
-      dot.style.background = s ? `var(--marker-${s.statusKey})` : '';
-      score.textContent = s ? s.riskScore + '/100' : '';
+      dot.style.background = s?.statusKey ? `var(--marker-${s.statusKey})` : '';
+      score.textContent = s?.riskScore == null ? '' : s.riskScore + '/100';
       if (label) trigger.setAttribute('aria-label', `${label} · ${name.textContent}`);
     }
 
@@ -124,7 +125,15 @@ window.SitePicker = (() => {
       else if (e.key === 'Escape') { setOpen(false); trigger.focus(); }
     });
     document.addEventListener('mousedown', e => { if (open && !root.contains(e.target)) setOpen(false); });
-    return {set};
+    return {
+      set,
+      updateSites(next) {
+        sites = next;
+        search.placeholder = 'Търси сред ' + sites.length + ' участъка';
+        set(current);
+        if (open) render();
+      }
+    };
   }
   return {create};
 })();

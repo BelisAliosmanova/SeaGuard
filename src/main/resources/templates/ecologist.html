@@ -12,7 +12,8 @@
 <div class="app-shell">
     <aside th:replace="~{fragments/layout :: rail('ecologist')}"></aside>
     <main id="workspace" class="workspace" th:data-provider="${aiProvider}"
-          th:data-archive-url="@{/data/zostera-bulgaria.geojson}">
+          th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
+          th:data-locations-url="@{/api/ecologist/locations}" th:data-sites-url="@{/api/ecologist/sites}">
 
         <div class="site-layout">
             <div class="site-main">
@@ -93,28 +94,30 @@
                     <ul id="tasks" class="tasks"></ul>
                 </section>
 
-                <section id="footage" class="panel section footage" th:data-endpoint="@{/api/seagrass/analysis}" aria-labelledby="footage-title">
+                <section id="footage" class="panel section footage" th:data-endpoint="@{/api/ecologist/footage}" aria-labelledby="footage-title">
             <header class="panel-head">
                 <div><h2 id="footage-title">Подводни кадри</h2></div>
             </header>
             <div class="panel-body">
                 <div class="footage-actions">
                     <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
-                    <input id="footage-file" class="file-input" type="file" disabled accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
+                    <input id="footage-file" class="file-input" type="file" disabled multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
                 </div>
-                <p id="footage-formats" class="footage-formats">JPG, PNG, WebP, MP4 или WebM до 100 MB. При видео се анализират до три кадъра.</p>
+                <p id="footage-formats" class="footage-formats">До 3 снимки (JPG, PNG, WebP) или 1 видео (MP4, WebM), до 100 MB на файл. При видео се подбират до 3 кадъра за локалния AI еколог.</p>
                 <div id="frame-preview" class="frame-preview" hidden></div>
-                <button id="analyze-file" class="button primary" type="button" hidden>Анализирай кадрите</button>
-                <p id="analysis-status" class="analysis-status" role="status"></p>
+                <button id="analyze-file" class="button primary" type="button" hidden>Анализирай с AI еколога</button>
+                <p id="analysis-status" class="analysis-status" role="status">Изчакваме списъка с участъци.</p>
             </div>
             <section id="analysis-result" class="panel-body analysis-result" aria-labelledby="analysis-title" hidden>
-                <h3 id="analysis-title" tabindex="-1">Първичен AI прочит</h3>
+                <h3 id="analysis-title" tabindex="-1">AI еколог · анализ на кадрите</h3>
                 <p id="analysis-provenance" class="analysis-provenance"></p>
                 <dl class="findings">
                     <div><dt>Видимо в кадрите</dt><dd><ol id="analysis-frames"></ol></dd></div>
                     <div><dt>Обобщение и несигурност</dt><dd id="analysis-summary"></dd></div>
                     <div><dt>Теренна проверка</dt><dd id="analysis-next"></dd></div>
                 </dl>
+                <button id="footage-add-task" type="button" class="button secondary">Добави теренна проверка</button>
+                <p id="footage-task-status" class="analysis-status" role="status"></p>
             </section>
         </section>
 

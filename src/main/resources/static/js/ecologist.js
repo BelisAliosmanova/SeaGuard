@@ -6,14 +6,14 @@
   const FRESH = {live: 'На живо', recent: 'Актуални', old: 'Стари', missing: 'Няма'};
   const workspace = $('workspace');
   const provider = workspace.dataset.provider || 'rules';
-  const footage = window.setupFootage($('footage').dataset.endpoint);
+  const footage = window.setupFootage?.($('footage').dataset.endpoint, {onResult: includeFootage, onTask: addFootageTask});
   let meadowMap, meadowOutline, meadowBounds, selection;
   const archive = typeof L === 'undefined' ? Promise.resolve(null) :
     fetch(workspace.dataset.archiveUrl).then(response => {
       if (!response.ok) throw new Error();
       return response.json();
     }).catch(() => null);
-  let sites = [], current = null, trendMetric = 'lightAtDepth', history = [], picker;
+  let sites = [], current = null, trendMetric = 'lightAtDepth', history = [], picker, lastFootage;
 
   const el = (tag, text, cls) => {
     const e = document.createElement(tag);
@@ -25,16 +25,28 @@
 
   async function init() {
     try {
-      const response = await fetch('/api/ecologist/sites');
+      const response = await fetch(workspace.dataset.locationsUrl);
       if (!response.ok) throw new Error();
-      ({sites} = await response.json());
+      sites = await response.json();
       if (!sites.length) throw new Error();
       $('eco-picker-status').remove();
       picker = SitePicker.create($('picker'), {sites, onSelect: select, label: 'Избран участък'});
       const wanted = Number(new URLSearchParams(location.search).get('site'));
       select(sites.some(s => s.id === wanted) ? wanted : sites[0].id);
+      fetch(workspace.dataset.sitesUrl)
+        .then(response => {
+          if (!response.ok) throw new Error();
+          return response.json();
+        })
+        .then(data => {
+          if (!data.sites?.length) return;
+          sites = data.sites;
+          picker.updateSites(sites);
+        })
+        .catch(() => {});
     } catch {
       const message = 'Участъците не се заредиха. Презареди страницата, за да опиташ отново.';
+      footage?.showUnavailable(message);
       $('verdict-headline').textContent = message;
       $('meadow-map-status').textContent = message;
       $('trend-status').textContent = message;
@@ -48,7 +60,8 @@
     if (!site) return;
     selection = id;
     picker.set(id);
-    footage.selectSite(id, site.name);
+    if (lastFootage?.siteId !== id) lastFootage = null;
+    footage?.selectSite(id, site.name);
     renderMeadowMap(id).catch(() => {
       if (selection !== id) return;
       const status = $('meadow-map-status');
@@ -274,9 +287,8 @@
   }
 
   // ---------------------------------------------------------------- field tasks
-  async function addTask(task) {
-    if (!current) return false;
-    const site = current.site.id;
+  async function addTask(task, site = current?.site.id) {
+    if (site == null || selection !== site) return false;
     try {
       const response = await fetch('/api/tasks', {method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({siteId: site, ...task})});
@@ -436,6 +448,29 @@
     return [...qs.filter(x => !asked.has(x)).slice(0, 3), REPORT_CHIP];
   }
 
+  function addFootageTask(siteId, nextStep) {
+    return addTask({title: 'Провери подводните кадри на участъка', priority: 'Рутинно',
+      reason: nextStep, origin: 'ai'}, siteId);
+  }
+
+  function showFootageInChat(data) {
+    chatEl().querySelector('.cp-footage-result')?.remove();
+    const box = el('div', null, 'cp-footage-result-body');
+    box.append(el('strong', 'Анализ на подводни кадри'), el('p', data.summary),
+      el('p', 'Следваща теренна стъпка: ' + data.nextStep));
+    const details = el('a', 'Виж наблюденията по кадри');
+    details.href = '#analysis-title';
+    box.append(details);
+    bubble('assistant', box).closest('.cp-row').classList.add('cp-footage-result');
+  }
+
+  function includeFootage(siteId, data) {
+    if (selection !== siteId) return;
+    lastFootage = data ? {siteId, data} : null;
+    if (data) showFootageInChat(data);
+    else chatEl().querySelector('.cp-footage-result')?.remove();
+  }
+
   function resetChat(name) {
     chatEl().replaceChildren();
     history = [];
@@ -465,6 +500,7 @@
     } else box.append(el('p', 'Не виждам силни рискови сигнали в данните.'));
     box.append(el('p', 'Какво искаш да разбереш?', 'cp-sub'));
     bubble('assistant', box);
+    if (lastFootage?.siteId === a.site.id) showFootageInChat(lastFootage.data);
     chips(suggestedQuestions());
   }
 
