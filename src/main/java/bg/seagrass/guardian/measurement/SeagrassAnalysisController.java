@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -115,7 +114,7 @@ public class SeagrassAnalysisController {
                 + "\nImages: user-supplied, unverified location and date.";
             content.add(Map.of("type", "text", "text", context));
             for (MultipartFile frame : frames) {
-                content.add(imagePart(validatedJpeg(frame)));
+                content.add(imagePart(JpegFrame.read(frame)));
             }
             return infer(content);
         } catch (InterruptedException e) {
@@ -137,30 +136,6 @@ public class SeagrassAnalysisController {
             if (feature.path("id").asInt() == siteId) return feature.path("properties");
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Участъкът не е намерен в архива.");
-    }
-
-    private byte[] validatedJpeg(MultipartFile frame) {
-        try (InputStream input = frame.getInputStream(); var image = ImageIO.createImageInputStream(input)) {
-            if (image != null) {
-                var readers = ImageIO.getImageReaders(image);
-                if (readers.hasNext()) {
-                    var reader = readers.next();
-                    try {
-                        reader.setInput(image);
-                        if ("JPEG".equalsIgnoreCase(reader.getFormatName()) && reader.getWidth(0) <= 1000
-                            && reader.getHeight(0) <= 1000) {
-                            reader.read(0);
-                            return frame.getBytes();
-                        }
-                    } finally {
-                        reader.dispose();
-                    }
-                }
-            }
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Един от кадрите е повреден.");
-        }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Кадърът трябва да е JPEG с размер до 1000 × 1000 px.");
     }
 
     private static Map<String, Object> imagePart(byte[] bytes) {

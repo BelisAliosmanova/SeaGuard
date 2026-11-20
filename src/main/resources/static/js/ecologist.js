@@ -6,13 +6,31 @@
   const FRESH = {live: 'На живо', recent: 'Актуални', old: 'Стари', missing: 'Няма'};
   const workspace = $('workspace');
   const provider = workspace.dataset.provider || 'rules';
-  const footage = window.setupFootage?.($('footage').dataset.endpoint, {onResult: includeFootage, onTask: addFootageTask});
-  let meadowMap, meadowOutline, meadowBounds, selection;
-  const archive = typeof L === 'undefined' ? Promise.resolve(null) :
+  let meadowMap, meadowOutline, meadowBounds, mapSiteId, selection, missionLayer;
+  let missionPoints = [];
+  const archive =
     fetch(workspace.dataset.archiveUrl).then(response => {
       if (!response.ok) throw new Error();
       return response.json();
     }).catch(() => null);
+  const findOutline = async id => (await archive)?.features?.find(item => Number(item.id) === id);
+  const fieldMission = window.setupFieldMission?.($('field-mission'), {
+    loadOutline: findOutline,
+    clearFootage: () => footage?.clear(),
+    onPoints(points) {
+      missionPoints = points;
+      syncMissionMap();
+    },
+    onTasks() { if (current) loadTasks(); }
+  });
+  const footage = window.setupFootage?.($('footage').dataset.endpoint, {
+    onResult(id, data) {
+      includeFootage(id, data);
+      fieldMission?.setAnalysis(id, data);
+    },
+    onTask: addFootageTask,
+    onFrames: (id, frames) => fieldMission?.setFrames(id, frames)
+  });
   let sites = [], current = null, trendMetric = 'lightAtDepth', history = [], picker, lastFootage;
 
   const el = (tag, text, cls) => {
@@ -61,6 +79,7 @@
     selection = id;
     picker.set(id);
     if (lastFootage?.siteId !== id) lastFootage = null;
+    fieldMission?.selectSite(id);
     footage?.selectSite(id, site.name);
     renderMeadowMap(id).catch(() => {
       if (selection !== id) return;
@@ -103,10 +122,9 @@
   async function renderMeadowMap(id) {
     const status = $('meadow-map-status');
     const shell = $('meadow-map-shell');
-    const data = await archive;
+    const feature = await findOutline(id);
     if (selection !== id) return;
-    const feature = data?.features?.find(item => Number(item.id) === id);
-    if (!feature) {
+    if (!feature || typeof L === 'undefined') {
       if (meadowMap) meadowMap.removeLayer(meadowOutline);
       shell.hidden = true;
       status.hidden = false;
@@ -128,7 +146,28 @@
       meadowMap.removeLayer(meadowOutline);
     }
     meadowOutline = outline.addTo(meadowMap);
+    mapSiteId = id;
+    syncMissionMap();
     fitMeadow(meadowMap);
+  }
+
+  function syncMissionMap() {
+    if (!meadowMap) return;
+    missionLayer?.remove();
+    missionLayer = null;
+    if (mapSiteId !== selection || !missionPoints.length) return;
+    const colors = {CONFIRMED: '#087a61', NOT_VISIBLE: '#355e7d', UNCLEAR: '#946018'};
+    const locations = missionPoints.map(point => [point.latitude, point.longitude]);
+    const line = L.polyline(locations, {color: '#2354a1', dashArray: '4 6', weight: 2, interactive: false});
+    const markers = missionPoints.map((point, index) => {
+      const marker = L.circleMarker(locations[index], {
+        radius: 9, color: '#fff', fillColor: colors[point.review?.verdict] || '#2354a1', fillOpacity: 1
+      });
+      marker.bindTooltip(el('span', point.number + ' · ' + point.label));
+      marker.on('click', () => fieldMission.focusPoint(point.number));
+      return marker;
+    });
+    missionLayer = L.layerGroup([line, ...markers]).addTo(meadowMap);
   }
 
   function renderVerdict() {

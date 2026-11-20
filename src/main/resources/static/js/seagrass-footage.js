@@ -92,7 +92,7 @@ window.setupFootage = (() => {
         return `Кадър ${index + 1} · ${min}:${seconds},${tenths % 10}`;
     }
 
-    function setupFootage(endpoint, {onResult, onTask} = {}) {
+    function setupFootage(endpoint, {onResult, onTask, onFrames} = {}) {
         const byId = id => document.getElementById(id);
         const input = byId('footage-file');
         const analyzeButton = byId('analyze-file');
@@ -138,6 +138,7 @@ window.setupFootage = (() => {
             preview.replaceChildren(...figures);
             preview.hidden = figures.length === 0;
             analyzeButton.hidden = figures.length === 0;
+            if (currentSite) onFrames?.(currentSite.id, newFrames.map((frame, index) => ({...frame, label: frameLabel(frame, index)})));
         }
 
         async function analyze() {
@@ -238,19 +239,24 @@ window.setupFootage = (() => {
             taskButton.disabled = saved;
         });
 
+        function clear() {
+            fileVersion++;
+            input.value = '';
+            frames = [];
+            renderFrames(frames);
+            resetAnalysis();
+        }
+
         return {
+            clear,
             showUnavailable(message) {
                 status.textContent = message;
             },
             selectSite(id, name) {
                 if (currentSite?.id === id) return;
                 currentSite = id == null ? null : {id, name};
-                fileVersion++;
-                input.value = '';
                 input.disabled = !currentSite;
-                frames = [];
-                renderFrames(frames);
-                resetAnalysis();
+                clear();
                 if (currentSite) status.textContent = 'Кадрите ще се анализират за участък „' + name + '“. ';
             }
         };

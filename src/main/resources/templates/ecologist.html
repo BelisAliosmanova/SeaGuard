@@ -89,6 +89,25 @@
                     <ol id="actions" class="actions panel-body"></ol>
                 </section>
 
+                <section id="field-mission" class="panel section field-mission" aria-labelledby="mission-title"
+                         th:data-endpoint="@{/api/ecologist/field-missions}">
+                    <header class="panel-head mission-head">
+                        <h2 id="mission-title">Мисия за теренна проверка</h2>
+                        <button id="mission-plan" class="button primary" type="button" hidden>Планирай проверка</button>
+                    </header>
+                    <div class="panel-body">
+                        <p id="mission-status" class="mission-status" role="status"></p>
+                        <div id="mission-board" class="mission-board" hidden>
+                            <figure class="mission-map">
+                                <svg id="mission-outline" viewBox="0 0 340 190" role="img"
+                                     aria-label="Архивен контур на ливадата и точки за заснемане"></svg>
+                                <figcaption>Архивен контур и точки за заснемане</figcaption>
+                            </figure>
+                            <ol id="mission-points" class="mission-points"></ol>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="panel section" aria-labelledby="tasks-title">
                     <header class="panel-head"><h2 id="tasks-title">План за терена</h2><span id="tasks-count" class="badge neutral">0</span></header>
                     <ul id="tasks" class="tasks"></ul>
@@ -99,6 +118,7 @@
                 <div><h2 id="footage-title">Подводни кадри</h2></div>
             </header>
             <div class="panel-body">
+                <p id="mission-capture" class="mission-capture" hidden></p>
                 <div class="footage-actions">
                     <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
                     <input id="footage-file" class="file-input" type="file" disabled multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
@@ -119,6 +139,30 @@
                 <button id="footage-add-task" type="button" class="button secondary">Добави теренна проверка</button>
                 <p id="footage-task-status" class="analysis-status" role="status"></p>
             </section>
+            <form id="mission-review" class="panel-body mission-review" hidden>
+                <div class="mission-review-head">
+                    <h3 id="mission-review-title">Теренен преглед на кадъра</h3>
+                    <button id="mission-cancel" type="button" class="button secondary small">Откачи от точката</button>
+                </div>
+                <p>При запис избраният кадър се съхранява към тази точка на мисията.</p>
+                <div class="mission-fields">
+                    <label>Кадър <select id="mission-frame" required></select></label>
+                    <label>Дата на заснемане <input name="capturedOn" type="date" required></label>
+                    <label>Дълбочина (м) <input name="depthM" type="number" min="0" step="any" inputmode="decimal" required></label>
+                    <label>Листовидни растителни форми
+                        <select name="verdict" required>
+                            <option value="">Избери резултат</option>
+                            <option value="CONFIRMED">Потвърдено</option>
+                            <option value="NOT_VISIBLE">Не се виждат</option>
+                            <option value="UNCLEAR">Кадърът е неясен</option>
+                        </select>
+                    </label>
+                </div>
+                <label>Теренна бележка <textarea name="notes" rows="2" maxlength="600"></textarea></label>
+                <p id="mission-ai-note" class="mission-status"></p>
+                <button id="mission-save" type="submit" class="button primary">Запиши проверката</button>
+                <p id="mission-save-status" class="mission-status" role="status"></p>
+            </form>
         </section>
 
 
@@ -182,6 +226,7 @@
 <script th:src="@{/js/site-picker.js}"></script>
 <script th:src="@{/js/depth-profile.js}"></script>
 <script th:src="@{/js/seagrass-footage.js}"></script>
+<script th:src="@{/js/field-mission.js}"></script>
 <script th:src="@{/js/ecologist.js}"></script>
 </body>
 </html>
