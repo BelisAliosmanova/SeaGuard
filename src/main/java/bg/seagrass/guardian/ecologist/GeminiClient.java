@@ -34,8 +34,8 @@ class GeminiClient {
 
     private final String fallbackModel;
 
-    GeminiClient(ObjectMapper mapper, @Value("${seaguard.ai.gemini-model:gemini-2.5-flash}") String model,
-                 @Value("${seaguard.ai.gemini-fallback-model:gemini-2.5-flash-lite}") String fallbackModel,
+    GeminiClient(ObjectMapper mapper, @Value("${seaguard.ai.gemini-model:gemini-3.5-flash}") String model,
+                 @Value("${seaguard.ai.gemini-fallback-model:gemini-3.5-flash-lite}") String fallbackModel,
                  @Value("${seaguard.ai.gemini-key:}") String configuredKey) {
         this.mapper = mapper;
         this.model = model;
@@ -70,7 +70,7 @@ class GeminiClient {
             "generationConfig", config);
         // Retry the main model on overload, then fall back to a lighter model before giving up.
         GeminiException last = null;
-        String[] plan = {model, model, fallbackModel};
+        String[] plan = {model, model, fallbackModel, "gemini-2.5-flash"};
         for (int attempt = 0; attempt < plan.length; attempt++) {
             if (plan[attempt] == null || plan[attempt].isBlank()) continue;
             try {
@@ -98,7 +98,9 @@ class GeminiClient {
             JsonNode root = mapper.readTree(response.body());
             int status = response.statusCode();
             if (status != 200) {
-                boolean busy = status == 429 || status >= 500;
+                // 404 shows up intermittently for valid models, so it is retried like an overload.
+                boolean busy = status == 404 || status == 429 || status >= 500;
+                System.err.println("Gemini " + modelName + " HTTP " + status + ": " + root.path("error").path("message").asText(""));
                 throw new GeminiException(busy ? "Gemini е претоварен в момента." : "Gemini отказа заявката (" + status + ").", busy);
             }
             StringBuilder text = new StringBuilder();

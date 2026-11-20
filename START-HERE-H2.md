@@ -44,7 +44,7 @@ The model screens for visible vegetation forms, bottom type, and visibility. Its
 For each of the 35 archive sites, the ecologist joins the SEANOE outline, Copernicus 100 m turbidity and chlorophyll-a, Open-Meteo sea temperature for the last 92 days (one request for all sites, cached for an hour), distance to the nearest harbour, and field measurements within 2 km. It returns a risk score, a confidence level, the probable causes, an ordered action plan, data gaps and evidence. The screening thresholds are in `EcologistKnowledge.java`, each with its literature source, so a marine biologist can tune them.
 
 - Without a key, a rules engine writes the report and the answers, with no network needed.
-- With `GEMINI_API_KEY` set (free key from https://aistudio.google.com/apikey), Gemini (`gemini-2.5-flash`, configurable with `seaguard.ai.gemini-model`) writes the report and answers.
+- With `GEMINI_API_KEY` set (free key from https://aistudio.google.com/apikey), Gemini (`gemini-3.5-flash` with `gemini-3.5-flash-lite` as fallback, configurable with `seaguard.ai.gemini-model`) writes the report and answers.
 - With `ANTHROPIC_API_KEY` set in the environment, Claude (`claude-opus-5-5`, configurable with `seaguard.ai.model`) writes the report and answers free questions. It works only from the computed assessment and does not invent measurements.
 
 API endpoints include `GET /api/ecologist/water`, `GET /api/ecologist/sites`, `GET /api/ecologist/assessment/{id}`, `POST /api/ecologist/report/{id}`, `POST /api/ecologist/ask`.
