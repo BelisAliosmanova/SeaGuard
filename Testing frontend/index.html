@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blue Root – Black Sea environmental intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Braah+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro&display=swap" rel="stylesheet">
+
+</head>
+<body style="background-image:url('img/bg.png')">
+
+<!-- Reusable fish shape -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="fish" viewBox="0 0 120 60">
+    <path d="M8 30C28 6 70 4 96 26L118 8V52L96 34C70 56 28 54 8 30Z" fill="currentColor"/>
+    <circle cx="30" cy="27" r="3.2" fill="#04182b"/>
+    <path d="M52 16C58 28 58 34 52 46" stroke="#04182b" stroke-opacity=".25" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<aside class="sidebar">
+  <a class="brand" href="#top" aria-label="Blue Root home"><img class="brand-mark" src="img/Logo.png" alt="Blue Root"></a>
+  <nav>
+    <a class="nav-item is-current" href="#top" aria-current="page"><span class="ico">◐</span>Portal</a>
+    <a class="nav-item" href="#lab"><span class="ico">✎</span>Online lab</a>
+    <a class="nav-item" href="#insights"><span class="ico">◈</span>Insights</a>
+    <a class="nav-item needs-login" href="#measure" aria-disabled="true" tabindex="-1" data-tip="Log in to use Measurement"><span class="ico">+</span>Measurement<span class="lock" aria-hidden="true">🔒</span></a>
+    <a class="nav-item needs-login" href="#discuss" aria-disabled="true" tabindex="-1" data-tip="Log in to join Discussions"><span class="ico">💬</span>Discussions<span class="lock" aria-hidden="true">🔒</span></a>
+  </nav>
+</aside>
+
+<header class="topbar">
+  <p class="tagline"><i class="dot"></i>Black Sea environmental intelligence<span class="rule"></span></p>
+  <div class="pills">
+    <span class="pill pill-a" id="loginBtn" role="button" tabindex="0"><i class="pill-ico"></i><span id="loginLabel">Sign Up/In</span></span>
+    <span class="pill pill-b"><i class="live"></i>Access real time data</span>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" id="hero">
+    <div class="fish-layer" id="fishLayer" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <img class="logo" src="img/Logo.png" alt="">
+      <h1>Blue <span class="root">root</span></h1>
+      <p class="monitor"><span class="rule"></span>Monitoring center<span class="rule"></span></p>
+
+      <div class="ask" id="ask">
+        <label class="ask-row">
+          <span class="spark">✦</span>
+          <input id="askInput" type="text" placeholder="Have a question? Ask Pickle AI..." autocomplete="off">
+        </label>
+        <div class="suggest" id="suggest">
+          <p>Suggested searches:</p>
+          <button type="button">Sea grass near Varna</button>
+          <button type="button">Identify declining habitats</button>
+          <button type="button">Compare vegetation over time</button>
+        </div>
+      </div>
+    </div>
+
+    <a class="scroll-cue" href="#map"><span>Scroll to explore</span><i></i></a>
+  </section>
+
+  <section class="map" id="map">
+    <h2 class="big">Geographic overview</h2>
+    <figure class="map-card"><div class="map-ph">Map image goes here</div></figure>
+  </section>
+</main>
+
+<script src="js/Script.js"></script>
+</body>
+</html>
