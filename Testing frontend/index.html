@@ -2,42 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
   <title>Blue Root – Black Sea environmental intelligence</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css2?family=Braah+One&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link href="css/style.css" rel="stylesheet">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
 
 </head>
 <body style="background-image:url('img/bg.png')">
 
 <!-- Reusable fish shape -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<svg aria-hidden="true" height="0" style="position:absolute" width="0">
   <symbol id="fish" viewBox="0 0 120 60">
     <path d="M8 30C28 6 70 4 96 26L118 8V52L96 34C70 56 28 54 8 30Z" fill="currentColor"/>
-    <circle cx="30" cy="27" r="3.2" fill="#04182b"/>
-    <path d="M52 16C58 28 58 34 52 46" stroke="#04182b" stroke-opacity=".25" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="30" cy="27" fill="#04182b" r="3.2"/>
+    <path d="M52 16C58 28 58 34 52 46" fill="none" stroke="#04182b" stroke-linecap="round" stroke-opacity=".25"
+          stroke-width="3"/>
+  </symbol>
+  <symbol id="kelp" viewBox="0 0 60 200">
+    <path d="M30 200C8 170 52 150 30 118C8 86 52 66 30 36C22 22 30 10 30 0" fill="none" stroke="currentColor"
+          stroke-linecap="round" stroke-width="7"/>
+    <path d="M30 160C56 152 62 134 56 118C44 128 34 140 30 160Z" fill="currentColor"/>
+    <path d="M30 124C4 116 -2 98 4 82C16 92 26 104 30 124Z" fill="currentColor"/>
+    <path d="M30 84C56 76 62 58 56 42C44 52 34 64 30 84Z" fill="currentColor"/>
+    <path d="M30 46C6 38 2 22 8 8C18 18 27 30 30 46Z" fill="currentColor"/>
   </symbol>
 </svg>
 
 <aside class="sidebar">
-  <a class="brand" href="#top" aria-label="Blue Root home"><img class="brand-mark" src="img/Logo.png" alt="Blue Root"></a>
+  <a aria-label="Blue Root home" class="brand" href="#top"><img alt="Blue Root" class="brand-mark"
+                                                                src="img/Logo.png"></a>
   <nav>
-    <a class="nav-item is-current" href="#top" aria-current="page"><span class="ico">◐</span>Portal</a>
+    <a aria-current="page" class="nav-item is-current" href="#top"><span class="ico">◐</span>Portal</a>
     <a class="nav-item" href="#lab"><span class="ico">✎</span>Online lab</a>
     <a class="nav-item" href="#insights"><span class="ico">◈</span>Insights</a>
-    <a class="nav-item needs-login" href="#measure" aria-disabled="true" tabindex="-1" data-tip="Log in to use Measurement"><span class="ico">+</span>Measurement<span class="lock" aria-hidden="true">🔒</span></a>
-    <a class="nav-item needs-login" href="#discuss" aria-disabled="true" tabindex="-1" data-tip="Log in to join Discussions"><span class="ico">💬</span>Discussions<span class="lock" aria-hidden="true">🔒</span></a>
+    <a aria-disabled="true" class="nav-item needs-login" data-tip="Log in to use Measurement" href="#measure"
+       tabindex="-1"><span class="ico">+</span>Measurement<span aria-hidden="true" class="lock">🔒</span></a>
+    <a aria-disabled="true" class="nav-item needs-login" data-tip="Log in to join Discussions" href="#discuss"
+       tabindex="-1"><span class="ico">💬</span>Discussions<span aria-hidden="true" class="lock">🔒</span></a>
   </nav>
 </aside>
 
 <header class="topbar">
-  <p class="tagline"><i class="dot"></i>Black Sea environmental intelligence<span class="rule"></span></p>
+  <p class="tagline"><span>Black Sea </span><i class="dot"></i> <span>environmental intelligence</span></p>
   <div class="pills">
     <span class="pill pill-a" id="loginBtn" role="button" tabindex="0"><i class="pill-ico"></i><span id="loginLabel">Sign Up/In</span></span>
     <span class="pill pill-b"><i class="live"></i>Access real time data</span>
@@ -46,17 +63,18 @@
 
 <main id="top">
   <section class="hero" id="hero">
-    <div class="fish-layer" id="fishLayer" aria-hidden="true"></div>
+    <div aria-hidden="true" class="plant-layer" id="plantLayer"></div>
+    <div aria-hidden="true" class="fish-layer" id="fishLayer"></div>
 
     <div class="hero-inner">
-      <img class="logo" src="img/Logo.png" alt="">
+      <img alt="" class="logo" src="img/Logo.png">
       <h1>Blue <span class="root">root</span></h1>
       <p class="monitor"><span class="rule"></span>Monitoring center<span class="rule"></span></p>
 
       <div class="ask" id="ask">
         <label class="ask-row">
           <span class="spark">✦</span>
-          <input id="askInput" type="text" placeholder="Have a question? Ask Pickle AI..." autocomplete="off">
+          <input autocomplete="off" id="askInput" placeholder="Have a question? Ask Pickle AI..." type="text">
         </label>
         <div class="suggest" id="suggest">
           <p>Suggested searches:</p>
@@ -72,7 +90,47 @@
 
   <section class="map" id="map">
     <h2 class="big">Geographic overview</h2>
-    <figure class="map-card"><div class="map-ph">Map image goes here</div></figure>
+    <div class="map-layout">
+      <figure class="map-card">
+        <div class="map-ph">Map image goes here</div>
+      </figure>
+
+      <!-- Sample values – replace with real data -->
+      <aside class="info">
+        <article class="info-card info-main" style="--i:0">
+          <span class="chip"><i class="live"></i>Sample data</span>
+          <h3>Varna Bay</h3>
+          <p>Shallow coastal waters with patchy seagrass meadows and rocky outcrops.</p>
+        </article>
+
+        <div class="stats">
+          <article class="info-card stat" style="--i:1"><b>14.2<em>°C</em></b><small>Sea surface temp</small></article>
+          <article class="info-card stat" style="--i:2"><b>17.8<em>PSU</em></b><small>Salinity</small></article>
+          <article class="info-card stat" style="--i:3"><b>2.4<em>µg/L</em></b><small>Chlorophyll-a</small></article>
+          <article class="info-card stat" style="--i:4"><b>38</b><small>Active stations</small></article>
+        </div>
+
+        <article class="info-card details" style="--i:5">
+          <h4>Habitat details</h4>
+          <dl>
+            <div class="row">
+              <dt>Region</dt>
+              <dd>Western Black Sea</dd>
+            </div>
+            <div class="row">
+              <dt>Habitat</dt>
+              <dd>Seagrass meadow</dd>
+            </div>
+            <div class="row">
+              <dt>Last survey</dt>
+              <dd>2 days ago</dd>
+            </div>
+          </dl>
+          <p class="meter-label">Habitat health <span>72%</span></p>
+          <div class="meter"><i style="--v:72%"></i></div>
+        </article>
+      </aside>
+    </div>
   </section>
 </main>
 
