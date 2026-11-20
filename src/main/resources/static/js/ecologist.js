@@ -204,36 +204,72 @@
     }));
   }
 
+  const TREND = {
+    lightAtDepth: {label: 'светлина до дъното', unit: '%', digits: 0, zones: [[20, 100, 'good'], [11, 20, 'mid'], [0, 11, 'bad']], higherIsBetter: true},
+    turbidity: {label: 'мътност', unit: 'FNU', digits: 1, zones: [[0, 2, 'good'], [2, 5, 'mid'], [5, 99, 'bad']]},
+    chlorophyll: {label: 'хлорофил-а', unit: 'mg/m³', digits: 1, zones: [[0, 3, 'good'], [3, 6, 'mid'], [6, 99, 'bad']]}
+  };
+  const ZONE_COLOR = {good: '#34c759', mid: '#ff9500', bad: '#ff3b30'};
+  const ZONE_TEXT = {good: '#1e8a3c', mid: '#b45309', bad: '#d1242f'};
+  const ZONE_WORD = {good: 'в норма', mid: 'внимание', bad: 'критично'};
+  const MONTH_NAMES = ['януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември'];
+  const MONTH_SHORT = ['яну', 'фев', 'мар', 'апр', 'май', 'юни', 'юли', 'авг', 'сеп', 'окт', 'ное', 'дек'];
+  let trendChart = null;
+  const zoneOf = (cfg, v) => cfg.zones.find(([lo, hi]) => v >= lo && v < hi)?.[2] || cfg.zones[cfg.zones.length - 1][2];
+
   function renderTrend() {
-    const chart = window.SeaGuardWaterChart;
-    const status = $('trend-status');
-    const body = $('trend-body');
-    const canvas = $('trend');
+    const status = $('trend-status'), body = $('trend-body'), canvas = $('trend');
     const points = current?.trend || [];
-    const values = points.map(point => point[trendMetric]);
-    const latest = values.findLastIndex(Number.isFinite);
-    body.hidden = !chart || latest === -1;
+    const values = points.map(p => Number.isFinite(p[trendMetric]) ? p[trendMetric] : null);
+    const latest = values.findLastIndex(v => v != null);
+    body.hidden = typeof Chart === 'undefined' || latest === -1;
     status.hidden = !body.hidden;
     if (body.hidden) {
-      chart?.clear(canvas);
-      if (!current) {
-        status.textContent = 'Зареждаме месечните данни…';
-      } else {
-        status.textContent = latest === -1 ?
-          'Няма месечни стойности. Избери друг показател или участък.' :
-          'Диаграмата е недостъпна. Провери интернет връзката и презареди страницата.';
-      }
+      status.textContent = !current ? 'Зареждаме месечните данни…' : latest === -1 ? 'Няма месечни стойности за този показател.' : 'Графиката изисква интернет връзка.';
+      $('trend-value').textContent = '—'; $('trend-detail').textContent = ''; $('wc-sub').textContent = '';
       return;
     }
-    const label = chart.metrics[trendMetric].label;
-    const date = chart.monthLabel(points[latest].month);
-    $('trend-value').textContent = chart.format(values[latest], trendMetric);
-    $('trend-detail').textContent = `${label} · ${date}`;
-    canvas.setAttribute('aria-label', `Месечна графика · ${label} · ${current.site.name}`);
-    chart.plot(canvas, {
-      months: points.map(point => point.month), metric: trendMetric,
-      primary: {label, values},
-      limits: trendMetric === 'lightAtDepth' ? [[20, '--risk-low'], [11, '--risk-high']] : []
+    const cfg = TREND[trendMetric];
+    const last = values[latest];
+    const known = values.filter(v => v != null);
+    // Same season value the risk assessment uses, so the numbers on the page agree.
+    const avg = known.reduce((a, b) => a + b, 0) / known.length;
+    const o = current.optics || {};
+    const mean = trendMetric === 'lightAtDepth' && o.lightPct != null ? o.lightPct : trendMetric === 'turbidity' && o.turbidityFnu != null ? o.turbidityFnu : avg;
+    const zone = zoneOf(cfg, last);
+    $('trend-value').textContent = fmt(last, cfg.digits);
+    $('trend-value').style.color = ZONE_TEXT[zone];
+    $('trend-detail').textContent = ` ${cfg.unit} ${cfg.label} през ${MONTH_NAMES[Number(points[latest].month.slice(5, 7)) - 1]}`;
+    $('wc-sub').replaceChildren();
+    const tag = el('span', ZONE_WORD[zone], 'wc-tag ' + zone);
+    $('wc-sub').append(tag, document.createTextNode(` Средно за сезона ${fmt(mean, cfg.digits)} ${cfg.unit}. Оценката на риска ползва средното.`));
+    if (trendChart) trendChart.destroy();
+    const ctx = canvas.getContext('2d');
+    const grad = ctx.createLinearGradient(0, 0, 0, 240);
+    grad.addColorStop(0, '#0a6cf133'); grad.addColorStop(1, '#0a6cf100');
+    const maxVal = Math.max(...known);
+    trendChart = new Chart(ctx, {
+      type: 'line',
+      data: {labels: points.map(p => MONTH_SHORT[Number(p.month.slice(5, 7)) - 1]), datasets: [
+        {data: values, borderColor: '#0a6cf1', backgroundColor: grad, fill: true, borderWidth: 3, tension: .38,
+          pointRadius: values.map((_, i) => i === latest ? 6 : 3.5), pointBackgroundColor: values.map(v => v == null ? '#fff' : ZONE_COLOR[zoneOf(cfg, v)]),
+          pointBorderColor: '#fff', pointBorderWidth: 2},
+        {data: values.map(() => mean), borderColor: '#9aa3b0', borderDash: [5, 5], borderWidth: 1.5, pointRadius: 0}
+      ]},
+      options: {responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
+        plugins: {legend: {display: false}, tooltip: {filter: i => i.datasetIndex === 0, callbacks: {label: c => `${fmt(c.parsed.y, cfg.digits)} ${cfg.unit}`}}},
+        scales: {x: {grid: {display: false}}, y: {beginAtZero: true, suggestedMax: Math.ceil(maxVal * 1.2), grid: {color: '#00000008'}}}},
+      plugins: [{id: 'zones', beforeDatasetsDraw(c) {
+        const {ctx: g, chartArea: a, scales: {y}} = c;
+        g.save();
+        for (const [lo, hi, key] of cfg.zones) {
+          const top = Math.max(y.getPixelForValue(Math.min(hi, y.max)), a.top), bottom = Math.min(y.getPixelForValue(Math.max(lo, y.min)), a.bottom);
+          if (bottom <= top) continue;
+          g.fillStyle = ZONE_COLOR[key] + '14';
+          g.fillRect(a.left, top, a.right - a.left, bottom - top);
+        }
+        g.restore();
+      }}]
     });
   }
 

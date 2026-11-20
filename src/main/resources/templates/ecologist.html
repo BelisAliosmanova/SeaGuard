@@ -53,24 +53,24 @@
                 </dl>
             </section>
 
-            <section class="brief-trend" aria-labelledby="trend-title">
-                <header class="brief-trend-head">
-                    <div><h2 id="trend-title">Водата над ливадата</h2></div>
-                    <div class="segmented" id="trend-switch" role="group" aria-label="Показател">
-                        <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
-                        <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
-                        <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
-                    </div>
-                </header>
-                <div class="brief-trend-body">
-                    <p id="trend-status" class="empty" role="status">Избери участък, за да видиш месечните данни.</p>
-                    <div id="trend-body" hidden>
-                        <p class="monthly-readout"><strong id="trend-value">—</strong><span id="trend-detail"></span></p>
-                        <div class="monthly-canvas"><canvas id="trend" role="img" aria-label="Месечна графика"></canvas></div>
-                    </div>
-                </div>
-            </section>
         </div>
+
+                <section class="panel section water-card" aria-labelledby="trend-title">
+                    <header class="wc-head">
+                        <div class="wc-readout">
+                            <h2 id="trend-title">Водата над ливадата</h2>
+                            <div class="wc-value"><strong id="trend-value">—</strong><span id="trend-detail"></span></div>
+                            <p class="wc-sub" id="wc-sub"></p>
+                        </div>
+                        <div class="segmented" id="trend-switch" role="group" aria-label="Показател">
+                            <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
+                            <button type="button" data-metric="turbidity" aria-pressed="false">Мътност</button>
+                            <button type="button" data-metric="chlorophyll" aria-pressed="false">Хлорофил</button>
+                        </div>
+                    </header>
+                    <p id="trend-status" class="empty" role="status">Зареждаме месечните данни…</p>
+                    <div id="trend-body" class="wc-chart" hidden><canvas id="trend" role="img" aria-label="Месечна графика"></canvas></div>
+                </section>
 
                 <div class="grid-2 even section">
                     <section class="panel" aria-labelledby="threats-title">

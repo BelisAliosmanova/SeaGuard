@@ -327,3 +327,26 @@
         background: linear-gradient(135deg, #0a6cf1, #12b5cb); color: #fff; font-weight: 600; box-shadow: 0 10px 30px -8px #0a6cf1aa; cursor: pointer; }
     body.cp-open .cp-fab { display: none; }
 }
+
+/* Top of the site page: map + verdict, then the water card */
+.site-brief { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) !important; grid-template-areas: "map verdict" !important; }
+.brief-map, .brief-map .map-shell { min-height: 320px !important; }
+.brief-map .map-shell { border-radius: var(--radius) 0 0 var(--radius) !important; }
+.verdict-main { justify-content: center; padding: 22px 24px !important; }
+.verdict-headline { font-size: 16.5px !important; line-height: 1.4 !important; font-weight: 600; max-width: none !important; }
+.water-card { padding: 18px 20px 14px; }
+.wc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.wc-readout h2 { font-size: 13px; color: var(--muted); font-weight: 600; }
+.wc-value { display: flex; align-items: baseline; gap: 2px; margin-top: 4px; flex-wrap: wrap; }
+.wc-value strong { font: 750 40px/1 var(--display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.wc-value span { color: var(--muted); font-size: 14px; font-weight: 500; }
+.wc-sub { display: flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--muted); font-size: 12.5px; flex-wrap: wrap; }
+.wc-tag { padding: 2px 9px; border-radius: 999px; font-weight: 650; font-size: 12px; }
+.wc-tag.good { background: var(--risk-low-soft); color: var(--risk-low); }
+.wc-tag.mid { background: var(--risk-mid-soft); color: var(--risk-mid); }
+.wc-tag.bad { background: var(--risk-high-soft); color: var(--risk-high); }
+.wc-chart { position: relative; height: 230px; margin-top: 12px; }
+@media (max-width: 900px) {
+  .site-brief { grid-template-columns: 1fr !important; grid-template-areas: "verdict" "map" !important; }
+  .brief-map .map-shell { border-radius: 0 0 var(--radius) var(--radius) !important; }
+}
