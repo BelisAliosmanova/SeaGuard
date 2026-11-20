@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" th:href="@{/css/ecologist.css}">
+    <link rel="stylesheet" th:href="@{/css/anchoring.css}">
 </head>
 <body>
 <svg th:replace="~{fragments/layout :: symbols}"></svg>
@@ -12,12 +13,14 @@
 <div class="app-shell">
     <aside th:replace="~{fragments/layout :: rail('ecologist')}"></aside>
     <main id="workspace" class="workspace" th:data-provider="${aiProvider}"
-          th:data-archive-url="@{/data/zostera-bulgaria.geojson}">
+          th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
+          th:data-locations-url="@{/api/ecologist/locations}" th:data-sites-url="@{/api/ecologist/sites}">
 
         <div class="site-layout">
             <div class="site-main">
                 <header class="site-head">
                     <div id="picker" class="eco-picker"><p class="muted" role="status" id="eco-picker-status">Зареждаме участъците…</p></div>
+                    <a class="button secondary anchoring-jump" href="#anchoring">Зона за закотвяне</a>
                     <a id="map-link" class="button secondary" th:href="@{/dashboard}"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>На картата</a>
                 </header>
         <div class="panel site-brief">
@@ -88,34 +91,141 @@
                     <ol id="actions" class="actions panel-body"></ol>
                 </section>
 
+                <section id="anchoring" class="panel section anchoring" aria-labelledby="anchoring-title">
+                    <header class="panel-head">
+                        <div>
+                            <h2 id="anchoring-title">Планиране на зона за закотвяне</h2>
+                            <p>Премести зона Б и сравни колко от нея попада в архивния контур на ливадата.</p>
+                        </div>
+                    </header>
+                    <div class="panel-body">
+                        <p id="anchor-loading" role="status">Изчакваме избрания участък…</p>
+                        <div id="anchor-board" class="anchor-board" hidden>
+                            <figure class="anchor-figure">
+                                <svg id="anchor-map" viewBox="0 0 720 400" role="group" aria-label="Карта за сравнение на зони за закотвяне">
+                                    <defs>
+                                        <pattern id="anchor-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                            <path d="M40 0H0V40" fill="none" stroke="#37778e" stroke-opacity=".26"/>
+                                        </pattern>
+                                        <clipPath id="anchor-clip"><path id="anchor-clip-outline" clip-rule="evenodd"/></clipPath>
+                                    </defs>
+                                    <rect width="720" height="400" fill="url(#anchor-grid)"/>
+                                    <path id="anchor-outline" class="anchor-outline" fill-rule="evenodd"/>
+                                    <rect id="anchor-baseline" class="anchor-baseline" />
+                                    <rect id="anchor-candidate" class="anchor-candidate" tabindex="0"
+                                          aria-label="Вариант Б. Мести със стрелките по 10 метра."/>
+                                    <rect id="anchor-overlap" class="anchor-overlap" clip-path="url(#anchor-clip)" pointer-events="none"/>
+                                    <text id="anchor-label-a" class="anchor-label" pointer-events="none">А</text>
+                                    <text id="anchor-label-b" class="anchor-label" pointer-events="none">Б</text>
+                                    <g class="anchor-reference" aria-hidden="true">
+                                        <path d="M682 60V29m-7 9 7-9 7 9" fill="none"/>
+                                        <text x="682" y="23" text-anchor="middle">С</text>
+                                        <path id="anchor-scale-line" fill="none"/>
+                                        <text id="anchor-scale-label" x="22" y="360"></text>
+                                    </g>
+                                </svg>
+                                <figcaption>
+                                    <span><i class="anchor-key meadow"></i>Архивен контур</span>
+                                    <span><i class="anchor-key compare"></i>Вариант А</span>
+                                    <span><i class="anchor-key overlap"></i>Припокриване на Б</span>
+                                </figcaption>
+                            </figure>
+                            <div class="anchor-controls">
+                                <div class="anchor-results" aria-label="Сравнение на припокриването">
+                                    <div><span>Вариант А</span><strong id="anchor-area-a">—</strong><small id="anchor-share-a"></small></div>
+                                    <div><span>Вариант Б</span><strong id="anchor-area-b">—</strong><small id="anchor-share-b"></small></div>
+                                </div>
+                                <p id="anchor-difference" class="anchor-difference"></p>
+                                <label for="anchor-width">Ширина на Б <output id="anchor-width-value" for="anchor-width"></output></label>
+                                <input type="range" id="anchor-width" min="20" max="200" step="5" value="80">
+                                <label for="anchor-length">Дължина на Б <output id="anchor-length-value" for="anchor-length"></output></label>
+                                <input type="range" id="anchor-length" min="20" max="200" step="5" value="60">
+                                <div class="anchor-actions">
+                                    <button id="anchor-keep" type="button" class="button secondary small">Запази Б като вариант А</button>
+                                    <button id="anchor-reset" type="button" class="button secondary small">Върни Б до А</button>
+                                    <button id="anchor-task" type="button" class="button primary small">Добави Б за теренна проверка</button>
+                                </div>
+                                <p id="anchor-status" class="anchor-status" role="status"></p>
+                            </div>
+                            <p class="anchor-note">Зоните са предложения за проверка. Нулево припокриване показва, че зоната е извън архивния контур. Пригодността за закотвяне се проверява отделно.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="field-mission" class="panel section field-mission" aria-labelledby="mission-title"
+                         th:data-endpoint="@{/api/ecologist/field-missions}">
+                    <header class="panel-head mission-head">
+                        <h2 id="mission-title">Мисия за теренна проверка</h2>
+                        <button id="mission-plan" class="button primary" type="button" hidden>Планирай проверка</button>
+                    </header>
+                    <div class="panel-body">
+                        <p id="mission-status" class="mission-status" role="status"></p>
+                        <div id="mission-board" class="mission-board" hidden>
+                            <figure class="mission-map">
+                                <svg id="mission-outline" viewBox="0 0 340 190" role="img"
+                                     aria-label="Архивен контур на ливадата и точки за заснемане"></svg>
+                                <figcaption>Архивен контур и точки за заснемане</figcaption>
+                            </figure>
+                            <ol id="mission-points" class="mission-points"></ol>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="panel section" aria-labelledby="tasks-title">
                     <header class="panel-head"><h2 id="tasks-title">План за терена</h2><span id="tasks-count" class="badge neutral">0</span></header>
                     <ul id="tasks" class="tasks"></ul>
                 </section>
 
-                <section id="footage" class="panel section footage" th:data-endpoint="@{/api/seagrass/analysis}" aria-labelledby="footage-title">
+                <section id="footage" class="panel section footage" th:data-endpoint="@{/api/ecologist/footage}" aria-labelledby="footage-title">
             <header class="panel-head">
                 <div><h2 id="footage-title">Подводни кадри</h2></div>
             </header>
             <div class="panel-body">
+                <p id="mission-capture" class="mission-capture" hidden></p>
                 <div class="footage-actions">
                     <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
-                    <input id="footage-file" class="file-input" type="file" disabled accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
+                    <input id="footage-file" class="file-input" type="file" disabled multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
                 </div>
-                <p id="footage-formats" class="footage-formats">JPG, PNG, WebP, MP4 или WebM до 100 MB. При видео се анализират до три кадъра.</p>
+                <p id="footage-formats" class="footage-formats">До 3 снимки (JPG, PNG, WebP) или 1 видео (MP4, WebM), до 100 MB на файл. При видео се подбират до 3 кадъра за локалния AI еколог.</p>
                 <div id="frame-preview" class="frame-preview" hidden></div>
-                <button id="analyze-file" class="button primary" type="button" hidden>Анализирай кадрите</button>
-                <p id="analysis-status" class="analysis-status" role="status"></p>
+                <button id="analyze-file" class="button primary" type="button" hidden>Анализирай с AI еколога</button>
+                <p id="analysis-status" class="analysis-status" role="status">Изчакваме списъка с участъци.</p>
             </div>
             <section id="analysis-result" class="panel-body analysis-result" aria-labelledby="analysis-title" hidden>
-                <h3 id="analysis-title" tabindex="-1">Първичен AI прочит</h3>
+                <h3 id="analysis-title" tabindex="-1">AI еколог · анализ на кадрите</h3>
                 <p id="analysis-provenance" class="analysis-provenance"></p>
                 <dl class="findings">
                     <div><dt>Видимо в кадрите</dt><dd><ol id="analysis-frames"></ol></dd></div>
                     <div><dt>Обобщение и несигурност</dt><dd id="analysis-summary"></dd></div>
                     <div><dt>Теренна проверка</dt><dd id="analysis-next"></dd></div>
                 </dl>
+                <button id="footage-add-task" type="button" class="button secondary">Добави теренна проверка</button>
+                <p id="footage-task-status" class="analysis-status" role="status"></p>
             </section>
+            <form id="mission-review" class="panel-body mission-review" hidden>
+                <div class="mission-review-head">
+                    <h3 id="mission-review-title">Теренен преглед на кадъра</h3>
+                    <button id="mission-cancel" type="button" class="button secondary small">Откачи от точката</button>
+                </div>
+                <p>При запис избраният кадър се съхранява към тази точка на мисията.</p>
+                <div class="mission-fields">
+                    <label>Кадър <select id="mission-frame" required></select></label>
+                    <label>Дата на заснемане <input name="capturedOn" type="date" required></label>
+                    <label>Дълбочина (м) <input name="depthM" type="number" min="0" step="any" inputmode="decimal" required></label>
+                    <label>Листовидни растителни форми
+                        <select name="verdict" required>
+                            <option value="">Избери резултат</option>
+                            <option value="CONFIRMED">Потвърдено</option>
+                            <option value="NOT_VISIBLE">Не се виждат</option>
+                            <option value="UNCLEAR">Кадърът е неясен</option>
+                        </select>
+                    </label>
+                </div>
+                <label>Теренна бележка <textarea name="notes" rows="2" maxlength="600"></textarea></label>
+                <p id="mission-ai-note" class="mission-status"></p>
+                <button id="mission-save" type="submit" class="button primary">Запиши проверката</button>
+                <p id="mission-save-status" class="mission-status" role="status"></p>
+            </form>
         </section>
 
 
@@ -179,6 +289,8 @@
 <script th:src="@{/js/site-picker.js}"></script>
 <script th:src="@{/js/depth-profile.js}"></script>
 <script th:src="@{/js/seagrass-footage.js}"></script>
+<script th:src="@{/js/field-mission.js}"></script>
+<script th:src="@{/js/anchoring.js}"></script>
 <script th:src="@{/js/ecologist.js}"></script>
 </body>
 </html>

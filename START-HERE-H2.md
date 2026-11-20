@@ -35,9 +35,18 @@ To refresh the snapshot, install `numpy` and `numcodecs` in a Python virtual env
 
 ### Local image and video analysis
 
-With a recent [llama.cpp](https://github.com/ggml-org/llama.cpp) installed, run `sh scripts/serve_local_ai.sh` in a separate terminal. The first launch downloads the approximately 1.5 GB Qwen3-VL weights. When the model is listening on port 18121, open **Участък**, choose a meadow, and upload a JPG, PNG, WebP, MP4, or WebM file up to 100 MB. A video is sampled at up to three positions in the browser. Only those JPEG frames are sent to the local Spring app and inference process, and no uploads are saved.
+Install a recent [llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/docs/install.md) and start the vision model in a separate terminal. On Windows:
 
-The model screens for visible vegetation forms, bottom type, and visibility. Its output is an aid for field review. Inter is bundled under the SIL Open Font License.
+```powershell
+winget install llama.cpp
+# Open a new PowerShell window in the SeaGuard project.
+.\scripts\serve_local_ai.cmd
+```
+
+For a portable installation, run `.\scripts\serve_local_ai.cmd "C:\path\to\llama-server.exe"`. On Linux or macOS, run `sh scripts/serve_local_ai.sh`. The first launch downloads the Qwen3-VL model and visual projector. Keep that terminal open. The service is ready when `http://127.0.0.1:18121/health` reports `{"status":"ok"}`.
+
+In **Участък → Подводни кадри**, select a site, then up to three JPG, PNG or WebP photos or one MP4 or WebM clip. Select **Анализирай с AI еколога** after previewing the frames. For video, the browser selects up to three frames and shows their timestamps. Only the prepared JPEG frames are passed to SeaGuard and the local vision runtime with the default configuration. SeaGuard keeps results in the current page, and **Добави теренна проверка** saves only the follow-up task. Visibility, vegetation form and seabed observations are screening evidence. The site and date of capture are unverified.
+
 
 ## AI еколог (`/ecologist`)
 

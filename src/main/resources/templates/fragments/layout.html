@@ -52,6 +52,8 @@
             <a aria-label="Преглед" title="Преглед" th:href="@{/dashboard}" th:attr="aria-current=${active == 'dashboard'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg><span class="nav-label">Преглед</span></a>
             <a aria-label="Участък" title="Участък" th:href="@{/ecologist}" th:attr="aria-current=${active == 'ecologist'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg><span class="nav-label">Участък</span></a>
             <a aria-label="Теренна работа" title="Теренна работа" th:href="@{/field}" th:attr="aria-current=${active == 'field'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-table"/></svg><span class="nav-label">Теренна работа</span></a>
+            <a aria-label="Морска симулация" title="Морска симулация" th:href="@{/simulation.html}"><svg class="icon" aria-hidden="true"><use href="#i-water"/></svg><span class="nav-label">Симулация</span></a>
+            <a aria-label="Под вълните" title="Под вълните" th:href="@{/sea-games.html}"><svg class="icon" aria-hidden="true"><use href="#i-wave"/></svg><span class="nav-label">Под вълните</span></a>
         </nav>
         <a class="button primary nav-cta" aria-label="Ново измерване" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span class="nav-action-label">Ново измерване</span></a>
     </div>

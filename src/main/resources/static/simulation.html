@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Морска симулация | SeaGuard</title>
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/simulation.css">
+<script src="js/simulation.js" defer></script>
+</head>
+<body class="simulation">
+<main>
+    <header>
+        <a href="dashboard">← Към SeaGuard</a>
+        <h1>Морска симулация</h1>
+        <p>Промени условията и проследи как реагират рибите и морската трева.</p>
+        <a href="sea-games.html">Играй „Под вълните“ →</a>
+
+    </header>
+    <div class="aquarium">
+        <section class="scene" aria-label="Подводна сцена">
+            <canvas role="img" aria-label="Анимиран пасаж риби над ливада от морска трева"></canvas>
+            <div class="readouts">
+                <div><span>Риби в сцената</span><strong id="population">30</strong></div>
+                <div><span>Здраве на рибите</span><strong id="fish-health">100%</strong></div>
+                <div><span>Здраве на тревата</span><strong id="grass-health">100%</strong></div>
+            </div>
+            <p id="observation" class="observation"></p>
+        </section>
+        <aside class="controls" aria-label="Условия в морето">
+            <h2>Условия в морето</h2>
+            <div class="presets" aria-label="Сценарии">
+                <button type="button" data-scenario="balanced">Спокойно море</button>
+                <button type="button" data-scenario="hot">Гореща вълна</button>
+                <button type="button" data-scenario="murky">Мътна вода</button>
+            </div>
+            <label for="temperature">Температура <output for="temperature"></output></label>
+            <input id="temperature" type="range" min="6" max="34" value="20" data-unit="°C">
+            <label for="oxygen">Разтворен кислород <output for="oxygen"></output></label>
+            <input id="oxygen" type="range" min="1" max="12" step="0.5" value="8" data-unit="мг/л">
+            <label for="clarity">Прозрачност <output for="clarity"></output></label>
+            <input id="clarity" type="range" min="5" max="100" value="85" data-unit="%">
+            <label for="current">Течение <output for="current"></output></label>
+            <input id="current" type="range" min="0" max="100" value="25" data-unit="%">
+            <div class="actions">
+                <button type="button" id="pause">Пауза</button>
+                <button type="button" id="reset">Започни отначало</button>
+            </div>
+            <p class="model-note">Учебен модел с ускорени промени в здравето и числеността.</p>
+        </aside>
+    </div>
+</main>
+</body>
+</html>

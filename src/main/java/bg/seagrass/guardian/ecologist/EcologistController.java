@@ -35,6 +35,13 @@ public class EcologistController {
         return "redirect:/ecologist";
     }
 
+    @GetMapping("/api/ecologist/locations") @ResponseBody
+    public List<SiteLocation> locations() {
+        return engine.sites().stream().map(site -> new SiteLocation(site.id(), site.name())).toList();
+    }
+
+    record SiteLocation(int id, String name) {}
+
     @GetMapping("/api/ecologist/water") @ResponseBody
     public Water water() {
         return engine.water();
