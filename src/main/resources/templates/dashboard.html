@@ -75,9 +75,8 @@
         <section class="panel ov-insights" aria-label="Водата и морето">
             <header class="ins-head">
                 <div class="tabs" role="tablist" aria-label="Изглед">
-                    <button type="button" role="tab" data-tab="water" aria-selected="true">Водата по месеци</button>
+                    <button type="button" role="tab" data-tab="water" aria-selected="true">Водата над ливадите</button>
                     <button type="button" role="tab" data-tab="sea" aria-selected="false">Морето днес</button>
-                    <button type="button" role="tab" data-tab="trend" aria-selected="false">Тенденция</button>
                 </div>
                 <div class="segmented" id="metric-switch" role="group" aria-label="Показател">
                     <button type="button" data-metric="lightAtDepth" aria-pressed="true">Светлина</button>
@@ -86,15 +85,23 @@
                 </div>
             </header>
 
-            <div class="tab-panel" data-panel="water">
-                <p class="ins-note" id="water-note"></p>
-                <div class="heat-wrap" role="region" aria-label="Таблица по участъци и месеци" tabindex="0">
-                    <table class="heat">
-                        <thead id="heat-head"></thead>
-                        <tbody id="heat-body"><tr><td class="empty">Зареждане…</td></tr></tbody>
-                    </table>
+            <div class="tab-panel water-panel" data-panel="water">
+                <div class="wv-main">
+                    <div class="wv-readout">
+                        <div>
+                            <span class="wv-site" id="wv-site">—</span>
+                            <div class="wv-value"><strong id="wv-value">—</strong><span id="wv-unit"></span></div>
+                            <span class="wv-sub" id="wv-sub"></span>
+                        </div>
+                        <span id="wv-delta" class="wv-delta"></span>
+                    </div>
+                    <div class="wv-chart"><canvas id="wv-canvas" aria-label="Месечна графика за избрания участък"></canvas></div>
                 </div>
-                <button id="heat-more" class="button ghost small heat-more" type="button" hidden>Покажи всички 35</button>
+                <aside class="wv-strip" aria-label="Всички участъци по месеци">
+                    <header><strong>Цялото крайбрежие</strong><span id="wv-strip-months"></span></header>
+                    <div id="heat-body" class="strip-rows"></div>
+                    <footer class="strip-legend"><span><i class="good"></i>добре</span><span><i class="mid"></i>внимание</span><span><i class="bad"></i>критично</span></footer>
+                </aside>
             </div>
 
             <div class="tab-panel" data-panel="sea" hidden>
@@ -102,10 +109,6 @@
                 <div id="sea-cards" class="sea-cards"><p class="empty">Зареждане…</p></div>
             </div>
 
-            <div class="tab-panel" data-panel="trend" hidden>
-                <p class="ins-note" id="trend-note">Средно за крайбрежието и избрания участък, по месеци.</p>
-                <div class="trend-wrap"><canvas id="trend" aria-label="Месечна графика"></canvas></div>
-            </div>
         </section>
 
         <section class="ov-field" aria-label="Теренна работа">

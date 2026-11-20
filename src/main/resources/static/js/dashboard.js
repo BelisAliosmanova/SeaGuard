@@ -5,6 +5,7 @@
   const LIGHT_OK = Number(page.lightOk) || 20, LIGHT_CRIT = Number(page.lightCritical) || 11;
   const CHL_MID = Number(page.chlModerate) || 3, CHL_HIGH = Number(page.chlHigh) || 6;
   const RISK = SeaMap.RISK, RISK_LABEL = SeaMap.RISK_LABEL;
+  const MONTHS_FULL = ['януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември'];
   const MONTHS = ['яну', 'фев', 'мар', 'апр', 'май', 'юни', 'юли', 'авг', 'сеп', 'окт', 'ное', 'дек'];
   const METRIC = {
     lightAtDepth: {label: 'Светлина до дъното', unit: '%', digits: 0,
@@ -94,12 +95,11 @@
       const top = row.offsetTop - list.offsetTop, bottom = top + row.offsetHeight;
       if (top < list.scrollTop || bottom > list.scrollTop + list.clientHeight) list.scrollTop = top - list.clientHeight / 2;
     }
-    document.querySelectorAll('#heat-body tr').forEach(tr => tr.classList.toggle('is-active', Number(tr.dataset.id) === id));
     if (zoom && map) map.flyTo([s.latitude, s.longitude], 14, {duration: .8});
     const url = new URL(location.href);
     url.searchParams.set('site', id);
     history.replaceState(null, '', url);
-    renderTrend();
+    renderWater();
   }
 
   function renderPriority() {
@@ -134,66 +134,94 @@
     }
   }
 
-  // ---------------------------------------------------------------- water heatmap
-  function renderHeat() {
-    const cfg = METRIC[metric];
-    $('water-note').textContent = cfg.note;
-    $('heat-head').replaceChildren((() => {
-      const tr = el('tr');
-      tr.append(el('th', 'Участък'));
-      water.months.forEach(m => tr.append(el('th', monthLabel(m), 'num')));
-      tr.append(el('th', 'Промяна', 'num'));
-      return tr;
-    })());
-    const order = new Map(sites.map((s, i) => [s.id, i]));
-    const rows = [...water.sites].sort((a, b) => order.get(a.id) - order.get(b.id));
-    const body = $('heat-body');
-    body.replaceChildren();
-    for (const r of showAll ? rows : rows.slice(0, 12)) {
-      const tr = el('tr');
-      tr.dataset.id = r.id;
-      if (r.id === selected) tr.classList.add('is-active');
-      const name = el('th');
-      const dot = el('i');
-      dot.style.background = RISK[r.statusKey];
-      name.append(dot, document.createTextNode(r.name));
-      tr.append(name);
-      const vals = r.values[metric] || [];
-      vals.forEach(v => {
-        const td = el('td', v == null ? '—' : fmt(v, cfg.digits), 'num cell ' + (v == null ? 'none' : cfg.level(v)));
-        td.title = v == null ? 'Няма данни' : `${cfg.label}: ${fmt(v, cfg.digits)} ${cfg.unit}`;
-        tr.append(td);
-      });
-      const first = vals.find(v => v != null), last = [...vals].reverse().find(v => v != null);
-      const change = first != null && last != null ? last - first : null;
-      const worse = change == null ? null : metric === 'lightAtDepth' ? change < 0 : change > 0;
-      tr.append(el('td', change == null ? '—' : (change > 0 ? '▲ ' : change < 0 ? '▼ ' : '') + fmt(Math.abs(change), cfg.digits), 'num delta ' + (worse == null ? '' : worse ? 'is-worse' : 'is-better')));
-      tr.addEventListener('click', () => { select(r.id, true); document.querySelector('.ov-hero').scrollIntoView({behavior: 'smooth'}); });
-      body.append(tr);
-    }
-    $('heat-more').hidden = rows.length <= 12;
-    $('heat-more').textContent = showAll ? 'Покажи по-малко' : `Покажи всички ${rows.length}`;
+  // ---------------------------------------------------------------- water: selected-site chart + coast strip
+  const ZONE = {good: '#34c759', mid: '#ff9500', bad: '#ff3b30'};
+  function zones() {
+    if (metric === 'lightAtDepth') return [[LIGHT_OK, 100, 'good'], [LIGHT_CRIT, LIGHT_OK, 'mid'], [0, LIGHT_CRIT, 'bad']];
+    if (metric === 'turbidity') return [[0, 2, 'good'], [2, 5, 'mid'], [5, 99, 'bad']];
+    return [[0, CHL_MID, 'good'], [CHL_MID, CHL_HIGH, 'mid'], [CHL_HIGH, 99, 'bad']];
   }
 
-  // ---------------------------------------------------------------- trend
-  function renderTrend() {
-    if (!water || typeof Chart === 'undefined' || $('trend').closest('[hidden]')) return;
+  function renderWater() {
+    if (!water) return;
     const cfg = METRIC[metric];
+    const site = water.sites.find(s => s.id === selected) || water.sites[0];
+    const vals = site.values[metric] || [];
+    const lastIdx = vals.map((v, i) => v == null ? -1 : i).filter(i => i >= 0).pop();
+    const firstIdx = vals.findIndex(v => v != null);
+    const last = vals[lastIdx], first = vals[firstIdx];
+    $('wv-site').textContent = `${site.name} · ${cfg.label}`;
+    $('wv-value').textContent = last == null ? '—' : fmt(last, cfg.digits);
+    $('wv-unit').textContent = ' ' + cfg.unit;
+    $('wv-sub').textContent = last == null ? 'няма данни' : `през ${MONTHS_FULL[Number(water.months[lastIdx].slice(5, 7)) - 1]} · ${({good: 'в норма', mid: 'внимание', bad: 'критично'})[cfg.level(last)]}`;
+    $('wv-value').style.color = last == null ? '' : ({good: '#1e8a3c', mid: '#b45309', bad: '#d1242f'})[cfg.level(last)];
+    const delta = last != null && first != null ? last - first : null;
+    const worse = delta == null ? null : metric === 'lightAtDepth' ? delta < 0 : delta > 0;
+    const d = $('wv-delta');
+    d.className = 'wv-delta ' + (worse == null ? '' : worse ? 'is-worse' : 'is-better');
+    d.textContent = delta == null ? '' : `${delta > 0 ? '▲' : delta < 0 ? '▼' : '•'} ${fmt(Math.abs(delta), cfg.digits)} ${cfg.unit} от ${monthLabel(water.months[firstIdx])}`;
+
+    // Chart with coloured risk zones behind the line and the coast average for context.
     const avg = water.months.map((_, i) => {
-      const v = water.sites.map(s => s.values[metric]?.[i]).filter(x => x != null);
+      const v = water.sites.map(x => x.values[metric]?.[i]).filter(x => x != null);
       return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
     });
-    const site = water.sites.find(s => s.id === selected);
-    $('trend-note').textContent = `${cfg.label} (${cfg.unit}): средно за 35-те участъка${site ? ' и ' + site.name : ''}.`;
-    const datasets = [{label: 'Средно за крайбрежието', data: avg, borderColor: '#9aa3b0', borderDash: [5, 4], pointRadius: 2, tension: .3}];
-    if (site) datasets.push({label: site.name, data: site.values[metric], borderColor: '#0a6cf1', backgroundColor: '#0a6cf11a', fill: true, pointRadius: 3, tension: .3});
+    const zoneBands = zones();
+    const maxVal = Math.max(...vals.filter(v => v != null), ...avg.filter(v => v != null));
     if (chart) chart.destroy();
-    chart = new Chart($('trend'), {
-      type: 'line', data: {labels: water.months.map(monthLabel), datasets},
+    const ctx = $('wv-canvas').getContext('2d');
+    const grad = ctx.createLinearGradient(0, 0, 0, 260);
+    grad.addColorStop(0, '#0a6cf140'); grad.addColorStop(1, '#0a6cf100');
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {labels: water.months.map(monthLabel), datasets: [
+        {label: site.name, data: vals, borderColor: '#0a6cf1', backgroundColor: grad, fill: true, borderWidth: 3, tension: .38,
+          pointRadius: vals.map((_, i) => i === lastIdx ? 6 : 3.5), pointBackgroundColor: vals.map(v => v == null ? '#fff' : ZONE[cfg.level(v)]),
+          pointBorderColor: '#fff', pointBorderWidth: 2},
+        {label: 'Средно за крайбрежието', data: avg, borderColor: '#9aa3b0', borderDash: [5, 5], borderWidth: 1.5, pointRadius: 0, tension: .38}
+      ]},
       options: {responsive: true, maintainAspectRatio: false, interaction: {mode: 'index', intersect: false},
-        plugins: {legend: {position: 'bottom'}, tooltip: {callbacks: {label: c => `${c.dataset.label}: ${fmt(c.parsed.y, cfg.digits)} ${cfg.unit}`}}},
-        scales: {x: {grid: {display: false}}, y: {beginAtZero: metric === 'lightAtDepth', grid: {color: '#eef0f3'}}}}
+        plugins: {legend: {position: 'bottom', labels: {boxWidth: 8, usePointStyle: true}},
+          tooltip: {callbacks: {label: c => `${c.dataset.label}: ${fmt(c.parsed.y, cfg.digits)} ${cfg.unit}`}}},
+        scales: {x: {grid: {display: false}}, y: {beginAtZero: true, suggestedMax: Math.ceil(maxVal * 1.15), grid: {color: '#00000008'}, ticks: {callback: v => v + (metric === 'lightAtDepth' ? ' %' : '')}}}},
+      plugins: [{
+        id: 'zones',
+        beforeDatasetsDraw(c) {
+          const {ctx: g, chartArea: a, scales: {y}} = c;
+          g.save();
+          for (const [lo, hi, key] of zoneBands) {
+            const top = y.getPixelForValue(Math.min(hi, y.max)), bottom = y.getPixelForValue(Math.max(lo, y.min));
+            if (bottom <= a.top || top >= a.bottom) continue;
+            g.fillStyle = ZONE[key] + '14';
+            g.fillRect(a.left, Math.max(top, a.top), a.right - a.left, Math.min(bottom, a.bottom) - Math.max(top, a.top));
+          }
+          g.restore();
+        }
+      }]
     });
+
+    // Coast strip: every site as a row of coloured cells, no numbers.
+    $('wv-strip-months').textContent = `${monthLabel(water.months[0])}–${monthLabel(water.months[water.months.length - 1])}`;
+    const order = new Map(sites.map((s, i) => [s.id, i]));
+    const rows = [...water.sites].sort((a, b) => order.get(a.id) - order.get(b.id));
+    const box = $('heat-body');
+    box.replaceChildren();
+    for (const r of rows) {
+      const row = el('button', null, 'strip-row' + (r.id === site.id ? ' is-active' : ''));
+      row.type = 'button';
+      row.dataset.id = r.id;
+      row.append(el('span', r.name, 'strip-name'));
+      const cells = el('span', null, 'strip-cells');
+      (r.values[metric] || []).forEach((v, i) => {
+        const c = el('i', null, v == null ? 'none' : cfg.level(v));
+        c.title = `${r.name}, ${monthLabel(water.months[i])}: ${v == null ? 'няма данни' : fmt(v, cfg.digits) + ' ' + cfg.unit}`;
+        cells.append(c);
+      });
+      row.append(cells);
+      row.addEventListener('click', () => select(r.id, true));
+      box.append(row);
+    }
+    box.querySelector('.is-active')?.scrollIntoView({block: 'nearest'});
   }
 
   // ---------------------------------------------------------------- sea today
@@ -241,14 +269,13 @@
     document.querySelectorAll('[data-tab]').forEach(t => t.setAttribute('aria-selected', String(t === tab)));
     document.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== tab.dataset.tab; });
     $('metric-switch').hidden = tab.dataset.tab === 'sea';
-    if (tab.dataset.tab === 'trend') renderTrend();
+    if (tab.dataset.tab === 'water') renderWater();
   });
   for (const b of document.querySelectorAll('#metric-switch button')) b.addEventListener('click', () => {
     metric = b.dataset.metric;
     document.querySelectorAll('#metric-switch button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    if (water) { renderHeat(); renderTrend(); }
+    renderWater();
   });
-  $('heat-more').addEventListener('click', () => { showAll = !showAll; renderHeat(); });
   $('mc-zoom').addEventListener('click', () => { const s = byId.get(selected); if (s && map) map.flyTo([s.latitude, s.longitude], 14, {duration: .8}); });
 
   (async () => {
@@ -264,7 +291,7 @@
     renderPriority();
     picker = SitePicker.create($('picker'), {sites, onSelect: id => select(id, true)});
     initMap(archive);
-    if (water) renderHeat(); else $('heat-body').replaceChildren(el('tr')).firstChild.append(el('td', 'Сателитните данни не се заредиха.', 'empty'));
+    if (!water) $('heat-body').replaceChildren(el('p', 'Сателитните данни не се заредиха.', 'empty'));
     const wanted = Number(new URLSearchParams(location.search).get('site'));
     select(byId.has(wanted) ? wanted : sites[0].id, byId.has(wanted));
     loadSea();

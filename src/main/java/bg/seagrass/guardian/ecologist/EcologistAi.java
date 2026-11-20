@@ -245,7 +245,7 @@ public class EcologistAi {
     }
 
     private static Answer rulesAnswer(Assessment a, String question, List<SiteRisk> sites, String notice) {
-        String text = rulesText(a, question) + (notice == null ? "" : " [" + notice + "]");
+        String text = (notice == null ? "" : notice + " Ето какво казват данните:\n\n") + rulesText(a, question);
         String q = question.toLowerCase(Locale.forLanguageTag("bg"));
         List<String> used = a.indicators().stream().filter(i -> i.level() == Ecology.Level.HIGH || i.level() == Ecology.Level.MODERATE)
             .map(Indicator::key).limit(3).toList();
@@ -274,7 +274,7 @@ public class EcologistAi {
             a.causes().stream().limit(2).forEach(c -> sb.append(c.title()).append(" (").append(c.confidence()).append(" %): ").append(c.reasoning()).append(" "));
         }
         if (!a.actions().isEmpty()) sb.append(" Първа стъпка: ").append(a.actions().get(0).title()).append(".");
-        sb.append(" (Отговор на експертната система. Добави GEMINI_API_KEY или ANTHROPIC_API_KEY за свободен разговор.)");
+
         return sb.toString().trim();
     }
 

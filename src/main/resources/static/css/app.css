@@ -425,3 +425,4 @@ body.has-fullscreen-map::after { content: ""; position: fixed; inset: 0; backgro
 /* Polish */
 .brand-mark { background: linear-gradient(135deg, #0a6cf1 0%, #12b5cb 100%); }
 .panel { box-shadow: var(--shadow-sm); }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

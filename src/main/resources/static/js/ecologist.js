@@ -13,7 +13,7 @@
       if (!response.ok) throw new Error();
       return response.json();
     }).catch(() => null);
-  let sites = [], current = null, trendMetric = 'lightAtDepth', history = [], lastReport = null, picker;
+  let sites = [], current = null, trendMetric = 'lightAtDepth', history = [], picker;
 
   const el = (tag, text, cls) => {
     const e = document.createElement(tag);
@@ -61,12 +61,7 @@
     url.searchParams.set('site', id);
     window.history.replaceState(null, '', url);
     current = null;
-    history = [];
-    lastReport = null;
-    $('chat').replaceChildren();
-    $('report-body').replaceChildren();
-    $('copy-report').hidden = true;
-    $('write-report').disabled = true;
+    resetChat(site.name);
     $('verdict-headline').textContent = 'Зареждаме оценката…';
     $('meadow-map-title').textContent = site.name;
     renderTrend();
@@ -78,7 +73,7 @@
       if (selection !== id) return;
       current = assessment;
       renderVerdict(); renderFreshness(); renderThreats(); renderCauses(); renderActions(); renderGaps(); renderEvidence(); renderTrend();
-      $('write-report').disabled = false;
+      welcome();
       loadTasks();
     } catch {
       if (selection !== id) return;
@@ -190,7 +185,8 @@
         add.textContent = saved ? '✓ Добавено' : 'Опитай да добавиш отново';
         add.disabled = saved;
       });
-      li.append(top, el('p', a.why), el('p', a.verify, 'verify'), add);
+      li.title = 'Как ще разберем: ' + a.verify;
+      li.append(top, el('p', a.why, 'why'), add);
       return li;
     }));
   }
@@ -239,57 +235,6 @@
       primary: {label, values},
       limits: trendMetric === 'lightAtDepth' ? [[20, '--risk-low'], [11, '--risk-high']] : []
     });
-  }
-
-  // ---------------------------------------------------------------- AI: report and questions
-  const modeLabel = m => m === 'claude' ? 'Claude' : m === 'gemini' ? 'Gemini' : 'Експертна система';
-
-  async function writeReport() {
-    if (!current) return;
-    const site = current.site.id;
-    $('write-report').disabled = true;
-    $('report-body').replaceChildren(el('p', provider === 'rules' ? 'Експертната система съставя доклада…' : modeLabel(provider) + ' анализира участъка…', 'thinking'));
-    try {
-      const r = await fetch('/api/ecologist/report/' + site, {method: 'POST'});
-      if (!r.ok) throw new Error();
-      const report = await r.json();
-      if (current?.site.id !== site) return;
-      lastReport = report;
-      renderReport(lastReport);
-    } catch {
-      if (current?.site.id === site) {
-        $('report-body').replaceChildren(el('p', 'Докладът не се генерира. Провери дали сървърът работи и опитай отново.', 'empty'));
-      }
-    } finally {
-      if (current?.site.id === site) $('write-report').disabled = false;
-    }
-  }
-
-  function renderReport(rep) {
-    const body = $('report-body');
-    body.replaceChildren();
-    const head = el('div', null, 'report-head');
-    head.append(el('h3', rep.headline), el('span', modeLabel(rep.mode), 'badge ' + (rep.mode === 'rules' ? 'neutral' : 'model')));
-    body.append(head, el('p', rep.summary, 'report-summary'));
-    const cols = el('div', null, 'report-cols');
-    const f = el('div'); f.append(el('h3', 'Находки'));
-    const ul = el('ul');
-    rep.findings.forEach(x => { const li = el('li', x.title + ' '); li.append(el('span', x.explanation)); ul.append(li); });
-    f.append(ul);
-    const p = el('div'); p.append(el('h3', 'План'));
-    const ol = el('ol');
-    rep.plan.forEach(s => { const li = el('li', s.action + ' '); li.append(el('span', `${s.priority}. ${s.rationale}`)); ol.append(li); });
-    p.append(ol);
-    cols.append(f, p);
-    body.append(cols);
-    if (rep.caveat) body.append(el('p', rep.caveat, 'report-caveat'));
-    $('copy-report').hidden = false;
-  }
-
-  function reportText(rep) {
-    return [`${current.site.name}: ${rep.headline}`, '', rep.summary, '', 'Находки:', ...rep.findings.map(f => `- ${f.title}: ${f.explanation}`),
-      '', 'План:', ...rep.plan.map((s, i) => `${i + 1}. ${s.action} [${s.priority}] ${s.rationale} Показател: ${s.successMetric}`),
-      '', 'Неизвестни:', ...(rep.unknowns || []).map(u => `- ${u}`), '', rep.caveat || ''].join('\n');
   }
 
   // ---------------------------------------------------------------- field tasks
@@ -362,14 +307,17 @@
     }
   }
 
-  // ---------------------------------------------------------------- ask: answer, data used, actions
+  // ---------------------------------------------------------------- AI copilot
+  const modeLabel = m => m === 'claude' ? 'Claude' : m === 'gemini' ? 'Gemini' : 'Експертна система';
   const ACTION_META = {
-    add_task: {icon: '#i-check', ask: 'Да добавя ли тази задача в плана за терена?', yes: 'Добави', done: 'Добавено в плана за терена'},
-    open_site: {icon: '#i-target', ask: 'Да отворя ли този участък за сравнение?', yes: 'Отвори'},
-    show_map: {icon: '#i-map', ask: 'Да покажа ли участъка на картата?', yes: 'Покажи'},
-    new_measurement: {icon: '#i-plus', ask: 'Да отворя ли формата, попълнена за този участък?', yes: 'Попълни'},
-    show_trend: {icon: '#i-chart', ask: 'Да покажа ли графиката?', yes: 'Покажи'}
+    add_task: {icon: '#i-check', yes: 'Добави в плана', done: 'Добавено в плана за терена'},
+    open_site: {icon: '#i-target', yes: 'Отвори'},
+    show_map: {icon: '#i-map', yes: 'Покажи на картата'},
+    new_measurement: {icon: '#i-plus', yes: 'Попълни измерване'},
+    show_trend: {icon: '#i-chart', yes: 'Покажи графиката'}
   };
+  const REPORT_CHIP = 'Напиши доклад';
+  let asked = new Set(), busy = false;
 
   function icon(href) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -380,29 +328,132 @@
     return svg;
   }
 
+  const chatEl = () => $('chat');
+  function scrollChat() { const c = chatEl(); c.scrollTo({top: c.scrollHeight, behavior: 'smooth'}); }
+
+  function bubble(role, content) {
+    const row = el('div', null, 'cp-row ' + role);
+    if (role.startsWith('assistant')) {
+      const av = el('span', null, 'cp-mini-avatar');
+      av.append(icon('#i-spark'));
+      row.append(av);
+    }
+    const b = el('div', null, 'cp-bubble');
+    if (typeof content === 'string') b.append(el('p', content)); else if (content) b.append(content);
+    row.append(b);
+    chatEl().append(row);
+    scrollChat();
+    return b;
+  }
+
+  function typing() {
+    const b = bubble('assistant', null);
+    b.classList.add('is-typing');
+    const dots = el('div', null, 'cp-dots');
+    dots.append(el('i'), el('i'), el('i'));
+    const step = el('span', 'Чета данните…', 'cp-step');
+    b.append(dots, step);
+    const steps = ['Проверявам показателите…', 'Сравнявам с праговете…', 'Сравнявам с другите участъци…', 'Пиша отговора…'];
+    let i = 0;
+    const timer = setInterval(() => { step.textContent = steps[Math.min(i++, steps.length - 1)]; }, 1400);
+    b.stop = () => clearInterval(timer);
+    return b;
+  }
+
+  /** Reveal text word by word so the answer feels alive, without delaying long answers. */
+  function reveal(p, text) {
+    const words = text.split(/(\s+)/);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || words.length > 400) { p.textContent = text; return Promise.resolve(); }
+    let i = 0;
+    const per = Math.max(1, Math.ceil(words.length / 45));
+    return new Promise(done => {
+      const t = setInterval(() => {
+        p.textContent = words.slice(0, i += per).join('');
+        scrollChat();
+        if (i >= words.length) { clearInterval(t); done(); }
+      }, 22);
+    });
+  }
+
+  function chips(list) {
+    const box = $('suggestions');
+    box.replaceChildren();
+    for (const text of list) {
+      const b = el('button', null, 'cp-chip' + (text === REPORT_CHIP ? ' is-report' : ''));
+      b.type = 'button';
+      if (text === REPORT_CHIP) b.append(icon('#i-download'));
+      b.append(document.createTextNode(text));
+      b.addEventListener('click', () => text === REPORT_CHIP ? writeReport() : ask(text));
+      box.append(b);
+    }
+  }
+
+  function suggestedQuestions() {
+    if (!current) return [];
+    const lvl = k => current.indicators.find(i => i.key === k)?.level;
+    const bad = l => l === 'HIGH' || l === 'MODERATE';
+    const qs = [];
+    if (bad(lvl('light')) || bad(lvl('trend'))) qs.push('Защо водата е мътна тук?');
+    if (bad(lvl('eutrophication'))) qs.push('Откъде идват хранителните вещества?');
+    if (bad(lvl('heat')) || bad(lvl('anomaly'))) qs.push('Има ли опасност от гореща вълна?');
+    qs.push('Какво да направим първо?', 'Можем ли да засаждаме тук?', 'Ще помогне ли забрана за котвене?', 'С кой участък да сравня?');
+    return [...qs.filter(x => !asked.has(x)).slice(0, 3), REPORT_CHIP];
+  }
+
+  function resetChat(name) {
+    chatEl().replaceChildren();
+    history = [];
+    asked = new Set();
+    $('suggestions').replaceChildren();
+    bubble('assistant', `Зареждам данните за ${name}…`).classList.add('is-muted');
+  }
+
+  function welcome() {
+    chatEl().replaceChildren();
+    const a = current;
+    const top = a.indicators.filter(i => i.level === 'HIGH' || i.level === 'MODERATE')
+      .sort((x, y) => (y.level === 'HIGH') - (x.level === 'HIGH')).slice(0, 3);
+    const box = el('div');
+    box.append(el('p', `Разгледах ${a.site.name}. ${a.status}, риск ${a.riskScore}/100.`));
+    if (top.length) {
+      box.append(el('p', 'Какво виждам:', 'cp-sub'));
+      const ul = el('ul', null, 'cp-findings');
+      for (const i of top) {
+        const li = el('li');
+        const d = el('i');
+        d.style.background = LEVEL[i.level][2];
+        li.append(d, el('strong', i.label), el('span', i.value));
+        ul.append(li);
+      }
+      box.append(ul);
+    } else box.append(el('p', 'Не виждам силни рискови сигнали в данните.'));
+    box.append(el('p', 'Какво искаш да разбереш?', 'cp-sub'));
+    bubble('assistant', box);
+    chips(suggestedQuestions());
+  }
+
   function actionCard(a) {
     const meta = ACTION_META[a.type];
-    const card = el('div', null, 'action-card');
-    const head = el('div', null, 'action-card-head');
+    const card = el('div', null, 'cp-action');
+    const head = el('div', null, 'cp-action-head');
     head.append(icon(meta.icon));
     const txt = el('div');
     const target = a.type === 'open_site' ? sites.find(s => s.id === a.siteId) : null;
-    txt.append(el('strong', a.label + (target ? ` (${target.name}, ${target.riskScore}/100)` : '')));
+    txt.append(el('strong', a.label + (target ? ` · ${target.name}` : '')));
     if (a.reason) txt.append(el('span', a.reason));
     head.append(txt);
-    const row = el('div', null, 'action-card-row');
-    row.append(el('span', meta.ask, 'action-q'));
+    const row = el('div', null, 'cp-action-row');
     const yes = el('button', meta.yes, 'button primary small');
-    const no = el('button', 'Не', 'button ghost small');
+    const no = el('button', 'Не сега', 'button ghost small');
     yes.type = no.type = 'button';
-    no.addEventListener('click', () => { card.classList.add('is-dismissed'); row.replaceChildren(el('span', 'Пропуснато', 'action-q')); });
+    no.addEventListener('click', () => { card.classList.add('is-dismissed'); row.replaceChildren(el('span', 'Пропуснато', 'cp-action-note')); });
     yes.addEventListener('click', async () => {
       if (a.type === 'add_task') {
         yes.disabled = true;
         const ok = await addTask({title: a.label, priority: a.priority, reason: a.reason, origin: 'ai'});
-        row.replaceChildren(el('span', ok ? '✓ ' + meta.done : 'Неуспешно добавяне', 'action-done'));
+        row.replaceChildren(el('span', ok ? '✓ ' + meta.done : 'Неуспешно добавяне', ok ? 'cp-action-done' : 'cp-action-note'));
         card.classList.add('is-confirmed');
-      } else if (a.type === 'open_site') { select(a.siteId); window.scrollTo({top: 0, behavior: 'smooth'}); }
+      } else if (a.type === 'open_site') select(a.siteId);
       else if (a.type === 'show_map') location.href = '/dashboard?site=' + a.siteId;
       else if (a.type === 'new_measurement') location.href = '/measurements/new?site=' + a.siteId;
       else if (a.type === 'show_trend') {
@@ -415,41 +466,35 @@
     return card;
   }
 
-  function trace(steps) {
-    const box = el('div', null, 'trace');
-    steps.forEach((t, i) => {
-      const s = el('div', t, 'trace-step');
-      s.style.animationDelay = (i * .9) + 's';
-      box.append(s);
-    });
-    return box;
-  }
-
   async function ask(question) {
-    if (!current || !question.trim()) return;
+    question = question.trim();
+    if (!current || !question || busy) return;
+    busy = true;
+    asked.add(question);
     const assessment = current;
-    const chat = $('chat');
-    chat.append(el('div', question, 'msg user'));
-    const pending = el('div', null, 'msg assistant pending');
-    pending.append(trace([`Чете оценката на ${current.site.name}`, 'Проверява показателите и праговете', 'Сравнява с другите участъци', 'Формулира отговор']));
-    chat.append(pending);
-    pending.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    $('suggestions').replaceChildren();
+    bubble('user', question);
     $('question').value = '';
+    autosize();
+    const pending = typing();
     try {
       const r = await fetch('/api/ecologist/ask', {method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({siteId: current.site.id, question, history})});
+        body: JSON.stringify({siteId: assessment.site.id, question, history})});
       if (!r.ok) throw new Error();
       const ans = await r.json();
       if (current !== assessment) return;
-      pending.className = 'msg assistant';
-      pending.replaceChildren(el('p', ans.text));
+      pending.stop();
+      pending.classList.remove('is-typing');
+      pending.replaceChildren();
+      const p = el('p');
+      pending.append(p);
+      await reveal(p, ans.text);
       if (ans.used?.length) {
-        const used = el('div', null, 'used');
-        used.append(el('span', 'Проверени данни'));
+        const used = el('div', null, 'cp-used');
         for (const key of ans.used) {
-          const ind = current.indicators.find(i => i.key === key);
+          const ind = assessment.indicators.find(i => i.key === key);
           if (!ind) continue;
-          const chip = el('span', ind.label, 'used-chip');
+          const chip = el('span', ind.label, 'cp-used-chip');
           const dot = el('i');
           dot.style.background = LEVEL[ind.level][2];
           chip.prepend(dot);
@@ -458,37 +503,79 @@
         }
         pending.append(used);
       }
-      pending.append(el('small', modeLabel(ans.mode)));
-      if (ans.actions?.length) {
-        const actions = el('div', null, 'action-cards');
-        ans.actions.forEach(a => actions.append(actionCard(a)));
-        chat.append(actions);
-      }
+      pending.append(el('small', modeLabel(ans.mode), 'cp-by'));
+      for (const a of ans.actions || []) bubble('assistant action', actionCard(a));
       history.push({role: 'user', text: question}, {role: 'assistant', text: ans.text});
-    } catch (e) {
-      pending.className = 'msg assistant';
+    } catch {
+      pending.stop?.();
+      pending.classList.remove('is-typing');
       pending.replaceChildren(el('p', 'Не получих отговор. Опитай отново.'));
+    } finally {
+      busy = false;
+      if (current === assessment) chips(suggestedQuestions());
+      scrollChat();
+    }
+  }
+
+  async function writeReport() {
+    if (!current || busy) return;
+    busy = true;
+    const assessment = current;
+    $('suggestions').replaceChildren();
+    bubble('user', REPORT_CHIP);
+    const pending = typing();
+    try {
+      const r = await fetch('/api/ecologist/report/' + assessment.site.id, {method: 'POST'});
+      if (!r.ok) throw new Error();
+      const rep = await r.json();
+      if (current !== assessment) return;
+      pending.stop();
+      pending.classList.remove('is-typing');
+      pending.classList.add('is-report');
+      pending.replaceChildren();
+      const head = el('div', null, 'cp-report-head');
+      head.append(icon('#i-download'), el('strong', 'Доклад: ' + assessment.site.name));
+      pending.append(head, el('h4', rep.headline));
+      const sum = el('p');
+      pending.append(sum);
+      await reveal(sum, rep.summary);
+      const det = el('details', null, 'cp-report-more');
+      det.append(el('summary', `Находки (${rep.findings.length}) и план (${rep.plan.length})`));
+      const ul = el('ul');
+      rep.findings.forEach(f => ul.append(el('li', `${f.title}: ${f.explanation}`)));
+      const ol = el('ol');
+      rep.plan.forEach(s => ol.append(el('li', `${s.action} (${s.priority})`)));
+      det.append(el('h5', 'Находки'), ul, el('h5', 'План'), ol);
+      pending.append(det);
+      const copy = el('button', 'Копирай доклада', 'button secondary small');
+      copy.type = 'button';
+      copy.addEventListener('click', async () => {
+        const text = [`${assessment.site.name}: ${rep.headline}`, '', rep.summary, '', 'Находки:', ...rep.findings.map(f => `- ${f.title}: ${f.explanation}`),
+          '', 'План:', ...rep.plan.map((s, i) => `${i + 1}. ${s.action} [${s.priority}] ${s.rationale} Показател: ${s.successMetric}`),
+          '', 'Неизвестни:', ...(rep.unknowns || []).map(u => `- ${u}`), '', rep.caveat || ''].join('\n');
+        try { await navigator.clipboard.writeText(text); copy.textContent = '✓ Копирано'; } catch { copy.textContent = 'Копирането не е разрешено'; }
+      });
+      pending.append(copy, el('small', modeLabel(rep.mode), 'cp-by'));
+    } catch {
+      pending.stop?.();
+      pending.classList.remove('is-typing');
+      pending.replaceChildren(el('p', 'Докладът не се генерира. Опитай отново.'));
+    } finally {
+      busy = false;
+      if (current === assessment) chips(suggestedQuestions().filter(x => x !== REPORT_CHIP));
+      scrollChat();
     }
   }
 
   // ---------------------------------------------------------------- wiring
-  for (const tab of document.querySelectorAll('[data-tab]')) tab.addEventListener('click', () => {
-    document.querySelectorAll('[data-tab]').forEach(t => t.setAttribute('aria-pressed', String(t === tab)));
-    document.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== tab.dataset.tab; });
-  });
-  $('write-report').addEventListener('click', writeReport);
-  $('copy-report').addEventListener('click', async () => {
-    if (!lastReport) return;
-    try {
-      await navigator.clipboard.writeText(reportText(lastReport));
-      $('copy-report').textContent = 'Копирано';
-    } catch {
-      $('copy-report').textContent = 'Копирай ръчно';
-    }
-    setTimeout(() => { $('copy-report').textContent = 'Копирай'; }, 1600);
-  });
-  $('ask-form').addEventListener('submit', e => { e.preventDefault(); ask($('question').value); });
-  for (const b of document.querySelectorAll('#suggestions button')) b.addEventListener('click', () => ask(b.textContent));
+  const q = $('question');
+  function autosize() { q.style.height = 'auto'; q.style.height = Math.min(q.scrollHeight, 140) + 'px'; }
+  q.addEventListener('input', autosize);
+  q.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(q.value); } });
+  $('ask-form').addEventListener('submit', e => { e.preventDefault(); ask(q.value); });
+  $('cp-reset').addEventListener('click', () => { if (current && !busy) { history = []; asked = new Set(); welcome(); } });
+  $('cp-open').addEventListener('click', () => { document.body.classList.add('cp-open'); setTimeout(() => q.focus(), 200); });
+  $('cp-close').addEventListener('click', () => document.body.classList.remove('cp-open'));
   for (const b of document.querySelectorAll('#trend-switch button')) b.addEventListener('click', () => {
     trendMetric = b.dataset.metric;
     document.querySelectorAll('#trend-switch button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));

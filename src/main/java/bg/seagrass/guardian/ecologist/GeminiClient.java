@@ -23,7 +23,8 @@ import java.util.Map;
 @Component
 class GeminiClient {
     static class GeminiException extends Exception {
-        GeminiException(String message) { super(message); }
+        final boolean retryable;
+        GeminiException(String message, boolean retryable) { super(message); this.retryable = retryable; }
     }
 
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(8)).build();
@@ -31,10 +32,14 @@ class GeminiClient {
     private final String apiKey;
     private final String model;
 
+    private final String fallbackModel;
+
     GeminiClient(ObjectMapper mapper, @Value("${seaguard.ai.gemini-model:gemini-2.5-flash}") String model,
+                 @Value("${seaguard.ai.gemini-fallback-model:gemini-2.5-flash-lite}") String fallbackModel,
                  @Value("${seaguard.ai.gemini-key:}") String configuredKey) {
         this.mapper = mapper;
         this.model = model;
+        this.fallbackModel = fallbackModel;
         // secrets.properties (git-ignored) first, then the environment.
         String key = configuredKey;
         if (key == null || key.isBlank()) key = System.getenv("GEMINI_API_KEY");
@@ -63,9 +68,26 @@ class GeminiClient {
             "systemInstruction", Map.of("parts", List.of(Map.of("text", system))),
             "contents", contents,
             "generationConfig", config);
+        // Retry the main model on overload, then fall back to a lighter model before giving up.
+        GeminiException last = null;
+        String[] plan = {model, model, fallbackModel};
+        for (int attempt = 0; attempt < plan.length; attempt++) {
+            if (plan[attempt] == null || plan[attempt].isBlank()) continue;
+            try {
+                return call(plan[attempt], body);
+            } catch (GeminiException e) {
+                last = e;
+                if (!e.retryable) throw e;
+                try { Thread.sleep(700L * (attempt + 1)); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); throw e; }
+            }
+        }
+        throw last;
+    }
+
+    private String call(String modelName, Object body) throws GeminiException {
         try {
             String url = "https://generativelanguage.googleapis.com/v1beta/models/"
-                + URLEncoder.encode(model, StandardCharsets.UTF_8) + ":generateContent";
+                + URLEncoder.encode(modelName, StandardCharsets.UTF_8) + ":generateContent";
             HttpRequest request = HttpRequest.newBuilder(URI.create(url))
                 .timeout(Duration.ofSeconds(90))
                 .header("Content-Type", "application/json")
@@ -74,25 +96,23 @@ class GeminiClient {
                 .build();
             HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
             JsonNode root = mapper.readTree(response.body());
-            if (response.statusCode() != 200) {
-                String msg = root.path("error").path("message").asText("HTTP " + response.statusCode());
-                throw new GeminiException("Gemini " + response.statusCode() + ": " + msg);
+            int status = response.statusCode();
+            if (status != 200) {
+                boolean busy = status == 429 || status >= 500;
+                throw new GeminiException(busy ? "Gemini е претоварен в момента." : "Gemini отказа заявката (" + status + ").", busy);
             }
             StringBuilder text = new StringBuilder();
             for (JsonNode part : root.path("candidates").path(0).path("content").path("parts")) {
                 if (part.path("thought").asBoolean(false)) continue;
                 text.append(part.path("text").asText(""));
             }
-            if (text.isEmpty()) {
-                String reason = root.path("candidates").path(0).path("finishReason").asText("празен отговор");
-                throw new GeminiException("Gemini не върна текст (" + reason + ").");
-            }
+            if (text.isEmpty()) throw new GeminiException("Gemini не върна текст.", true);
             return text.toString().trim();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new GeminiException("Заявката към Gemini беше прекъсната.");
+            throw new GeminiException("Заявката към Gemini беше прекъсната.", false);
         } catch (java.io.IOException e) {
-            throw new GeminiException("Няма връзка с Gemini.");
+            throw new GeminiException("Няма връзка с Gemini.", true);
         }
     }
 }

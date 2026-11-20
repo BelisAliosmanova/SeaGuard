@@ -120,3 +120,39 @@
     .sea-cards, .ov-field { grid-template-columns: 1fr; }
     .tabs button { padding: 0 10px; font-size: 12.5px; }
 }
+
+/* Water: selected-site chart with risk zones + coast heat strip */
+.water-panel { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; }
+.wv-main { display: grid; grid-template-rows: auto 1fr; gap: 6px; min-width: 0; }
+.wv-readout { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.wv-site { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+.wv-value { display: flex; align-items: baseline; gap: 4px; margin-top: 2px; }
+.wv-value strong { font: 750 44px/1 var(--display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; transition: color .3s; }
+.wv-value span { color: var(--muted); font-size: 15px; font-weight: 600; }
+.wv-sub { color: var(--muted); font-size: 12.5px; }
+.wv-delta { padding: 6px 11px; border-radius: 999px; font-size: 12.5px; font-weight: 650; background: var(--well); color: var(--muted); white-space: nowrap; }
+.wv-delta.is-worse { background: var(--risk-high-soft); color: var(--risk-high); }
+.wv-delta.is-better { background: var(--risk-low-soft); color: var(--risk-low); }
+.wv-chart { position: relative; height: 300px; }
+
+.wv-strip { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: linear-gradient(180deg, #fbfcfe, #fff); }
+.wv-strip header { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+.wv-strip header span { color: var(--muted); font-size: 11.5px; }
+.strip-rows { flex: 1; overflow-y: auto; max-height: 300px; padding: 4px; }
+.strip-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; padding: 3px 8px; border: 0; border-radius: 7px; background: transparent; cursor: pointer; text-align: left; }
+.strip-row:hover { background: var(--hover); }
+.strip-row.is-active { background: var(--accent-soft); box-shadow: inset 2px 0 0 var(--accent); }
+.strip-name { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.strip-row.is-active .strip-name { font-weight: 650; color: var(--accent-strong); }
+.strip-cells { display: flex; gap: 3px; }
+.strip-cells i { width: 15px; height: 15px; border-radius: 4px; transition: transform .12s; }
+.strip-row:hover .strip-cells i { transform: scale(1.08); }
+.strip-cells i.good { background: #34c759; }
+.strip-cells i.mid { background: #ffb340; }
+.strip-cells i.bad { background: #ff453a; }
+.strip-cells i.none { background: var(--well); }
+.strip-legend { display: flex; gap: 12px; padding: 8px 12px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--muted); }
+.strip-legend span { display: flex; align-items: center; gap: 5px; }
+.strip-legend i { width: 10px; height: 10px; border-radius: 3px; }
+.strip-legend .good { background: #34c759; } .strip-legend .mid { background: #ffb340; } .strip-legend .bad { background: #ff453a; }
+@media (max-width: 900px) { .water-panel { grid-template-columns: 1fr; } .wv-chart { height: 240px; } .wv-value strong { font-size: 36px; } }
