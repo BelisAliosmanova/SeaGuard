@@ -1,6 +1,6 @@
 <p align="center">
   <img
-    src="Logo%20%2B%20name.png"
+    src="Logo%20%2B%20brand.png"
     alt="Logo"
     width="300"
   />
