@@ -1,28 +1,179 @@
-﻿.simulation { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at top left, #16444d, #081c27 60%, #07151e); color: #e7f8f7; }
-.simulation main { max-width: 1450px; margin: auto; padding: clamp(20px, 4vw, 60px); }
-.simulation header a { color: #8fefda; text-decoration: underline; text-underline-offset: 4px; }
-.simulation h1 { font-size: clamp(32px, 6vw, 65px); line-height: 1.06; margin: 18px 0 8px; letter-spacing: -.055em; }
-.simulation header p { color: #b2d3d5; margin: 0 0 24px; }
-.aquarium { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; }
-.simulation .scene, .simulation .controls { border: 1px solid #417078; border-radius: 20px; }
-.simulation .scene { position: relative; overflow: hidden; min-height: 535px; background: #0b394b; isolation: isolate; }
-.simulation canvas { position: absolute; width: 100%; height: 100%; inset: 0; }
-.simulation .readouts { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
-.simulation .readouts div, .simulation .observation { background: #071f2be8; border: 1px solid #5b9198; border-radius: 12px; padding: 7px 10px; }
-.simulation .readouts span { display: block; font-size: 11px; color: #bddddd; }
-.simulation .readouts strong { font-size: clamp(16px, 2.5vw, 23px); color: #fff; }
-.simulation .observation { position: absolute; bottom: 12px; left: 14px; right: 14px; margin: 0; font-size: 13px; }
-.simulation .controls { background: #102e39; padding: 20px; }
-.simulation h2 { margin: 0 0 14px; font-size: 21px; }
-.simulation .presets, .simulation .actions { display: flex; gap: 7px; flex-wrap: wrap; }
-.simulation button { cursor: pointer; border: 1px solid #65949a; padding: 7px 9px; border-radius: 8px; color: #ecfffc; background: #19434e; font: inherit; font-size: 13px; }
-.simulation button:hover, .simulation button[aria-pressed="true"] { background: #286653; }
-.simulation label { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; font-size: 14px; margin-top: 18px; }
-.simulation output { color: #91f3d7; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.simulation input[type="range"] { padding: 0; cursor: pointer; display: block; width: 100%; margin: 6px 0 0; accent-color: #73e6c2; }
-.simulation :focus-visible { outline: 2px solid #99fbe3; outline-offset: 3px; }
-.simulation .actions { margin-top: 20px; }
-.simulation .model-note { color: #b2d3d5; font-size: 12px; margin: 14px 0 0; }
-@media (max-width: 890px) { .aquarium { grid-template-columns: 1fr; } .simulation .scene { min-height: clamp(355px, 65vw, 535px); } }
+﻿.simulation {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at top left, #16444d, #081c27 60%, #07151e);
+    color: #e7f8f7;
+}
 
-.simulation header a[href="sea-games.html"] { display: inline-block; margin-bottom: 18px; }
+.simulation main {
+    max-width: 1450px;
+    margin: auto;
+    padding: clamp(20px, 4vw, 60px);
+}
+
+.simulation header a {
+    color: #8fefda;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.simulation h1 {
+    font-size: clamp(32px, 6vw, 65px);
+    line-height: 1.06;
+    margin: 18px 0 8px;
+    letter-spacing: -.055em;
+}
+
+.simulation header p {
+    color: #b2d3d5;
+    margin: 0 0 24px;
+}
+
+.aquarium {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 18px;
+}
+
+.simulation .scene, .simulation .controls {
+    border: 1px solid #417078;
+    border-radius: 20px;
+}
+
+.simulation .scene {
+    position: relative;
+    overflow: hidden;
+    min-height: 535px;
+    background: #0b394b;
+    isolation: isolate;
+}
+
+.simulation canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+}
+
+.simulation .readouts {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    pointer-events: none;
+}
+
+.simulation .readouts div, .simulation .observation {
+    background: #071f2be8;
+    border: 1px solid #5b9198;
+    border-radius: 12px;
+    padding: 7px 10px;
+}
+
+.simulation .readouts span {
+    display: block;
+    font-size: 11px;
+    color: #bddddd;
+}
+
+.simulation .readouts strong {
+    font-size: clamp(16px, 2.5vw, 23px);
+    color: #fff;
+}
+
+.simulation .observation {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    right: 14px;
+    margin: 0;
+    font-size: 13px;
+}
+
+.simulation .controls {
+    background: #102e39;
+    padding: 20px;
+}
+
+.simulation h2 {
+    margin: 0 0 14px;
+    font-size: 21px;
+}
+
+.simulation .presets, .simulation .actions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.simulation button {
+    cursor: pointer;
+    border: 1px solid #65949a;
+    padding: 7px 9px;
+    border-radius: 8px;
+    color: #ecfffc;
+    background: #19434e;
+    font: inherit;
+    font-size: 13px;
+}
+
+.simulation button:hover, .simulation button[aria-pressed="true"] {
+    background: #286653;
+}
+
+.simulation label {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 18px;
+}
+
+.simulation output {
+    color: #91f3d7;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.simulation input[type="range"] {
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    margin: 6px 0 0;
+    accent-color: #73e6c2;
+}
+
+.simulation :focus-visible {
+    outline: 2px solid #99fbe3;
+    outline-offset: 3px;
+}
+
+.simulation .actions {
+    margin-top: 20px;
+}
+
+.simulation .model-note {
+    color: #b2d3d5;
+    font-size: 12px;
+    margin: 14px 0 0;
+}
+
+@media (max-width: 890px) {
+    .aquarium {
+        grid-template-columns: 1fr;
+    }
+
+    .simulation .scene {
+        min-height: clamp(355px, 65vw, 535px);
+    }
+}
+
+.simulation header a[href="sea-games.html"] {
+    display: inline-block;
+    margin-bottom: 18px;
+}
