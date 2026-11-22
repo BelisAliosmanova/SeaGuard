@@ -1481,3 +1481,60 @@ body.has-fullscreen-map::after {
     clip-path: inset(50%);
     white-space: nowrap;
 }
+
+/* Marine simulator and game use the Blue root dashboard palette. */
+body:has(.workspace:is(.simulation, .dive)) {
+    color-scheme: dark;
+    --canvas: #031722;
+    --paper: rgba(7, 45, 60, .90);
+    --well: rgba(255, 255, 255, .07);
+    --hover: rgba(255, 255, 255, .13);
+    --ink: #eaf8fb;
+    --muted: #a9c7d0;
+    --border: rgba(151, 220, 226, .20);
+    --control: rgba(151, 220, 226, .34);
+    --accent: #27d6d0;
+    --accent-strong: #61eee2;
+    --accent-soft: rgba(39, 214, 208, .15);
+    --on-accent: #032833;
+    --map-backdrop: #052a38;
+    --shadow-sm: 0 8px 24px rgba(0, 8, 16, .28);
+    --shadow-md: 0 18px 50px rgba(0, 8, 16, .42);
+    --sans: 'Roboto', system-ui, 'Segoe UI', sans-serif;
+    --display: var(--sans);
+
+    background: linear-gradient(rgba(3, 23, 34, .45), rgba(3, 27, 42, .68)),
+        url("../img/bg.png") center / cover no-repeat fixed;
+}
+
+.workspace:is(.simulation, .dive) .masthead {
+    align-items: center;
+}
+
+.workspace:is(.simulation, .dive) .masthead .button.secondary {
+    background: rgba(5, 35, 49, .82);
+}
+
+.workspace:is(.simulation, .dive) .masthead .button.secondary:hover {
+    background: #104554;
+}
+
+.workspace:is(.simulation, .dive) .panel {
+    background: linear-gradient(145deg, rgba(12, 62, 77, .90), rgba(5, 35, 49, .88));
+}
+
+@media (max-width: 480px) {
+    body:has(.workspace:is(.simulation, .dive)) .site-nav nav .nav-label {
+        display: none;
+    }
+
+    body:has(.workspace:is(.simulation, .dive)) .site-nav nav a {
+        justify-content: center;
+        min-width: 36px;
+        min-height: 36px;
+    }
+
+    body:has(.workspace:is(.simulation, .dive)) .site-nav nav .icon {
+        display: block;
+    }
+}

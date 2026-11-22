@@ -10,7 +10,6 @@
     const PRIORITY = {'Спешно': 'p-urgent', 'Висок': 'p-high', 'Среден': 'p-mid', 'Рутинно': 'p-routine'};
     const FRESH = {live: 'На живо', recent: 'Актуални', old: 'Стари', missing: 'Няма'};
     const workspace = $('workspace');
-    const provider = workspace.dataset.provider || 'rules';
     let meadowMap, meadowOutline, meadowBounds, mapSiteId, selection, missionLayer;
     let missionPoints = [];
     const archive =
@@ -428,7 +427,7 @@
         const list = $('tasks');
         list.replaceChildren();
         if (!tasks.length) {
-            list.append(el('li', 'Няма задачи. Добави стъпка от плана или потвърди предложение на AI еколога.', 'empty'));
+            list.append(el('li', 'Няма задачи. Добави стъпка от плана или потвърди предложение от Pickle.', 'empty'));
             return;
         }
         for (const t of tasks) {
@@ -458,7 +457,7 @@
             box.addEventListener('change', () => updateTask('PATCH', JSON.stringify({done: box.checked})));
             const text = el('div', null, 'task-text');
             text.append(el('strong', t.title));
-            const meta = el('span', `${t.priority || 'Среден'} · ${t.origin === 'ai' ? 'предложено от AI' : 'добавено ръчно'} · ${new Date(t.createdAt).toLocaleDateString('bg-BG', {
+            const meta = el('span', `${t.priority || 'Среден'} · ${t.origin === 'ai' ? 'предложено от Pickle' : 'добавено ръчно'} · ${new Date(t.createdAt).toLocaleDateString('bg-BG', {
                 day: 'numeric',
                 month: 'short'
             })}`);
@@ -475,7 +474,6 @@
     }
 
     // ---------------------------------------------------------------- AI copilot
-    const modeLabel = m => m === 'claude' ? 'Claude' : m === 'gemini' ? 'Gemini' : 'Експертна система';
     const ACTION_META = {
         add_task: {icon: '#i-check', yes: 'Добави в плана', done: 'Добавено в плана за терена'},
         open_site: {icon: '#i-target', yes: 'Отвори'},
@@ -713,7 +711,7 @@
                 }
                 pending.append(used);
             }
-            pending.append(el('small', modeLabel(ans.mode), 'cp-by'));
+            pending.append(el('small', 'Pickle', 'cp-by'));
             for (const a of ans.actions || []) bubble('assistant action', actionCard(a));
             history.push({role: 'user', text: question}, {role: 'assistant', text: ans.text});
         } catch {
@@ -770,7 +768,7 @@
                     copy.textContent = 'Копирането не е разрешено';
                 }
             });
-            pending.append(copy, el('small', modeLabel(rep.mode), 'cp-by'));
+            pending.append(copy, el('small', 'Pickle', 'cp-by'));
         } catch {
             pending.stop?.();
             pending.classList.remove('is-typing');

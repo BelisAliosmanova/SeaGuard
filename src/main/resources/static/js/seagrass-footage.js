@@ -128,6 +128,7 @@ window.setupFootage = (() => {
             taskStatus.textContent = '';
             taskButton.disabled = true;
             if (currentSite) onResult?.(currentSite.id, null);
+            status.classList.remove('is-analyzing');
             status.textContent = '';
             analyzeButton.disabled = !currentSite || !frames.length;
         }
@@ -164,11 +165,13 @@ window.setupFootage = (() => {
             const fileFrames = frames;
             const site = currentSite;
             analyzeButton.disabled = true;
-            status.textContent = 'AI екологът преглежда ' + fileFrames.length + ' кадъра. Това може да отнеме няколко минути.';
+            status.classList.add('is-analyzing');
+            const subject = fileFrames.length === 1 ? 'кадъра' : fileFrames.length + ' кадъра';
+            status.textContent = 'Pickle анализира ' + subject + '… Това може да отнеме няколко минути.';
             const timeout = setTimeout(() => {
                 if (activeRequest !== request) return;
                 request.abort();
-                status.textContent = 'Моделът се забави. Опитай с една снимка или провери прозореца на локалния сървър.';
+                status.textContent = 'Прегледът се забави. Опитай отново с една снимка.';
             }, 195000);
             const form = new FormData();
             form.append('siteId', site.id);
@@ -179,11 +182,11 @@ window.setupFootage = (() => {
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.message ||
-                    (response.status === 404 ? 'Тази версия на SeaGuard няма връзката за анализ. Стартирай обновения проект.' :
+                    (response.status === 404 ? 'Прегледът на кадри е недостъпен. Презареди страницата и опитай пак.' :
                         'Анализът е недостъпен. Опитай отново.'));
                 if (!Array.isArray(data.observations) || data.observations.length !== fileFrames.length
                     || typeof data.summary !== 'string' || typeof data.nextStep !== 'string') {
-                    throw new Error('AI екологът върна непълен анализ. Опитай отново.');
+                    throw new Error('Pickle върна непълен преглед на кадрите. Опитай отново.');
                 }
                 if (request.signal.aborted) return;
                 byId('analysis-provenance').textContent = `Участък „${site.name}“. Мястото и датата на заснемане са непотвърдени.`;
@@ -210,6 +213,7 @@ window.setupFootage = (() => {
                 clearTimeout(timeout);
                 if (activeRequest === request) {
                     activeRequest = undefined;
+                    status.classList.remove('is-analyzing');
                     analyzeButton.disabled = false;
                 }
             }

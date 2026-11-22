@@ -1,5 +1,7 @@
 package bg.seagrass.guardian.ecologist;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 /** Data shapes returned by the AI ecologist. Every number carries its source so nothing is presented without evidence. */
@@ -50,7 +52,7 @@ public final class Ecology {
     public record WaterValues(List<Double> lightAtDepth, List<Double> turbidity, List<Double> chlorophyll) {}
 
     /** The narrative report. Same shape whether Claude or the rules engine wrote it. */
-    public record Report(String mode, String model, String headline, String summary, List<Finding> findings,
+    public record Report(@JsonIgnore String mode, @JsonIgnore String model, String headline, String summary, List<Finding> findings,
                          List<Step> plan, List<String> unknowns, String caveat) {}
 
     public record Finding(String title, String severity, String explanation) {}
@@ -60,5 +62,5 @@ public final class Ecology {
     /** An action the AI suggests and the user confirms with a button. */
     public record AiAction(String type, String label, int siteId, String priority, String reason, String metric) {}
 
-    public record Answer(String mode, String model, String text, List<String> used, List<AiAction> actions) {}
+    public record Answer(@JsonIgnore String mode, @JsonIgnore String model, String text, List<String> used, List<AiAction> actions) {}
 }

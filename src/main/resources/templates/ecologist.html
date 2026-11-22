@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="bg" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:replace="~{fragments/layout :: head('AI еколог')}"></th:block>
+    <th:block th:replace="~{fragments/layout :: head('Участък')}"></th:block>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" th:href="@{/css/ecologist.css}">
@@ -12,7 +12,7 @@
 <a class="skip" href="#workspace">Към разследването</a>
 <div class="app-shell">
     <aside th:replace="~{fragments/layout :: rail('ecologist')}"></aside>
-    <main id="workspace" class="workspace" th:data-provider="${aiProvider}"
+    <main id="workspace" class="workspace"
           th:data-archive-url="@{/data/zostera-bulgaria.geojson}"
           th:data-locations-url="@{/api/ecologist/locations}" th:data-sites-url="@{/api/ecologist/sites}">
 
@@ -186,13 +186,13 @@
                             <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
                             <input id="footage-file" class="file-input" type="file" disabled multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
                         </div>
-                        <p id="footage-formats" class="footage-formats">До 3 снимки (JPG, PNG, WebP) или 1 видео (MP4, WebM), до 100 MB на файл. При видео се подбират до 3 кадъра за локалния AI еколог.</p>
+                        <p id="footage-formats" class="footage-formats">До 3 снимки (JPG, PNG, WebP) или 1 видео (MP4, WebM), до 100 MB на файл. При видео Pickle преглежда до 3 кадъра.</p>
                         <div id="frame-preview" class="frame-preview" hidden></div>
-                        <button id="analyze-file" class="button primary" type="button" hidden>Анализирай с AI еколога</button>
+                        <button id="analyze-file" class="button primary" type="button" hidden>Анализирай с Pickle</button>
                         <p id="analysis-status" class="analysis-status" role="status">Изчакваме списъка с участъци.</p>
                     </div>
                     <section id="analysis-result" class="panel-body analysis-result" aria-labelledby="analysis-title" hidden>
-                        <h3 id="analysis-title" tabindex="-1">AI еколог · анализ на кадрите</h3>
+                        <h3 id="analysis-title" tabindex="-1">Pickle · анализ на кадрите</h3>
                         <p id="analysis-provenance" class="analysis-provenance"></p>
                         <dl class="findings">
                             <div><dt>Видимо в кадрите</dt><dd><ol id="analysis-frames"></ol></dd></div>
@@ -251,18 +251,12 @@
                 </details>
             </div>
 
-            <aside class="copilot" id="copilot" aria-label="AI еколог">
+            <aside class="copilot" id="copilot" aria-label="Pickle">
                 <header class="cp-head">
                     <span class="cp-avatar" aria-hidden="true"><svg class="icon"><use href="#i-spark"/></svg></span>
                     <div class="cp-title">
-                        <strong>AI еколог</strong>
-                        <div class="engine-pill" th:classappend="${aiEnabled} ? 'is-ai' : 'is-rules'"
-                             th:title="${aiEnabled} ? 'Докладите и отговорите се пишат от езиков модел' : 'Няма API ключ: отговорите са от правила'">
-                            <i></i>
-                            <span th:if="${aiProvider == 'claude'}" th:text="'Claude · ' + ${aiModel}">Claude</span>
-                            <span th:if="${aiProvider == 'gemini'}" th:text="'Gemini · ' + ${aiModel}">Gemini</span>
-                            <span th:if="${aiProvider == 'rules'}">Експертна система, без AI ключ</span>
-                        </div>
+                        <strong>Pickle</strong>
+                        <span class="cp-role">Морски еколог</span>
                     </div>
                     <button id="cp-reset" class="cp-icon-btn" type="button" title="Нов разговор" aria-label="Нов разговор"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg></button>
                     <button id="cp-close" class="cp-icon-btn cp-close" type="button" aria-label="Затвори"><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></button>
@@ -278,7 +272,7 @@
             </aside>
         </div>
 
-        <button id="cp-open" class="cp-fab" type="button"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Попитай AI</button>
+        <button id="cp-open" class="cp-fab" type="button"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Попитай Pickle</button>
     </main>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"

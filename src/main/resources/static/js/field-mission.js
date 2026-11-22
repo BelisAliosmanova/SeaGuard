@@ -78,7 +78,7 @@ window.setupFieldMission = (() => {
             const response = await fetch(url, options);
             const result = await response.json().catch(() => ({}));
             if (!response.ok) {
-                const error = new Error(result.message || 'SeaGuard не успя да запише или зареди мисията. Опитай отново.');
+                const error = new Error(result.message || 'Blue root не успя да запише или зареди мисията. Опитай отново.');
                 error.status = response.status;
                 throw error;
             }
@@ -134,7 +134,7 @@ window.setupFieldMission = (() => {
                 ' · кадър на ' + Number(review.seconds).toLocaleString('bg-BG', {maximumFractionDigits: 1}) + ' с';
             details.append(image, element('p', when + timestamp, 'mission-coordinate'));
             if (review.notes) details.append(element('p', review.notes));
-            if (review.aiObservation) details.append(element('p', 'AI наблюдение · ' + review.aiObservation));
+            if (review.aiObservation) details.append(element('p', 'Наблюдение на Pickle · ' + review.aiObservation));
             return details;
         }
 
@@ -162,7 +162,7 @@ window.setupFieldMission = (() => {
 
         function announceProgress() {
             if (!points.length) {
-                notice.textContent = 'SeaGuard ще предложи две точки в архивния контур на избрания участък.';
+                notice.textContent = 'Blue root ще предложи две точки в архивния контур на избрания участък.';
                 return;
             }
             const finished = points.filter(point => point.review && point.review.verdict !== 'UNCLEAR').length;
@@ -179,7 +179,7 @@ window.setupFieldMission = (() => {
             byId('mission-review-title').textContent = 'Теренен преглед · точка ' + active.number;
             save.disabled = !frames.length || operation === active;
             byId('mission-ai-note').textContent = analysis?.observations?.[Number(frameSelect.value)] ||
-                'Ако пуснеш AI анализ, наблюдението за избрания кадър ще се добави към проверката.';
+                'Ако анализираш кадрите с Pickle, наблюдението за избрания кадър ще се добави към проверката.';
         }
 
         function startReview(point) {

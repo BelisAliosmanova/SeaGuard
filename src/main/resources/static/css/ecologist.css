@@ -653,6 +653,27 @@ body.ecologist-page .copilot {
     color: var(--eco-muted);
 }
 
+.ecologist-page .analysis-status.is-analyzing {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--eco-ink);
+}
+
+.ecologist-page .analysis-status.is-analyzing::before {
+    content: "";
+    flex: 0 0 18px;
+    height: 18px;
+    border: 2px solid var(--eco-line-strong);
+    border-top-color: var(--eco-cyan-bright);
+    border-radius: 50%;
+    animation: footage-spin .8s linear infinite;
+}
+
+@keyframes footage-spin {
+    to { transform: rotate(1turn); }
+}
+
 .ecologist-page .footage-actions {
     display: flex;
     flex-wrap: wrap;
@@ -828,24 +849,9 @@ body.ecologist-page .copilot {
     font-size: 1.02rem;
 }
 
-.ecologist-page .engine-pill {
-    display: flex;
-    align-items: center;
-    gap: 7px;
+.ecologist-page .cp-role {
     color: var(--eco-muted);
     font-size: .78rem;
-}
-
-.ecologist-page .engine-pill i {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #f3b75a;
-}
-
-.ecologist-page .engine-pill.is-ai i {
-    background: #4be0a1;
-    box-shadow: 0 0 10px rgba(75, 224, 161, .5);
 }
 
 .ecologist-page .cp-icon-btn {

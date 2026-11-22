@@ -4,9 +4,6 @@ import bg.seagrass.guardian.ecologist.Ecology.*;
 import com.anthropic.client.AnthropicClient;
 import com.anthropic.client.okhttp.AnthropicOkHttpClient;
 import com.anthropic.core.JsonValue;
-import com.anthropic.errors.AnthropicIoException;
-import com.anthropic.errors.AnthropicServiceException;
-import com.anthropic.errors.RateLimitException;
 import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.StopReason;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -16,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 /**
  * Claude as the ecologist's voice. It receives the engine's evidence-backed assessment and turns it into a report
@@ -40,6 +38,12 @@ public class EcologistAi {
                    String rationale,
                    @JsonPropertyDescription("Измерим показател, по който ще се види ефектът.") String successMetric) {}
 
+
+    private static final Pattern INTERNAL_LABEL = Pattern.compile(
+        "(?iU)\\b(?:seaguard|gemini|claude|qwen\\p{Alnum}*|llama(?:\\.cpp)?|anthropic|openai|chatgpt|gpt|ai|ии|езиков модел|language model|изкуствен\\p{L}*\\s+интелект\\p{L}*)\\b");
+    private static final String REPORT_NOTICE = "Показано е обобщение на наличните данни за участъка.";
+    private static final String ANSWER_NOTICE = "Подробният отговор е временно недостъпен.";
+
     private final ObjectMapper mapper;
     private final String model;
     private final AnthropicClient client;
@@ -57,7 +61,6 @@ public class EcologistAi {
     /** "claude", "gemini" or "rules": Claude wins when both keys are set. */
     public String provider() { return client != null ? "claude" : gemini.enabled() ? "gemini" : "rules"; }
     public boolean enabled() { return !"rules".equals(provider()); }
-    public String model() { return client != null ? model : gemini.enabled() ? gemini.model() : null; }
 
     public Report report(Assessment a) {
         if (!enabled()) return rulesReport(a, null);
@@ -69,13 +72,12 @@ public class EcologistAi {
                 String text = gemini.generate(EcologistKnowledge.SYSTEM_PROMPT, List.of(Map.of("role", "user",
                     "text", REPORT_TASK.formatted(json(a)) + "\n\n" + REPORT_SHAPE)), true);
                 LlmReport r = mapper.readValue(stripFences(text), LlmReport.class);
+                checkPublicText(r);
                 Report report = toReport("gemini", gemini.model(), r);
                 reportCache.put(key, report);
                 return report;
-            } catch (GeminiClient.GeminiException e) {
-                return rulesReport(a, e.getMessage() + " Показан е докладът на експертната система.");
             } catch (Exception e) {
-                return rulesReport(a, "Gemini върна непълен отговор; показан е докладът на експертната система.");
+                return rulesReport(a, REPORT_NOTICE);
             }
         }
         try {
@@ -85,25 +87,23 @@ public class EcologistAi {
                 .build();
             var message = client.messages().create(params);
             if (message.stopReason().filter(StopReason.REFUSAL::equals).isPresent()) {
-                return rulesReport(a, "Моделът отказа заявката; показан е докладът на експертната система.");
+                return rulesReport(a, REPORT_NOTICE);
             }
             LlmReport r = message.content().stream()
                 .flatMap(b -> b.text().stream()).map(t -> t.text()).findFirst()
                 .orElseThrow(() -> new IllegalStateException("Empty response"));
+            checkPublicText(r);
             Report report = toReport("claude", model, r);
             reportCache.put(key, report);
             return report;
-        } catch (RateLimitException e) {
-            return rulesReport(a, "AI е натоварен (rate limit); показан е докладът на експертната система.");
-        } catch (AnthropicServiceException | AnthropicIoException e) {
-            return rulesReport(a, "AI не е достъпен в момента; показан е докладът на експертната система.");
         } catch (RuntimeException e) {
-            return rulesReport(a, "AI върна непълен отговор; показан е докладът на експертната система.");
+            return rulesReport(a, REPORT_NOTICE);
         }
     }
 
     /** What the model returns for a question: the answer, which indicators it relied on, and suggested actions. */
     record LlmAnswer(
+        @JsonPropertyDescription("true за допустим тематичен въпрос; false за въпрос извън обхвата или със смесена тема.") Boolean inScope,
         @JsonPropertyDescription("Отговор на български, до ~150 думи, с числата от оценката. Без markdown.") String answer,
         @JsonPropertyDescription("Ключовете на показателите, на които се опира отговорът (light, eutrophication, heat, anomaly, trend, mechanical, field).") List<String> used,
         @JsonPropertyDescription("0 до 3 предложени действия, които потребителят може да потвърди с бутон.") List<LlmAction> actions) {}
@@ -119,7 +119,9 @@ public class EcologistAi {
     private static final java.util.Set<String> METRICS = java.util.Set.of("lightAtDepth", "turbidity", "chlorophyll");
 
     private static final String ASK_RULES = """
-        Отговори кратко (до ~150 думи), конкретно и с числата от оценката. Без markdown.
+        Ако последният въпрос е извън тематичния обхват или включва несвързана заявка, върни
+        {"inScope": false, "answer": "", "used": [], "actions": []}.
+        За допустим въпрос върни inScope=true и отговори кратко (до ~150 думи), конкретно и с числата от оценката. Без markdown.
         Можеш да предложиш до 3 действия, които потребителят потвърждава с бутон:
         - add_task: задача в плана за терена за ТОЗИ участък (label = конкретната задача, priority, reason);
         - open_site: отвори друг участък от списъка за сравнение (siteId от списъка, label, reason);
@@ -134,6 +136,7 @@ public class EcologistAi {
             + "Други участъци (id, име, риск):\n" + sites.stream().map(s -> s.id() + " " + s.name() + " " + s.riskScore())
                 .collect(java.util.stream.Collectors.joining("; "));
         List<Map<String, String>> recent = history.stream().skip(Math.max(0, history.size() - 6))
+            .filter(Objects::nonNull)
             .filter(t -> t.get("text") != null && ("user".equals(t.get("role")) || "assistant".equals(t.get("role")))).toList();
         if (client == null) {
             List<Map<String, String>> turns = new ArrayList<>();
@@ -142,14 +145,13 @@ public class EcologistAi {
             turns.addAll(recent);
             turns.add(Map.of("role", "user", "text", question + "\n\n" + ASK_RULES + """
 
-                Върни САМО JSON: {"answer": "...", "used": ["light"], "actions": [{"type": "add_task", "label": "...", "siteId": 2, "priority": "Висок", "reason": "...", "metric": null}]}"""));
+                Върни САМО JSON: {"inScope": true, "answer": "...", "used": ["light"], "actions": [{"type": "add_task", "label": "...", "siteId": 2, "priority": "Висок", "reason": "...", "metric": null}]}"""));
             try {
                 LlmAnswer r = mapper.readValue(stripFences(gemini.generate(EcologistKnowledge.SYSTEM_PROMPT, turns, true)), LlmAnswer.class);
+                if (Boolean.TRUE.equals(r.inScope())) checkPublicText(r);
                 return toAnswer("gemini", gemini.model(), r, a, sites);
-            } catch (GeminiClient.GeminiException e) {
-                return rulesAnswer(a, question, sites, e.getMessage());
             } catch (Exception e) {
-                return rulesAnswer(a, question, sites, "Gemini върна неочакван формат.");
+                return rulesAnswer(a, question, sites, ANSWER_NOTICE);
             }
         }
         try {
@@ -164,6 +166,7 @@ public class EcologistAi {
             if (message.stopReason().filter(StopReason.REFUSAL::equals).isPresent()) return rulesAnswer(a, question, sites, null);
             LlmAnswer r = message.content().stream().flatMap(b -> b.text().stream()).map(t -> t.text()).findFirst()
                 .orElseThrow(() -> new IllegalStateException("Empty response"));
+            if (Boolean.TRUE.equals(r.inScope())) checkPublicText(r);
             return toAnswer("claude", model, r, a, sites);
         } catch (RuntimeException e) {
             return rulesAnswer(a, question, sites, null);
@@ -172,6 +175,8 @@ public class EcologistAi {
 
     /** Keep only well-formed actions that point at real sites, so the UI never shows a broken button. */
     private static Answer toAnswer(String mode, String model, LlmAnswer r, Assessment a, List<SiteRisk> sites) {
+        if (r.inScope() == null) throw new IllegalStateException("Missing question scope");
+        if (!r.inScope()) return EcologistScope.redirect();
         var known = a.indicators().stream().map(Indicator::key).collect(java.util.stream.Collectors.toSet());
         var ids = sites.stream().map(SiteRisk::id).collect(java.util.stream.Collectors.toSet());
         List<String> used = r.used() == null ? List.of() : r.used().stream().filter(known::contains).distinct().toList();
@@ -245,7 +250,9 @@ public class EcologistAi {
     }
 
     private static Answer rulesAnswer(Assessment a, String question, List<SiteRisk> sites, String notice) {
-        String text = (notice == null ? "" : notice + " Ето какво казват данните:\n\n") + rulesText(a, question);
+        String intro = notice == null ? "" : notice + " Ето какво казват данните:\n\n";
+        if (EcologistScope.mentionsNutrients(question)) return nutrientAnswer(a, intro);
+        String text = intro + rulesText(a, question);
         String q = question.toLowerCase(Locale.forLanguageTag("bg"));
         List<String> used = a.indicators().stream().filter(i -> i.level() == Ecology.Level.HIGH || i.level() == Ecology.Level.MODERATE)
             .map(Indicator::key).limit(3).toList();
@@ -257,6 +264,25 @@ public class EcologistAi {
         if (q.contains("измер") || q.contains("засад")) actions.add(new AiAction("new_measurement", "Запиши теренно измерване тук", a.site().id(), null, "Теренните данни повишават увереността на оценката.", null));
         else actions.add(new AiAction("show_map", "Покажи на картата", a.site().id(), null, null, null));
         return new Answer("rules", null, text, used, actions);
+    }
+
+    private static Answer nutrientAnswer(Assessment assessment, String intro) {
+        var indicator = assessment.indicators().stream()
+            .filter(i -> i.key().equals("eutrophication") && i.level() != Level.UNKNOWN)
+            .findFirst();
+        String evidence = indicator.map(i -> "За участъка оценката показва " + i.value()
+            + ". Хлорофил-а е косвен показател за фитопланктон.")
+            .orElse("За участъка няма налична оценка по хлорофил-а.");
+        String answer = intro
+            + "Хранителни вещества могат да постъпват в морето с речен отток, отмиване от земеделски площи и отпадъчни води. "
+            + evidence + " Конкретният източник остава непотвърден. "
+            + "За проверка сравни пробите за нитрати и фосфати близо до предполагаемия вход и извън влиянието му.";
+        List<AiAction> actions = assessment.actions().stream()
+            .filter(action -> EcologistScope.mentionsNutrients(action.title())).findFirst()
+            .map(action -> new AiAction("add_task", action.title(), assessment.site().id(), action.priority(),
+                "Сравни нитрати и фосфати при предполагаемия вход и извън влиянието му.", null))
+            .stream().toList();
+        return new Answer("rules", null, answer, indicator.isPresent() ? List.of("eutrophication") : List.of(), actions);
     }
 
     private static String rulesText(Assessment a, String question) {
@@ -280,6 +306,12 @@ public class EcologistAi {
 
     private static String severity(Ecology.Level l) {
         return switch (l) { case HIGH -> "висока"; case MODERATE -> "умерена"; case LOW -> "ниска"; default -> "неизвестна"; };
+    }
+
+    private void checkPublicText(Object result) {
+        if (INTERNAL_LABEL.matcher(mapper.valueToTree(result).toString()).find()) {
+            throw new IllegalStateException("Provider returned non-public branding");
+        }
     }
 
     private String json(Assessment a) {
