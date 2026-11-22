@@ -310,7 +310,7 @@ textarea.input { height: auto; min-height: 88px; padding: 8px 10px; resize: vert
 @media (max-width: 760px) {
     .site-nav-inner { min-height: 54px; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px; padding-inline: 10px; }
     .site-nav :is(.brand-name, .nav-action-label) { display: none; }
-    .site-nav nav { justify-content: center; gap: 3px; }
+    .site-nav nav { justify-content: center; flex-wrap: wrap; gap: 3px; padding-block: 3px; }
     .site-nav nav a { min-height: 33px; padding: 0 6px; font-size: 11.5px; }
     .site-nav nav .icon { display: none; }
     .nav-cta { width: 32px; height: 32px; padding: 0; }

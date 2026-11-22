@@ -896,6 +896,7 @@ function draw() {
 
 const controls = new Set(['arrowright', 'arrowleft', 'arrowdown', 'arrowup', 'w', 'a', 's', 'd', 'keyw', 'keya', 'keys', 'keyd', 'shift', ' ']);
 window.addEventListener('keydown', event => {
+    if (event.target?.closest?.('.site-nav, .skip')) return;
     const key = event.key.toLowerCase();
     if ((event.code === 'KeyQ' || key === 'q') && !event.repeat && !event.ctrlKey && !event.altKey && !event.metaKey) {
         ping();

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Морска симулация')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/simulation.css}">
+    <script th:src="@{/js/simulation.js}" defer></script>
+</head>
+<body>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<a class="skip" href="#workspace">Към съдържанието</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/layout :: rail('simulation')}"></aside>
+    <main id="workspace" class="workspace simulation">
+        <header class="masthead">
+            <div>
+                <h1>Морска симулация</h1>
+                <p>Промени условията и проследи как реагират рибите и морската трева.</p>
+            </div>
+            <div class="masthead-actions">
+                <a class="button secondary" th:href="@{/under-the-waves}">
+                    <svg class="icon" aria-hidden="true"><use href="#i-wave"/></svg>Играй „Под вълните“
+                </a>
+            </div>
+        </header>
+        <div class="aquarium">
+            <section class="panel simulation-view" aria-label="Подводна сцена">
+                <div class="readouts">
+                    <div><span>Риби в сцената</span><strong id="population">30</strong></div>
+                    <div><span>Здраве на рибите</span><strong id="fish-health">100%</strong></div>
+                    <div><span>Здраве на тревата</span><strong id="grass-health">100%</strong></div>
+                </div>
+                <div class="scene">
+                    <canvas role="img" aria-label="Анимиран пасаж риби над ливада от морска трева"></canvas>
+                </div>
+                <p id="observation" class="panel-foot observation"></p>
+            </section>
+            <aside class="panel controls" aria-labelledby="conditions-title">
+                <header class="panel-head"><h2 id="conditions-title">Условия в морето</h2></header>
+                <div class="panel-body">
+                    <div class="presets" aria-label="Сценарии">
+                        <button class="button secondary small" type="button" data-scenario="balanced">Спокойно море</button>
+                        <button class="button secondary small" type="button" data-scenario="hot">Гореща вълна</button>
+                        <button class="button secondary small" type="button" data-scenario="murky">Мътна вода</button>
+                    </div>
+                    <label for="temperature">Температура <output for="temperature"></output></label>
+                    <input id="temperature" type="range" min="6" max="34" value="20" data-unit="°C">
+                    <label for="oxygen">Разтворен кислород <output for="oxygen"></output></label>
+                    <input id="oxygen" type="range" min="1" max="12" step="0.5" value="8" data-unit="мг/л">
+                    <label for="clarity">Прозрачност <output for="clarity"></output></label>
+                    <input id="clarity" type="range" min="5" max="100" value="85" data-unit="%">
+                    <label for="current">Течение <output for="current"></output></label>
+                    <input id="current" type="range" min="0" max="100" value="25" data-unit="%">
+                    <div class="actions">
+                        <button class="button secondary small" type="button" id="pause">Пауза</button>
+                        <button class="button secondary small" type="button" id="reset">Започни отначало</button>
+                    </div>
+                    <p class="model-note">Учебен модел с ускорени промени в здравето и числеността.</p>
+                </div>
+            </aside>
+        </div>
+    </main>
+</div>
+</body>
+</html>
