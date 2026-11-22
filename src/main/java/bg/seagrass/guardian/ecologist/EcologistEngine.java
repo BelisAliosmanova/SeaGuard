@@ -158,6 +158,15 @@ public class EcologistEngine {
             turbidity == null ? null : lightAtDepth(turbidity, depth) * 100);
     }
 
+    public List<MonthPoint> coastalTrend(int siteId) {
+        return site(siteId).map(site -> coastalTrend(satellite.getOrDefault(siteId, List.of()), depthLimit(site)))
+            .orElseGet(List::of);
+    }
+
+    private static List<MonthPoint> coastalTrend(List<JsonNode> rows, double depth) {
+        return rows.stream().map(row -> waterPoint(row.path("month").asText(), row, depth)).toList();
+    }
+
     public Optional<Assessment> assess(int siteId) {
         return site(siteId).map(s -> assess(s, temperatures.forSites(sites).get(s.id()), realMeasurements()));
     }
@@ -322,8 +331,7 @@ public class EcologistEngine {
         List<Cause> causes = causes(light, eutro, heatLevel, anomalyLevel, trend, mechanical, lightFrac, seasonChl, heat, harbour.name(), harbourKm);
         List<Action> actions = actions(site, light, eutro, max(heatLevel, anomalyLevel), trend, mechanical, near.isEmpty(), ageYears);
 
-        List<MonthPoint> series = sat.stream()
-            .map(row -> waterPoint(row.path("month").asText(), row, depth)).toList();
+        List<MonthPoint> series = coastalTrend(sat, depth);
 
         Optics optics = new Optics(depth, site.depthLimitM() == null,
             seasonTur == null ? null : round(attenuation(seasonTur), 3),

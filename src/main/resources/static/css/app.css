@@ -1482,8 +1482,8 @@ body.has-fullscreen-map::after {
     white-space: nowrap;
 }
 
-/* Marine simulator and game use the Blue root dashboard palette. */
-body:has(.workspace:is(.simulation, .dive)) {
+/* The marine pages and community use the Blue root dashboard palette. */
+body:has(.workspace:is(.simulation, .dive, .community-page)) {
     color-scheme: dark;
     --canvas: #031722;
     --paper: rgba(7, 45, 60, .90);
@@ -1507,34 +1507,47 @@ body:has(.workspace:is(.simulation, .dive)) {
         url("../img/bg.png") center / cover no-repeat fixed;
 }
 
-.workspace:is(.simulation, .dive) .masthead {
+.workspace:is(.simulation, .dive, .community-page) .masthead {
     align-items: center;
 }
 
-.workspace:is(.simulation, .dive) .masthead .button.secondary {
+.workspace:is(.simulation, .dive, .community-page) .masthead .button.secondary {
     background: rgba(5, 35, 49, .82);
 }
 
-.workspace:is(.simulation, .dive) .masthead .button.secondary:hover {
+.workspace:is(.simulation, .dive, .community-page) .masthead .button.secondary:hover {
     background: #104554;
 }
 
-.workspace:is(.simulation, .dive) .panel {
+.workspace:is(.simulation, .dive, .community-page) .panel {
     background: linear-gradient(145deg, rgba(12, 62, 77, .90), rgba(5, 35, 49, .88));
 }
 
-@media (max-width: 480px) {
-    body:has(.workspace:is(.simulation, .dive)) .site-nav nav .nav-label {
+@media (max-width: 1100px) {
+    .site-nav nav {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+    }
+
+    .site-nav #primary-nav a {
+        justify-content: center;
+        min-height: 36px;
+        padding-inline: 7px;
+    }
+
+    .site-nav nav .nav-label {
         display: none;
     }
 
-    body:has(.workspace:is(.simulation, .dive)) .site-nav nav a {
-        justify-content: center;
-        min-width: 36px;
-        min-height: 36px;
-    }
-
-    body:has(.workspace:is(.simulation, .dive)) .site-nav nav .icon {
+    .site-nav nav .icon {
         display: block;
+        flex: none;
+    }
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+    .site-nav nav {
+        min-width: 245px;
     }
 }

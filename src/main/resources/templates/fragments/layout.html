@@ -44,9 +44,10 @@
     <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0Z"/></symbol>
     <symbol id="i-wave" viewBox="0 0 24 24"><path d="M2 15c3 0 3-5 6-5s3 5 6 5 3-5 6-5M2 20h20"/></symbol>
     <symbol id="i-current" viewBox="0 0 24 24"><path d="M3 8h13l-3-3M21 16H8l3 3"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 11a7 7 0 0 1-7 7H8l-4 3v-5a7 7 0 0 1-1-4 7 7 0 0 1 7-7h3a7 7 0 0 1 7 6Z"/><path d="M8 10h7m-7 4h5"/></symbol>
 </svg>
 
-<!-- Shared navigation. `active` is one of: dashboard, ecologist, field, simulation, dive. -->
+<!-- Shared navigation. `active` is one of: dashboard, ecologist, field, simulation, dive, community. -->
 <aside th:fragment="rail(active)" class="site-nav">
     <div class="site-nav-inner">
         <a class="brand" aria-label="Blue root" th:href="@{/}">
@@ -59,6 +60,7 @@
             <a aria-label="Теренна работа" title="Теренна работа" th:href="@{/field}" th:attr="aria-current=${active == 'field'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-table"/></svg><span class="nav-label">Теренна работа</span></a>
             <a aria-label="Морска симулация" title="Морска симулация" th:href="@{/simulation}" th:attr="aria-current=${active == 'simulation'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-water"/></svg><span class="nav-label">Симулация</span></a>
             <a aria-label="Под вълните" title="Под вълните" th:href="@{/under-the-waves}" th:attr="aria-current=${active == 'dive'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-wave"/></svg><span class="nav-label">Под вълните</span></a>
+            <a aria-label="Общност" title="Общност" th:href="@{/community}" th:attr="aria-current=${active == 'community'} ? 'page' : null"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg><span class="nav-label">Общност</span></a>
         </nav>
         <a class="button primary nav-cta" aria-label="Ново измерване" th:href="@{/measurements/new}"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span class="nav-action-label">Ново измерване</span></a>
     </div>

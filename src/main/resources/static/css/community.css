@@ -1,0 +1,367 @@
+.community-page {
+    max-width: 1200px;
+}
+
+.community-layout {
+    display: grid;
+    grid-template-columns: minmax(245px, 310px) minmax(0, 1fr);
+    align-items: start;
+    gap: 18px;
+}
+
+.community-filters,
+.topic-pages {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0 14px 12px;
+}
+
+.community-filters label,
+.community-form label {
+    display: grid;
+    min-width: 0;
+    gap: 5px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.community-page :is(input:not([type="checkbox"]), select, textarea) {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--control);
+    border-radius: var(--radius-sm);
+    background: rgba(3, 25, 37, .76);
+    color: var(--ink);
+    font: inherit;
+}
+
+.community-page :is(input, textarea)::placeholder {
+    color: var(--muted);
+}
+
+.community-page textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+.community-page input[type="checkbox"] {
+    accent-color: var(--accent);
+}
+
+.community-status {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.community-status:empty {
+    display: none;
+}
+
+.community-status.is-error {
+    color: #ffd0c9;
+}
+
+.community-directory > .community-status,
+.community-conversation > .community-status {
+    padding: 10px 16px;
+}
+
+.topic-list,
+.message-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.topic-list {
+    max-height: 560px;
+    overflow: auto;
+}
+
+.topic-list li {
+    border-top: 1px solid var(--border);
+}
+
+.topic-list button {
+    display: grid;
+    width: 100%;
+    gap: 3px;
+    padding: 11px 14px;
+    border: 0;
+    color: var(--ink);
+    background: transparent;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+
+.topic-list button:hover {
+    background: var(--well);
+}
+
+.topic-list button[aria-current="true"] {
+    background: var(--accent-soft);
+    box-shadow: inset 3px 0 var(--accent);
+}
+
+.topic-list button:focus-visible {
+    outline-offset: -3px;
+}
+
+.topic-list span,
+.discussion-meta {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.topic-pages {
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+.community-welcome {
+    display: grid;
+    min-height: 300px;
+    place-content: center;
+    justify-items: center;
+    gap: 9px;
+    padding: 30px 18px;
+    text-align: center;
+}
+
+.community-welcome .icon {
+    width: 36px;
+    height: 36px;
+    color: var(--accent-strong);
+}
+
+.community-welcome p {
+    max-width: 46ch;
+    color: var(--muted);
+}
+
+.discussion-header,
+.reply-form {
+    padding: 15px 16px;
+}
+
+.discussion-header h2 {
+    margin: 3px 0;
+    font-size: clamp(19px, 3vw, 27px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.discussion-header a,
+.message-photo a {
+    color: var(--accent-strong);
+    font-size: 12px;
+}
+
+.investigation {
+    margin: 0 16px 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--well);
+}
+
+.investigation-tools,
+.form-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.task-stage {
+    margin-right: auto;
+    color: var(--accent-strong);
+    font-weight: 650;
+}
+
+.investigation > .community-status {
+    margin-top: 8px;
+}
+
+.summary-panel {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+.summary-panel > summary {
+    color: var(--accent-strong);
+    cursor: pointer;
+    font-weight: 650;
+}
+
+.pickle-summary {
+    display: grid;
+    gap: 8px;
+    padding-top: 7px;
+}
+
+.pickle-summary ul {
+    margin: 0;
+    padding-inline-start: 18px;
+}
+
+.pickle-summary li,
+.pickle-summary p {
+    overflow-wrap: anywhere;
+}
+
+.message-scroll {
+    max-height: min(52svh, 520px);
+    overflow: auto;
+    padding: 12px 16px;
+    border-block: 1px solid var(--border);
+    background: rgba(3, 24, 34, .32);
+}
+
+.message-list {
+    display: grid;
+    gap: 12px;
+}
+
+.message-list li {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    overflow-wrap: anywhere;
+}
+
+.message-list li > header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    align-items: baseline;
+}
+
+.message-list time {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.message-body {
+    margin-top: 4px;
+    white-space: pre-wrap;
+}
+
+.message-photo {
+    margin-top: 9px;
+}
+
+.message-photo img {
+    display: block;
+    width: min(100%, 340px);
+    height: auto;
+    max-height: 225px;
+    object-fit: contain;
+    object-position: left;
+    border-radius: var(--radius-sm);
+}
+
+.message-photo figcaption {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.message-reading {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-size: 12px;
+}
+
+#older-posts {
+    margin-bottom: 10px;
+}
+
+.community-form {
+    display: grid;
+    gap: 10px;
+}
+
+.reply-fields,
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.reply-fields {
+    grid-template-columns: minmax(120px, .34fr) minmax(0, 1fr);
+}
+
+.evidence-fields summary {
+    width: fit-content;
+    margin-bottom: 5px;
+    color: var(--accent-strong);
+    cursor: pointer;
+}
+
+.topic-dialog {
+    width: min(calc(100% - 24px), 560px);
+    max-height: 92svh;
+    padding: 0;
+    color: var(--ink);
+    box-shadow: var(--shadow-md);
+}
+
+.topic-dialog::backdrop {
+    background: rgba(1, 15, 24, .76);
+}
+
+.topic-dialog .community-form {
+    padding: 0 16px 16px;
+}
+
+.community-form .investigation-choice {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.investigation-choice strong {
+    color: var(--ink);
+}
+
+.investigation-choice small {
+    display: block;
+    font-size: inherit;
+}
+
+@media (max-width: 760px) {
+    .community-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .topic-list {
+        max-height: 255px;
+    }
+
+    .community-welcome {
+        min-height: 170px;
+    }
+}
+
+@media (max-width: 480px) {
+    .reply-fields,
+    .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Общност')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/community.css}">
+    <script th:src="@{/js/community.js}" defer></script>
+</head>
+<body>
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<a class="skip" href="#workspace">Към съдържанието</a>
+<div class="app-shell">
+    <aside th:replace="~{fragments/layout :: rail('community')}"></aside>
+    <main id="workspace" class="workspace community-page" th:data-topics="@{/api/community/topics}"
+          th:data-sites="@{/ecologist}" th:data-field="@{/field}">
+        <header class="masthead">
+            <div>
+                <h1>Общност</h1>
+                <p>Обсъждай морето, споделяй наблюдения и предложи какво да проверим на терен.</p>
+            </div>
+            <button class="button primary" id="open-new-topic" type="button">
+                <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg> Нова тема
+            </button>
+        </header>
+
+        <div class="community-layout">
+            <section class="panel community-directory" aria-labelledby="directory-title">
+                <header class="panel-head"><h2 id="directory-title">Дискусии</h2></header>
+                <div class="community-filters">
+                    <label>Тема
+                        <select id="filter-category">
+                            <option value="">Всички теми</option>
+                            <option th:each="category : ${categories}" th:value="${category.value}" th:text="${category.label}"></option>
+                        </select>
+                    </label>
+                    <label>Участък
+                        <select id="filter-site">
+                            <option value="">Всички участъци</option>
+                            <option th:each="site : ${sites}" th:value="${site.id}" th:text="${site.name}"></option>
+                        </select>
+                    </label>
+                </div>
+                <p id="directory-status" class="community-status" role="status">Зареждаме дискусиите…</p>
+                <ul id="topics" class="topic-list"></ul>
+                <div id="topic-pages" class="topic-pages" hidden>
+                    <button class="button secondary small" id="previous-topics" type="button">Предишни</button>
+                    <button class="button secondary small" id="next-topics" type="button">Следващи</button>
+                </div>
+            </section>
+
+            <section class="panel community-conversation" aria-label="Дискусия">
+                <div id="community-welcome" class="community-welcome">
+                    <svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg>
+                    <h2>Избери или започни дискусия</h2>
+                    <p>Започни разследване, ако имаш въпрос за конкретен участък. Другите могат да добавят наблюдения, снимки и данни.</p>
+                </div>
+                <article id="discussion" hidden>
+                    <header class="discussion-header">
+                        <p class="discussion-meta" id="discussion-meta"></p>
+                        <h2 id="discussion-title" tabindex="-1"></h2>
+                        <a id="discussion-site" hidden>Виж данните за участъка →</a>
+                    </header>
+                    <section id="investigation" class="investigation" aria-label="Разследване" hidden>
+                        <div class="investigation-tools">
+                            <span id="task-stage" class="task-stage">Отворено разследване</span>
+                            <button id="summarize-discussion" class="button secondary small" type="button">
+                                <svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>
+                                <span>Обобщи с Pickle</span>
+                            </button>
+                            <button id="save-discussion-task" class="button secondary small" type="button">Добави теренна проверка</button>
+                            <a id="discussion-task-link" class="button secondary small" th:href="@{/field#open-tasks-title}" hidden>Виж в плана за терена</a>
+                        </div>
+                        <p id="investigation-status" class="community-status" role="status"></p>
+                        <details id="summary-panel" class="summary-panel" hidden>
+                            <summary>Обобщение от Pickle</summary>
+                            <div id="pickle-summary" class="pickle-summary"></div>
+                        </details>
+                    </section>
+                    <div id="message-scroll" class="message-scroll" tabindex="0" aria-label="Публикации">
+                        <button id="older-posts" class="button secondary small" type="button" hidden>По-стари публикации</button>
+                        <ol id="messages" class="message-list"></ol>
+                    </div>
+                    <form id="reply-form" class="community-form reply-form">
+                        <div class="reply-fields">
+                            <label>Показвано име
+                                <input name="author" maxlength="45" placeholder="Напр. Мира" autocomplete="nickname" required>
+                            </label>
+                            <label>Отговор
+                                <textarea name="message" rows="2" maxlength="1600" placeholder="Какво наблюдаваш?" required></textarea>
+                            </label>
+                        </div>
+                        <details class="evidence-fields">
+                            <summary>Добави снимка или показател</summary>
+                            <div class="form-grid">
+                                <label>Снимка (JPG, PNG, WebP)
+                                    <input name="photo" type="file" accept="image/jpeg,image/png,image/webp">
+                                </label>
+                                <label>Последна налична стойност за участъка
+                                    <select name="metric">
+                                        <option value="">Избери показател</option>
+                                        <option th:each="metric : ${metrics}" th:value="${metric.value}" th:text="${metric.label}"></option>
+                                    </select>
+                                </label>
+                            </div>
+                        </details>
+                        <div class="form-actions">
+                            <button class="button primary" type="submit">Публикувай отговор</button>
+                            <p id="reply-status" class="community-status" role="status"></p>
+                        </div>
+                    </form>
+                </article>
+                <p id="discussion-status" class="community-status" role="status"></p>
+            </section>
+        </div>
+
+        <dialog id="new-topic" class="panel topic-dialog" aria-labelledby="new-topic-title">
+            <header class="panel-head">
+                <h2 id="new-topic-title">Нова дискусия</h2>
+                <button id="close-new-topic" class="button secondary small" type="button">Затвори</button>
+            </header>
+            <form id="topic-form" class="community-form">
+                <div class="form-grid">
+                    <label>Показвано име
+                        <input name="author" maxlength="45" placeholder="Напр. Мира" autocomplete="nickname" required>
+                    </label>
+                    <label>Тема
+                        <select name="category">
+                            <option th:each="category : ${categories}" th:value="${category.value}" th:text="${category.label}"></option>
+                        </select>
+                    </label>
+                </div>
+                <label class="investigation-choice">
+                    <input name="investigation" type="checkbox" value="true">
+                    <span><strong>Разследване на участък</strong><small>Съберете наблюдения и планирайте теренна проверка.</small></span>
+                </label>
+                <label>Участък
+                    <select name="siteId">
+                        <option value="">Без конкретен участък</option>
+                        <option th:each="site : ${sites}" th:value="${site.id}" th:text="${site.name}"></option>
+                    </select>
+                </label>
+                <label>Заглавие
+                    <input name="title" maxlength="120" placeholder="Напр. Как се промени видимостта след бурята?" required>
+                </label>
+                <label>Начално съобщение
+                    <textarea name="message" maxlength="1600" rows="3" placeholder="Какво забеляза и какво искаш да провериш?" required></textarea>
+                </label>
+                <details class="evidence-fields">
+                    <summary>Добави снимка или показател</summary>
+                    <div class="form-grid">
+                        <label>Снимка (JPG, PNG, WebP)
+                            <input name="photo" type="file" accept="image/jpeg,image/png,image/webp">
+                        </label>
+                        <label>Последна налична стойност за участъка
+                            <select name="metric">
+                                <option value="">Избери показател</option>
+                                <option th:each="metric : ${metrics}" th:value="${metric.value}" th:text="${metric.label}"></option>
+                            </select>
+                        </label>
+                    </div>
+                </details>
+                <div class="form-actions">
+                    <button class="button primary" type="submit">Публикувай тема</button>
+                    <p id="topic-status" class="community-status" role="status"></p>
+                </div>
+            </form>
+        </dialog>
+    </main>
+</div>
+</body>
+</html>
