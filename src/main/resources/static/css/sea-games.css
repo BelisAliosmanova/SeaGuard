@@ -1,41 +1,245 @@
-.dive .masthead { align-items: center; }
-.dive .dive-panel { overflow: hidden; }
-.dive .dive-hud {
+﻿.dive {
+    min-height: 100vh;
+    margin: 0;
+    background: radial-gradient(ellipse at 40% 0%, #123948 0, #071824 48%, #060e17 100%);
+    color: #eafcf7;
+}
+
+.dive-shell {
+    width: min(100%, 1230px);
+    margin: auto;
+    padding: 19px clamp(12px, 3vw, 36px) 24px;
+}
+
+.dive-header, .dive-hud, .dive-console, .dive-tools {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
+    gap: 10px;
+}
+
+.dive-header, .dive-hud {
     justify-content: space-between;
-    gap: 7px 13px;
-    padding: 11px 16px;
 }
-.dive .dive-hud > strong { color: var(--accent-strong); }
-.dive .dive-hud-item { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 12px; }
-.dive .dive-hud-item strong { color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.dive .dive-energy meter { width: clamp(45px, 8vw, 100px); height: 12px; }
-.dive #energy-percent { min-width: 4ch; text-align: right; }
-.dive .dive-stage { position: relative; background: var(--map-backdrop); }
-.dive canvas { display: block; width: 100%; aspect-ratio: 1000 / 565; touch-action: none; cursor: crosshair; }
-.dive canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
-.dive .dive-overlay {
-    position: absolute; inset: 0; display: grid; place-items: center; padding: 8px;
-    background: #091a2abf; backdrop-filter: blur(5px); overflow: auto;
+
+.dive-header {
+    flex-wrap: wrap;
 }
-.dive .dive-dialog {
-    width: min(100%, 430px); padding: clamp(9px, 2.5vw, 24px); border: 1px solid var(--border);
-    border-radius: var(--radius); background: var(--paper); box-shadow: var(--shadow-md); text-align: center;
+
+.dive-header a {
+    color: #a4e1dc;
+    font-size: 14px;
 }
-.dive .dive-dialog h2 { font-size: clamp(17px, 3vw, 26px); line-height: 1.15; }
-.dive .dive-dialog p { color: var(--muted); font-size: 13px; line-height: 1.35; margin: 6px 0 10px; }
-.dive .dive-console { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 10px 16px; }
-.dive .dive-console p { flex: 1 1 220px; color: var(--ink); font-size: 13px; }
-.dive .dive-console .button { touch-action: manipulation; }
-.dive .dive-console .is-held { filter: brightness(.84); }
-.dive .dive-tools .button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-strong); }
-.dive .dive-keys { color: var(--muted); }
-.dive kbd { padding: 0 4px; border: 1px solid var(--border); border-radius: 3px; background: var(--well); color: var(--ink); }
+
+.dive button {
+    touch-action: manipulation;
+    background: #123441;
+    border: 1px solid #407179;
+    border-radius: 9px;
+    color: #e0fffa;
+    font: inherit;
+    font-size: 13px;
+    min-height: 39px;
+    padding: 7px 12px;
+    cursor: pointer;
+}
+
+.dive button:hover, .dive button[aria-pressed="true"] {
+    background: #20545a;
+}
+
+.dive :focus-visible {
+    outline: 2px solid #9bf8df;
+    outline-offset: 3px;
+}
+
+.dive-intro {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 5px 25px;
+    margin: 14px 0;
+}
+
+.dive-intro h1 {
+    font-size: clamp(2.25rem, 7vw, 4.3rem);
+    line-height: .96;
+    letter-spacing: -.06em;
+    margin: 0;
+}
+
+.dive-intro p {
+    max-width: 44ch;
+    margin: 0;
+    color: #b5d6d9;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.dive-hud {
+    background: #092733;
+    padding: 8px 13px;
+    border: 1px solid #356068;
+    border-radius: 12px 12px 0 0;
+    font-size: 12px;
+}
+
+.dive-hud-item {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dive-hud strong {
+    color: #98f6d3;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.dive-energy meter {
+    width: clamp(40px, 10vw, 100px);
+    height: 12px;
+}
+
+.dive-energy #energy-percent {
+    min-width: 4ch;
+    text-align: right;
+}
+
+.dive-stage {
+    position: relative;
+    overflow: hidden;
+    border-inline: 1px solid #356068;
+    background: #092736;
+}
+
+.dive canvas {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1000 / 565;
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.dive canvas:focus-visible {
+    outline-offset: -4px;
+}
+
+.dive-overlay[hidden] {
+    display: none;
+}
+
+.dive-overlay {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    inset: 0;
+    background: #041723bf;
+    backdrop-filter: blur(5px);
+    padding: 12px;
+}
+
+.dive-dialog {
+    width: min(100%, 480px);
+    border: 1px solid #64a4a0;
+    border-radius: 15px;
+    padding: clamp(12px, 3vw, 28px);
+    background: #0d2c38;
+    text-align: center;
+    box-shadow: 0 22px 70px #0007;
+}
+
+.dive-dialog h2 {
+    margin: 0;
+    font-size: clamp(20px, 4vw, 35px);
+}
+
+.dive-dialog p {
+    margin: 6px 0 12px;
+    color: #bddee0;
+    font-size: 14px;
+}
+
+.dive-console {
+    justify-content: flex-end;
+    padding: 8px 12px;
+    border: 1px solid #356068;
+    border-radius: 0 0 12px 12px;
+    background: #092733;
+}
+
+.dive-console p {
+    margin: 0 auto 0 0;
+    color: #cae9e7;
+    font-size: 14px;
+}
+
+.dive #work, .dive #overlay-action {
+    background: #a1f0d1;
+    border-color: #a1f0d1;
+    color: #082921;
+    font-weight: 750;
+}
+
+.dive #work:active, .dive #boost:active, .dive .is-held {
+    filter: brightness(.82);
+}
+
+.dive-keys {
+    color: #a8c4ca;
+    margin: 9px 0 0;
+    font-size: 12px;
+}
+
+.dive kbd {
+    color: #d5eee9;
+}
+
 @media (max-width: 630px) {
-    .dive .dive-console p { flex-basis: 100%; }
-    .dive .dive-console .button { flex: 1; min-height: 40px; }
-    .dive .dive-hud > strong { flex-basis: 100%; }
-    .dive .dive-hud, .dive .dive-console { padding-inline: 11px; }
+    .dive-console {
+        flex-wrap: wrap;
+    }
+
+    .dive-console p {
+        flex-basis: 100%;
+        min-height: 2.7em;
+    }
+
+    .dive-console button {
+        flex: 1;
+        min-height: 44px;
+    }
+
+    .dive-tools {
+        gap: 5px;
+    }
+
+    .dive-tools button {
+        min-height: 34px;
+        padding: 4px 8px;
+    }
+}
+
+.dive #mission {
+    color: #b5ebff;
+}
+
+.dive #sonar {
+    border-color: #6899a8;
+    white-space: nowrap;
+}
+
+.dive #sonar:disabled {
+    cursor: default;
+    opacity: .68;
+}
+
+@media (max-width: 700px) {
+    .dive-hud {
+        flex-wrap: wrap;
+        column-gap: 14px;
+    }
+
+    .dive #mission {
+        flex-basis: 100%;
+    }
 }

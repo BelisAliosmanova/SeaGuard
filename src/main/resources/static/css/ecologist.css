@@ -1,389 +1,1375 @@
-/* AI ecologist. Shared tokens and components are in app.css. */
-.engine-pill { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--well); font-size: 12.5px; color: var(--muted); }
-.engine-pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
-.engine-pill.is-ai { background: var(--risk-low-soft); color: var(--risk-low); }
-.engine-pill.is-ai i { background: var(--risk-low); }
+/* SeaGuard · AI Ecologist
+   Ocean-glass visual refresh. Keeps the existing HTML hooks and JS contracts. */
 
-.site-masthead { align-items: center; }
-.eco-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.eco-picker { width: clamp(200px, 26vw, 290px); }
+:root {
+    --eco-ink: #eaf8fb;
+    --eco-muted: #a9c7d0;
+    --eco-faint: #7fa5b1;
+    --eco-ocean-950: #031a27;
+    --eco-ocean-900: #062635;
+    --eco-ocean-850: #083444;
+    --eco-ocean-800: #0b4050;
+    --eco-ocean-700: #10576a;
+    --eco-cyan: #27d6d0;
+    --eco-cyan-bright: #61eee2;
+    --eco-blue: #258dff;
+    --eco-line: rgba(151, 220, 226, .17);
+    --eco-line-strong: rgba(151, 220, 226, .30);
+    --eco-glass: rgba(7, 43, 57, .82);
+    --eco-glass-soft: rgba(10, 57, 71, .72);
+    --eco-shadow: 0 22px 60px rgba(0, 8, 16, .32);
+    --eco-radius: 22px;
+    --eco-radius-sm: 14px;
+    color-scheme: dark;
+}
 
-.site-brief {
+.ecologist-page {
+    background: linear-gradient(rgba(3, 23, 34, .38), rgba(3, 27, 42, .58)),
+    url("../img/bg.png") center / cover no-repeat fixed;
+}
+
+.ecologist-page *,
+.ecologist-page *::before,
+.ecologist-page *::after {
+    box-sizing: border-box;
+}
+
+.ecologist-page a {
+    color: inherit;
+}
+
+.ecologist-page button,
+.ecologist-page input,
+.ecologist-page select,
+.ecologist-page textarea {
+    font: inherit;
+}
+
+.ecologist-page .app-shell {
+    min-height: 100vh;
+    background: linear-gradient(90deg, rgba(1, 17, 27, .28), transparent 24%),
+    radial-gradient(circle at 55% 0%, rgba(33, 190, 183, .06), transparent 42%);
+}
+
+.ecologist-page .workspace {
+    width: min(100%, 1920px);
+    min-width: 0;
+    margin-inline: auto;
+    padding: clamp(18px, 2.4vw, 38px);
+}
+
+.ecologist-page .site-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
-    grid-template-areas: "map verdict" "trend trend";
-}
-.brief-map { grid-area: map; position: relative; min-width: 0; min-height: 355px; }
-.brief-map .map-shell { height: 100%; min-height: 355px; border-radius: var(--radius) 0 0 0; }
-.brief-map .seamap { min-height: 0; }
-.brief-map-caption { position: absolute; z-index: 500; left: 12px; bottom: 34px; max-width: calc(100% - 24px); padding: 9px 13px; border-radius: var(--radius-sm); background: var(--map-glass); box-shadow: 0 2px 9px #0003; pointer-events: none; }
-.brief-map-caption h2 { font-size: 20px; letter-spacing: -.04em; }
-.brief-map-caption p { color: var(--muted); font-size: 11.5px; }
-.brief-map > .empty { margin-top: 100px; }
-
-.verdict-main { grid-area: verdict; min-width: 0; padding: 24px; display: flex; flex-direction: column; gap: 11px; border-left: 1px solid var(--border); }
-.verdict-top { display: flex; align-items: center; gap: 7px 10px; flex-wrap: wrap; }
-.verdict-meta { color: var(--muted); font-size: 12px; }
-.verdict-headline { font-size: clamp(17px, 2vw, 25px); font-weight: 620; line-height: 1.24; letter-spacing: -.035em; max-width: 36ch; }
-.gauges { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: auto; padding-top: 8px; }
-.gauges dt { color: var(--muted); font-size: 12px; }
-.gauges dd strong { font: 640 clamp(30px, 5vw, 50px)/1.1 var(--display); letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
-.gauges dd span { color: var(--muted); margin-left: 3px; font-size: 13px; }
-.gauge { height: 5px; border-radius: 3px; margin-top: 8px; overflow: hidden; position: relative;
-    background: linear-gradient(90deg, var(--marker-low) 0 30%, var(--marker-watch) 30% 45%, var(--marker-elevated) 45% 55%, var(--marker-high) 55%); }
-.gauge i { position: absolute; inset: 0 0 0 auto; background: var(--well); transition: width .28s ease; }
-.gauge.confidence { background: var(--accent); }
-.gauge-note { color: var(--faint); font-size: 11.5px; margin-top: 6px; }
-
-.brief-trend { grid-area: trend; min-width: 0; display: grid; grid-template-columns: minmax(250px, .85fr) minmax(0, 2fr); gap: 18px; padding: 17px 24px; border-top: 1px solid var(--border); }
-.brief-trend-head { display: grid; gap: 8px; align-content: start; justify-items: start; }
-.brief-trend-head p { color: var(--muted); font-size: 12px; }
-.brief-trend-head > a { font-size: 12px; text-decoration: underline; text-underline-offset: .22em; }
-.brief-trend-body { min-width: 0; }
-.brief-trend .monthly-readout { padding-top: 0; }
-.brief-trend .monthly-canvas { height: 160px; }
-.site-actions { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
-.site-actions .actions { grid-template-columns: minmax(0, 1fr); }
-
-.profile { padding: 14px 16px; display: grid; justify-items: start; }
-.profile svg { width: min(100%, 320px); height: auto; display: block; }
-.profile figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
-
-/* Threats as expandable rows */
-.threats { padding: 0 8px 10px; }
-.threat { border-radius: 8px; }
-.threat + .threat { border-top: 1px solid var(--border); }
-.threat summary { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 8px; cursor: pointer; list-style: none; border-radius: 8px; }
-.threat summary::-webkit-details-marker { display: none; }
-.threat summary:hover { background: var(--hover); }
-.threat-dot { width: 10px; height: 10px; border-radius: 50%; }
-.threat-text { display: grid; min-width: 0; }
-.threat-text strong { font-weight: 500; }
-.threat-text span { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
-.threat-body { padding: 0 8px 12px 30px; display: grid; gap: 5px; font-size: 13px; color: var(--ink); }
-.threat-body .meta { color: var(--muted); font-size: 12px; }
-
-/* Causes */
-.causes { list-style: none; margin: 0; display: grid; gap: 16px; }
-.causes li { display: grid; gap: 6px; }
-.cause-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
-.cause-top strong { font-weight: 500; }
-.cause-top span { font-weight: 600; font-variant-numeric: tabular-nums; }
-.cause-bar { height: 5px; background: var(--well); border-radius: 3px; overflow: hidden; }
-.cause-bar i { display: block; height: 100%; background: var(--chart-turbidity); border-radius: 3px; transition: width .5s ease; }
-.causes li:first-child .cause-bar i { background: var(--accent); }
-.causes p { color: var(--muted); font-size: 12.5px; }
-
-/* Plan */
-.actions { list-style: none; margin: 0; counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-.actions li { position: relative; padding: 14px 14px 14px 50px; border: 1px solid var(--border); border-radius: 9px; counter-increment: step; }
-.actions li::before { content: counter(step); position: absolute; left: 14px; top: 13px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--well); font-weight: 600; font-size: 12px; }
-.action-top { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; }
-.action-top strong { font-weight: 500; }
-.priority { flex: 0 0 auto; font-size: 11.5px; font-weight: 500; padding: 1px 8px; border-radius: 999px; }
-.priority.p-urgent { background: var(--risk-high-soft); color: var(--risk-high); }
-.priority.p-high { background: var(--risk-mid-soft); color: var(--risk-mid); }
-.priority.p-mid { background: var(--accent-soft); color: var(--accent); }
-.priority.p-routine { background: var(--risk-low-soft); color: var(--risk-low); }
-.actions p { color: var(--muted); font-size: 12.5px; margin-top: 5px; }
-.actions .verify { color: var(--ink); }
-.actions .verify::before { content: "Как ще разберем: "; color: var(--muted); }
-
-/* AI panel */
-.chat { display: grid; gap: 10px; margin-bottom: 12px; }
-.chat:empty { display: none; }
-.msg { max-width: 76ch; padding: 10px 13px; border-radius: 14px; font-size: 13.5px; line-height: 1.5; white-space: pre-wrap; }
-.msg.user { justify-self: end; background: var(--accent); color: var(--on-accent); border-bottom-right-radius: 4px; }
-.msg.assistant { background: var(--well); border-bottom-left-radius: 4px; }
-.msg small { display: block; color: var(--faint); font-size: 11px; margin-top: 5px; }
-.suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.suggestions button { height: 30px; border: 1px solid var(--control); background: var(--well); border-radius: 999px; padding: 0 12px; font-size: 12.5px; cursor: pointer; color: var(--ink); }
-.suggestions button:hover { background: var(--hover); }
-.ask-row { display: flex; gap: 8px; }
-.ask-row .input { flex: 1; height: 36px; }
-.ask-row .button { height: 36px; }
-.report-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-.report-actions p { color: var(--muted); flex: 1; min-width: 200px; }
-.report-body { display: grid; gap: 14px; }
-.report-body:empty { display: none; }
-.report-head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.report-head h3 { font-size: 15px; }
-.report-summary { font-size: 14px; line-height: 1.6; max-width: 76ch; }
-.report-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.report-cols h3 { margin-bottom: 7px; }
-.report-cols ul, .report-cols ol { margin: 0; padding-left: 18px; display: grid; gap: 7px; font-size: 13px; }
-.report-cols li span { color: var(--muted); }
-.report-caveat { color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
-.thinking { display: flex; align-items: center; gap: 10px; color: var(--muted); }
-.thinking::before { content: ""; width: 13px; height: 13px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Trend, gaps, sources */
-.gaps { list-style: none; margin: 0; display: grid; gap: 10px; }
-.gaps li { position: relative; padding-left: 18px; font-size: 13px; }
-.gaps li::before { content: ""; position: absolute; left: 2px; top: .5em; width: 8px; height: 8px; border: 1.5px dashed var(--faint); border-radius: 50%; }
-.sources summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; cursor: pointer; list-style: none; font-weight: 600; font-size: 14.5px; }
-.sources summary::-webkit-details-marker { display: none; }
-.sources summary .icon { color: var(--muted); transition: transform .2s; }
-.sources[open] summary .icon { transform: rotate(180deg); }
-.evidence { list-style: none; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 20px; }
-.evidence li { padding: 10px 0; border-top: 1px solid var(--border); font-size: 12.5px; display: grid; gap: 2px; }
-.evidence a { font-weight: 500; color: var(--ink); }
-.evidence span { color: var(--muted); }
-
-@media (max-width: 900px) {
-    .site-actions { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 700px) {
-    .site-brief { grid-template-columns: minmax(0, 1fr); grid-template-areas: "verdict" "trend" "map"; }
-    .verdict-main { border-left: 0; padding: 16px; }
-    .brief-trend { grid-template-columns: minmax(0, 1fr); padding: 14px 16px; gap: 10px; }
-    .brief-map, .brief-map .map-shell { min-height: 265px; }
-    .brief-map .map-shell { border-radius: 0 0 var(--radius) var(--radius); }
-}
-@media (max-width: 625px) {
-    .eco-toolbar { width: 100%; }
-    .eco-picker { width: 100%; }
-    .gauges { gap: 14px; }
-    .report-cols { grid-template-columns: 1fr; }
-    .ask-row { flex-direction: column; }
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 390px);
+    align-items: start;
+    gap: clamp(18px, 2vw, 30px);
 }
 
-/* AI trace, data used and action cards */
-.msg.pending { background: var(--well); }
-.trace { display: grid; gap: 5px; }
-.trace-step { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; opacity: 0; animation: step-in .35s ease forwards; }
-.trace-step::before { content: ""; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--accent); animation: spin .8s linear infinite; }
-@keyframes step-in { to { opacity: 1; } }
-.msg p { margin: 0; }
-.used { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--border); }
-.used > span:first-child { color: var(--muted); font-size: 11.5px; margin-right: 2px; }
-.used-chip { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 999px; background: var(--well); font-size: 11.5px; font-weight: 500; box-shadow: 0 0 0 .5px #00000014; }
-.used-chip i { width: 7px; height: 7px; border-radius: 50%; }
-.action-cards { display: grid; gap: 8px; max-width: 76ch; }
-.action-card { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: var(--well); box-shadow: 0 1px 2px #0000000a; animation: step-in .3s ease forwards; opacity: 0; }
-.action-card-head { display: flex; gap: 11px; align-items: start; }
-.action-card-head .icon { width: 30px; height: 30px; padding: 7px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); flex: 0 0 auto; }
-.action-card-head div { display: grid; gap: 2px; }
-.action-card-head strong { font-weight: 500; }
-.action-card-head span { color: var(--muted); font-size: 12.5px; }
-.action-card-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-left: 41px; flex-wrap: wrap; }
-.action-q { flex: 1; color: var(--muted); font-size: 12.5px; min-width: 180px; }
-.action-done { color: var(--risk-low); font-weight: 500; font-size: 13px; }
-.action-card.is-confirmed { border-color: var(--risk-low); background: var(--risk-low-soft); }
-.action-card.is-dismissed { opacity: .55 !important; }
-.link-btn { margin-top: 8px; border: 0; background: none; padding: 0; color: var(--accent); font-size: 12.5px; font-weight: 500; cursor: pointer; }
-.link-btn:disabled { color: var(--risk-low); cursor: default; }
-
-/* Field tasks */
-.tasks { list-style: none; margin: 0; padding: 0 16px 12px; }
-.task { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 10px 0; border-top: 1px solid var(--border); }
-.task:first-child { border-top: 0; }
-.task input { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--accent); }
-.task-text { display: grid; gap: 2px; }
-.task-text strong { font-weight: 500; }
-.task-text span { color: var(--muted); font-size: 12px; }
-.task.is-done strong { text-decoration: line-through; color: var(--muted); }
-.task-del { border: 0; background: none; color: var(--faint); font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px; }
-.task-del:hover { color: var(--risk-high); }
-
-
-
-.footage .file-label { cursor: pointer; }
-.footage-actions:has(.file-input:disabled) .file-label { opacity: .55; cursor: default; }
-.file-input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-.footage-actions:has(.file-input:focus-visible) .file-label { outline: 2px solid var(--accent); outline-offset: 3px; }
-.footage-formats, .analysis-status, .analysis-provenance { color: var(--muted); font-size: 12.5px; margin-top: 6px; }
-.analysis-status:empty { display: none; }
-.frame-preview { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-.frame-preview figure { width: 90px; }
-.frame-preview img { width: 90px; height: 58px; display: block; object-fit: cover; border-radius: 5px; }
-.frame-preview figcaption { color: var(--muted); font-size: 12px; }
-.analysis-result dl { display: grid; gap: 8px; margin-top: 8px; }
-.analysis-result dl > div { padding-top: 8px; border-top: 1px solid var(--border); }
-.analysis-result dt { font-weight: 600; }
-.analysis-result dd { color: var(--muted); overflow-wrap: anywhere; }
-.analysis-result ol { padding-left: 19px; }
-.analysis-result li + li { margin-top: 4px; }
-
-#profile-caption { scroll-margin-top: 70px; }
-
-/* ======================= Site page: layout with an AI copilot ======================= */
-.site-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.site-head .eco-picker { width: min(100%, 440px); }
-.site-layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 18px; align-items: start; }
-.site-main { min-width: 0; }
-.site-main > .section:first-child, .site-main > .panel:first-child { margin-top: 0; }
-.panel-head h2 { font-size: 15px; }
-.actions .why { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.causes p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-/* Collapsible details */
-.more summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; cursor: pointer; list-style: none; font-weight: 600; }
-.more summary::-webkit-details-marker { display: none; }
-.more summary .icon { color: var(--muted); transition: transform .2s; }
-.more[open] summary .icon { transform: rotate(180deg); }
-.more-body { padding: 0 16px 16px; display: grid; gap: 12px; }
-.more-body h3 { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 6px; }
-.more-grid { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 20px; align-items: start; }
-.more .profile { border: 0; background: none; padding: 0; }
-.more .fresh-list { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-
-/* Copilot panel */
-.copilot {
-    position: sticky; top: 78px; height: calc(100dvh - 100px); min-height: 480px;
-    display: flex; flex-direction: column; overflow: hidden;
-    background: var(--paper); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow-md);
-}
-.cp-head { display: flex; align-items: center; gap: 10px; padding: 12px 12px 12px 14px; border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, #f3f8ff, #fff); }
-.cp-avatar { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; color: #fff;
-    background: linear-gradient(135deg, #0a6cf1, #12b5cb); box-shadow: 0 4px 12px -4px #0a6cf180; }
-.cp-avatar .icon { width: 18px; height: 18px; }
-.cp-title { display: grid; flex: 1; min-width: 0; gap: 1px; }
-.cp-title strong { font-size: 14.5px; }
-.cp-title .engine-pill { height: auto; padding: 0; background: none; font-size: 11.5px; gap: 6px; }
-.cp-title .engine-pill i { width: 6px; height: 6px; }
-.cp-icon-btn { width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 9px; background: transparent; color: var(--muted); cursor: pointer; }
-.cp-icon-btn:hover { background: var(--hover); color: var(--ink); }
-.cp-close { display: none; }
-
-.cp-chat { flex: 1; overflow-y: auto; padding: 16px 14px 8px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
-.cp-row { display: flex; gap: 8px; align-items: flex-end; animation: cp-in .28s ease both; }
-.cp-row.user { justify-content: flex-end; }
-.cp-row.action { padding-left: 34px; }
-.cp-row.action .cp-mini-avatar { display: none; }
-@keyframes cp-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-.cp-mini-avatar { width: 26px; height: 26px; flex: 0 0 auto; border-radius: 8px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, #0a6cf1, #12b5cb); }
-.cp-mini-avatar .icon { width: 14px; height: 14px; }
-.cp-bubble { max-width: 88%; padding: 10px 13px; border-radius: 16px; font-size: 13.5px; line-height: 1.5; background: var(--well); border-bottom-left-radius: 5px; }
-.cp-bubble p + p { margin-top: 6px; }
-.cp-row.user .cp-bubble { background: var(--accent); color: #fff; border-radius: 16px; border-bottom-right-radius: 5px; }
-.cp-row.action .cp-bubble { background: none; padding: 0; max-width: 100%; width: 100%; }
-.cp-bubble.is-muted { color: var(--muted); }
-.cp-sub { color: var(--muted); font-size: 12.5px; margin-top: 8px; }
-.cp-findings { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 5px; }
-.cp-findings li { display: grid; grid-template-columns: 8px auto 1fr; align-items: center; gap: 7px; padding: 6px 9px; border-radius: 9px; background: #fff; font-size: 12.5px; }
-.cp-findings i { width: 8px; height: 8px; border-radius: 50%; }
-.cp-findings span { color: var(--muted); text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cp-dots { display: inline-flex; gap: 4px; margin-right: 8px; vertical-align: middle; }
-.cp-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: cp-dot 1s infinite ease-in-out; }
-.cp-dots i:nth-child(2) { animation-delay: .15s; }
-.cp-dots i:nth-child(3) { animation-delay: .3s; }
-@keyframes cp-dot { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
-.cp-step { color: var(--muted); font-size: 12.5px; vertical-align: middle; }
-.cp-used { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
-.cp-used-chip { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 999px; background: #fff; font-size: 11.5px; font-weight: 500; box-shadow: 0 0 0 .5px #00000014; }
-.cp-used-chip i { width: 7px; height: 7px; border-radius: 50%; }
-.cp-by { display: block; color: var(--faint); font-size: 11px; margin-top: 6px; }
-
-.cp-action { border: 1px solid var(--border); border-radius: 14px; padding: 12px; background: #fff; box-shadow: var(--shadow-sm); display: grid; gap: 10px; }
-.cp-action-head { display: flex; gap: 10px; align-items: start; }
-.cp-action-head .icon { width: 30px; height: 30px; padding: 7px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); flex: 0 0 auto; }
-.cp-action-head div { display: grid; gap: 2px; }
-.cp-action-head strong { font-weight: 600; font-size: 13px; }
-.cp-action-head span { color: var(--muted); font-size: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.cp-action-row { display: flex; gap: 6px; padding-left: 40px; }
-.cp-action-done { color: var(--risk-low); font-weight: 600; font-size: 12.5px; }
-.cp-action-note { color: var(--muted); font-size: 12.5px; }
-.cp-action.is-confirmed { border-color: #bfe6cb; background: #f6fcf8; }
-.cp-action.is-dismissed { opacity: .5; }
-
-.cp-bubble.is-report { background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-sm); max-width: 100%; display: grid; gap: 8px; }
-.cp-report-head { display: flex; align-items: center; gap: 7px; color: var(--accent); font-size: 12px; }
-.cp-report-head .icon { width: 14px; height: 14px; }
-.cp-bubble h4 { margin: 0; font-size: 14px; line-height: 1.35; }
-.cp-report-more summary { cursor: pointer; color: var(--accent); font-size: 12.5px; font-weight: 500; }
-.cp-report-more h5 { margin: 8px 0 4px; font-size: 12px; color: var(--muted); }
-.cp-report-more ul, .cp-report-more ol { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 12.5px; }
-.cp-bubble.is-report .button { justify-self: start; }
-
-.cp-foot { border-top: 1px solid var(--border); padding: 10px 12px 12px; display: grid; gap: 9px; background: #fff; }
-.cp-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 1px; flex-wrap: wrap; }
-.cp-chip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: var(--ink); font-size: 12.5px; cursor: pointer; white-space: nowrap; transition: border-color .12s, background .12s; }
-.cp-chip:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-strong); }
-.cp-chip.is-report { border-color: #cfe0fb; background: var(--accent-soft); color: var(--accent-strong); font-weight: 500; }
-.cp-chip .icon { width: 13px; height: 13px; }
-.cp-input { display: flex; align-items: flex-end; gap: 8px; padding: 6px 6px 6px 14px; border: 1px solid var(--control); border-radius: 16px; background: #fff; transition: border-color .12s, box-shadow .12s; }
-.cp-input:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px #0a6cf126; }
-.cp-input textarea { flex: 1; border: 0; outline: 0; resize: none; font-size: 13.5px; line-height: 1.45; padding: 6px 0; max-height: 140px; background: transparent; }
-.cp-send { width: 34px; height: 34px; flex: 0 0 auto; border: 0; border-radius: 11px; display: grid; place-items: center; background: var(--accent); color: #fff; cursor: pointer; }
-.cp-send:hover { background: var(--accent-strong); }
-.cp-send .icon { width: 16px; height: 16px; }
-
-.cp-fab { display: none; }
-
-@media (max-width: 1180px) {
-    .site-layout { grid-template-columns: minmax(0, 1fr) 360px; }
-    .more-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 980px) {
-    .site-layout { grid-template-columns: 1fr; }
-    .copilot { position: fixed; z-index: 2000; inset: auto 0 0 0; top: 12dvh; height: auto; border-radius: 20px 20px 0 0; transform: translateY(105%); transition: transform .3s ease; }
-    body.cp-open .copilot { transform: none; }
-    body.cp-open { overflow: hidden; }
-    .cp-close { display: grid; transform: rotate(0); }
-    .cp-fab { display: inline-flex; align-items: center; gap: 8px; position: fixed; z-index: 1900; right: 16px; bottom: 16px; height: 48px; padding: 0 18px; border: 0; border-radius: 999px;
-        background: linear-gradient(135deg, #0a6cf1, #12b5cb); color: #fff; font-weight: 600; box-shadow: 0 10px 30px -8px #0a6cf1aa; cursor: pointer; }
-    body.cp-open .cp-fab { display: none; }
+.ecologist-page .site-main {
+    min-width: 0;
 }
 
-/* Top of the site page: map + verdict, then the water card */
-.site-brief { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) !important; grid-template-areas: "map verdict" !important; }
-.brief-map, .brief-map .map-shell { min-height: 320px !important; }
-.brief-map .map-shell { border-radius: var(--radius) 0 0 var(--radius) !important; }
-.verdict-main { justify-content: center; padding: 22px 24px !important; }
-.verdict-headline { font-size: 16.5px !important; line-height: 1.4 !important; font-weight: 600; max-width: none !important; }
-.water-card { padding: 18px 20px 14px; }
-.wc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
-.wc-readout h2 { font-size: 13px; color: var(--muted); font-weight: 600; }
-.wc-value { display: flex; align-items: baseline; gap: 2px; margin-top: 4px; flex-wrap: wrap; }
-.wc-value strong { font: 750 40px/1 var(--display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-.wc-value span { color: var(--muted); font-size: 14px; font-weight: 500; }
-.wc-sub { display: flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--muted); font-size: 12.5px; flex-wrap: wrap; }
-.wc-tag { padding: 2px 9px; border-radius: 999px; font-weight: 650; font-size: 12px; }
-.wc-tag.good { background: var(--risk-low-soft); color: var(--risk-low); }
-.wc-tag.mid { background: var(--risk-mid-soft); color: var(--risk-mid); }
-.wc-tag.bad { background: var(--risk-high-soft); color: var(--risk-high); }
-.wc-chart { position: relative; height: 230px; margin-top: 12px; }
-@media (max-width: 900px) {
-  .site-brief { grid-template-columns: 1fr !important; grid-template-areas: "verdict" "map" !important; }
-  .brief-map .map-shell { border-radius: 0 0 var(--radius) var(--radius) !important; }
+.ecologist-page .site-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 18px;
 }
 
-.cp-footage-result-body a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.ecologist-page .eco-picker {
+    flex: 1 1 270px;
+    min-width: 220px;
+}
 
-.mission-head, .mission-review-head, .mission-point-heading {
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 14px;
+.ecologist-page .eco-picker > * {
+    margin: 0;
 }
-.mission-head h2, .mission-review h3, .mission-point p, .mission-map { margin: 0; }
-.mission-status, .mission-coordinate, .mission-map figcaption { color: var(--muted); font-size: 13px; }
-.mission-status:empty { display: none; }
-.mission-board { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(235px, 1.15fr); gap: 15px; align-items: start; margin-top: 12px; }
-.mission-map svg { display: block; width: 100%; border-radius: 12px; background: linear-gradient(135deg, #e0f3ee, #e6f0fc); }
-.mission-map svg text { fill: #fff; font: 700 13px system-ui, sans-serif; }
-.mission-map svg circle { stroke: #fff; stroke-width: 2; }
-.mission-map figcaption { margin-top: 5px; }
-.mission-boundary { fill: #75b9a668; stroke: #237e78; stroke-width: 2; stroke-linejoin: round; }
-.mission-line { fill: none; stroke: #3c6776; stroke-width: 1.6; stroke-dasharray: 4 4; }
-.mission-points { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-.mission-point { border: 1px solid var(--border); border-radius: 11px; padding: 10px 12px; display: grid; gap: 6px; scroll-margin-block: 18px; }
-.mission-point .button { justify-self: start; }
-.mission-badge { padding: 3px 7px; border-radius: 6px; white-space: nowrap; font-size: 11px; background: #e8effa; color: #2354a1; font-weight: 700; }
-.mission-badge.confirmed { background: #dcf4ea; color: #08705a; }
-.mission-badge.not-visible { background: #e6eff5; color: #355e7d; }
-.mission-badge.unclear { background: #fff1d8; color: #79500b; }
-.mission-evidence summary { cursor: pointer; color: var(--accent); font-weight: 600; }
-.mission-evidence img { display: block; margin: 8px 0 5px; max-width: 100%; max-height: 220px; border-radius: 8px; object-fit: contain; }
-.mission-capture { color: #145552; background: #ddf1ec; border-radius: 8px; padding: 8px 11px; margin: 0 0 10px; font-weight: 650; scroll-margin-block: 18px; }
-.mission-review { border-top: 1px solid var(--border); }
-.mission-review p { margin: 8px 0; }
-.mission-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0; }
-.mission-review label { display: grid; gap: 4px; font-size: 13px; font-weight: 650; }
-.mission-review input, .mission-review textarea, .mission-review select {
-    width: 100%; min-width: 0; padding: 8px; border: 1px solid var(--border); border-radius: 8px;
-    background: var(--surface, #fff); color: inherit; font: inherit;
+
+.ecologist-page .muted,
+.ecologist-page .verdict-meta,
+.ecologist-page .wc-sub,
+.ecologist-page .footage-formats,
+.ecologist-page .anchor-note,
+.ecologist-page .mission-map figcaption,
+.ecologist-page .profile figcaption {
+    color: var(--eco-muted);
 }
+
+body.ecologist-page .panel,
+body.ecologist-page .copilot {
+    background: linear-gradient(145deg, rgba(12, 62, 77, .80), rgba(5, 35, 49, .74));
+}
+
+.ecologist-page .eco-picker select,
+.ecologist-page .eco-picker button,
+.ecologist-page .eco-picker [role="combobox"] {
+    color: var(--eco-ink);
+    background: linear-gradient(145deg, rgba(12, 62, 77, .91), rgba(5, 35, 49, .88));
+    border: 1px solid var(--eco-line);
+    border-radius: var(--eco-radius);
+    box-shadow: var(--eco-shadow), inset 0 1px 0 rgba(255, 255, 255, .045);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.ecologist-page .panel {
+    overflow: hidden;
+}
+
+.ecologist-page .section {
+    margin-top: 18px;
+}
+
+.ecologist-page .panel-head,
+.ecologist-page .wc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--eco-line);
+}
+
+.ecologist-page .panel-head h2,
+.ecologist-page .wc-head h2,
+.ecologist-page .brief-map-caption h2 {
+    margin: 0;
+    color: #f2fdff;
+    font-size: 1.04rem;
+    font-weight: 720;
+    letter-spacing: -.02em;
+}
+
+.ecologist-page .panel-head p {
+    margin: 8px 0 0;
+    color: var(--eco-muted);
+}
+
+.ecologist-page .panel-body {
+    padding: 20px 22px;
+}
+
+.ecologist-page .site-brief {
+    display: grid;
+    grid-template-columns: minmax(0, 1.22fr) minmax(280px, .92fr);
+    min-height: 360px;
+}
+
+.ecologist-page .brief-map {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 360px;
+    margin: 0;
+    overflow: hidden;
+    background: #052a38;
+}
+
+.ecologist-page .brief-map .empty {
+    display: grid;
+    flex: 1;
+    min-height: 250px;
+    place-items: center;
+    margin: 0;
+    padding: 20px;
+    color: var(--eco-muted);
+}
+
+.ecologist-page .map-shell,
+.ecologist-page .seamap {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+}
+
+.ecologist-page .seamap {
+    background: #073747;
+}
+
+.ecologist-page .brief-map-caption {
+    position: absolute;
+    z-index: 500;
+    left: 16px;
+    bottom: 16px;
+    max-width: calc(100% - 32px);
+    padding: 12px 16px;
+    border: 1px solid rgba(178, 243, 239, .28);
+    border-radius: 13px;
+    background: rgba(3, 27, 39, .82);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .28);
+    backdrop-filter: blur(12px);
+}
+
+.ecologist-page .brief-map-caption h2 {
+    font-size: 1rem;
+}
+
+.ecologist-page .verdict-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    padding: clamp(22px, 2.5vw, 34px);
+    background: linear-gradient(155deg, rgba(11, 66, 79, .75), rgba(4, 35, 50, .76));
+}
+
+.ecologist-page .verdict-top {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ecologist-page .verdict-headline {
+    max-width: 34ch;
+    margin: 20px 0 30px;
+    color: #f3fdff;
+    font-size: clamp(1.15rem, 1.55vw, 1.55rem);
+    font-weight: 720;
+    line-height: 1.35;
+    letter-spacing: -.035em;
+}
+
+.ecologist-page .gauges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin: auto 0 0;
+}
+
+.ecologist-page .gauges > div {
+    min-width: 0;
+}
+
+.ecologist-page .gauges dt {
+    margin-bottom: 5px;
+    color: var(--eco-muted);
+    font-size: .85rem;
+}
+
+.ecologist-page .gauges dd {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin: 0;
+}
+
+.ecologist-page .gauges dd strong {
+    color: white;
+    font-size: clamp(2.7rem, 4.5vw, 4.1rem);
+    line-height: .98;
+    letter-spacing: -.07em;
+}
+
+.ecologist-page .gauges dd span {
+    color: var(--eco-muted);
+    font-size: .9rem;
+}
+
+.ecologist-page .gauge {
+    height: 6px;
+    margin-top: 13px !important;
+    overflow: hidden;
+    border-radius: 20px;
+    background: rgba(181, 220, 226, .16);
+}
+
+.ecologist-page .gauge i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #25d47e, #d6d94b);
+    transition: width .35s ease;
+}
+
+.ecologist-page .gauge.confidence i {
+    background: linear-gradient(90deg, #168fff, #43d9e6);
+}
+
+.ecologist-page .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 11px;
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 999px;
+    color: #eafcff;
+    background: rgba(255, 255, 255, .075);
+    font-size: .8rem;
+    font-weight: 700;
+}
+
+.ecologist-page .badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--eco-cyan);
+}
+
+.ecologist-page .risk-high, .ecologist-page .risk-critical {
+    color: #ffd4b8;
+    background: rgba(220, 92, 35, .16);
+}
+
+.ecologist-page .risk-high::before, .ecologist-page .risk-critical::before {
+    background: #ff9a45;
+}
+
+.ecologist-page .risk-low {
+    color: #baf8dc;
+    background: rgba(35, 186, 125, .13);
+}
+
+.ecologist-page .risk-low::before {
+    background: #45dfa0;
+}
+
+.ecologist-page .risk-unknown::before {
+    background: #8aa8b2;
+}
+
+.ecologist-page .water-card {
+    padding-bottom: 8px;
+}
+
+.ecologist-page .wc-head {
+    align-items: flex-start;
+    border: 0;
+    padding-bottom: 10px;
+}
+
+.ecologist-page .wc-readout {
+    min-width: 0;
+}
+
+.ecologist-page .wc-readout h2 {
+    color: var(--eco-muted);
+    font-size: .92rem;
+}
+
+.ecologist-page .wc-value {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 7px;
+}
+
+.ecologist-page .wc-value strong {
+    color: var(--eco-cyan-bright);
+    font-size: clamp(2.4rem, 4vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -.065em;
+}
+
+.ecologist-page .wc-value span {
+    color: #e5f8fa;
+}
+
+.ecologist-page .wc-sub {
+    margin: 9px 0 0;
+    font-size: .9rem;
+}
+
+.ecologist-page .segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--eco-line);
+    border-radius: 13px;
+    background: rgba(1, 20, 31, .42);
+}
+
+.ecologist-page .segmented button {
+    border: 0;
+    border-radius: 9px;
+    padding: 9px 12px;
+    color: var(--eco-muted);
+    background: transparent;
+    cursor: pointer;
+}
+
+.ecologist-page .segmented button[aria-pressed="true"] {
+    color: #042630;
+    background: linear-gradient(135deg, #73f0e4, #29c8c6);
+    font-weight: 750;
+}
+
+.ecologist-page .wc-chart {
+    min-height: 260px;
+    padding: 8px 20px 22px;
+}
+
+.ecologist-page .wc-chart canvas {
+    display: block;
+    width: 100% !important;
+    max-height: 320px;
+}
+
+.ecologist-page .water-card > .empty {
+    padding: 10px 22px;
+    color: var(--eco-muted);
+}
+
+.ecologist-page .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.ecologist-page .threats,
+.ecologist-page .causes,
+.ecologist-page .actions,
+.ecologist-page .tasks,
+.ecologist-page .mission-points,
+.ecologist-page .gaps,
+.ecologist-page .evidence {
+    color: #d9eff2;
+}
+
+.ecologist-page .threats {
+    display: grid;
+    gap: 10px;
+    padding: 18px 22px 22px;
+}
+
+.ecologist-page .threats > *,
+.ecologist-page .causes li,
+.ecologist-page .actions li,
+.ecologist-page .tasks li,
+.ecologist-page .mission-points li {
+    padding: 12px 14px;
+    border: 1px solid var(--eco-line);
+    border-radius: 12px;
+    background: rgba(2, 28, 41, .36);
+}
+
+.ecologist-page .causes,
+.ecologist-page .actions,
+.ecologist-page .tasks,
+.ecologist-page .gaps,
+.ecologist-page .evidence {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding: 18px 22px 22px 42px;
+}
+
+.ecologist-page .causes li::marker,
+.ecologist-page .actions li::marker {
+    color: var(--eco-cyan);
+    font-weight: 800;
+}
+
+.ecologist-page .tasks {
+    list-style: none;
+    padding-left: 22px;
+}
+
+.ecologist-page .anchoring .panel-head p {
+    max-width: 66ch;
+    line-height: 1.5;
+}
+
+.ecologist-page .anchor-board {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(250px, .8fr);
+    gap: 22px;
+}
+
+.ecologist-page .anchor-figure {
+    min-width: 0;
+    margin: 0;
+}
+
+.ecologist-page #anchor-map {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--eco-line);
+    border-radius: 14px;
+    background: rgba(2, 24, 37, .65);
+}
+
+.ecologist-page .anchor-figure figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+    color: var(--eco-muted);
+    font-size: .82rem;
+}
+
+.ecologist-page .anchor-key {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 5px;
+    border-radius: 3px;
+    background: var(--eco-cyan);
+}
+
+.ecologist-page .anchor-key.compare {
+    background: #328fff;
+}
+
+.ecologist-page .anchor-key.overlap {
+    background: #e4c65c;
+}
+
+.ecologist-page .anchor-controls {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+}
+
+.ecologist-page .anchor-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.ecologist-page .anchor-results > div {
+    display: grid;
+    gap: 5px;
+    padding: 13px;
+    border: 1px solid var(--eco-line);
+    border-radius: 13px;
+    background: rgba(2, 28, 41, .4);
+}
+
+.ecologist-page .anchor-results span, .ecologist-page .anchor-results small {
+    color: var(--eco-muted);
+}
+
+.ecologist-page .anchor-results strong {
+    font-size: 1.35rem;
+}
+
+.ecologist-page .anchor-controls label {
+    color: #dff6f7;
+    font-size: .9rem;
+}
+
+.ecologist-page .anchor-controls input[type="range"] {
+    width: 100%;
+    accent-color: var(--eco-cyan);
+}
+
+.ecologist-page .anchor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ecologist-page .anchor-difference {
+    color: var(--eco-cyan-bright);
+}
+
+.ecologist-page .anchor-note {
+    margin: 18px 0 0;
+    font-size: .85rem;
+    line-height: 1.55;
+}
+
+.ecologist-page .anchor-outline {
+    fill: rgba(42, 216, 197, .13);
+    stroke: #66e9df;
+    stroke-width: 3;
+}
+
+.ecologist-page .anchor-baseline {
+    fill: rgba(40, 143, 255, .25);
+    stroke: #328fff;
+    stroke-width: 2;
+}
+
+.ecologist-page .anchor-candidate {
+    fill: rgba(35, 203, 205, .25);
+    stroke: #5be5df;
+    stroke-width: 2;
+    cursor: move;
+}
+
+.ecologist-page .anchor-overlap {
+    fill: rgba(230, 196, 80, .45);
+}
+
+.ecologist-page .anchor-label {
+    fill: white;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.ecologist-page .anchor-reference {
+    fill: var(--eco-muted);
+    stroke: var(--eco-muted);
+}
+
+.ecologist-page .mission-head {
+    align-items: center;
+}
+
+.ecologist-page .mission-board {
+    display: grid;
+    grid-template-columns: minmax(180px, .8fr) minmax(0, 1.2fr);
+    gap: 18px;
+}
+
+.ecologist-page .mission-map {
+    margin: 0;
+}
+
+.ecologist-page .mission-map svg {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--eco-line);
+    border-radius: 13px;
+    background: rgba(2, 24, 37, .55);
+}
+
+.ecologist-page .mission-map figcaption {
+    margin-top: 8px;
+    font-size: .82rem;
+}
+
+.ecologist-page .mission-points {
+    margin: 0;
+    padding-left: 22px;
+}
+
+.ecologist-page .mission-points li {
+    margin-bottom: 8px;
+}
+
+.ecologist-page .mission-status,
+.ecologist-page .analysis-status {
+    color: var(--eco-muted);
+}
+
+.ecologist-page .footage-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ecologist-page .file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+.ecologist-page .frame-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.ecologist-page .frame-preview img,
+.ecologist-page .frame-preview video {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border: 1px solid var(--eco-line);
+    border-radius: 12px;
+}
+
+.ecologist-page .findings {
+    display: grid;
+    gap: 12px;
+}
+
+.ecologist-page .findings > div {
+    padding: 13px;
+    border: 1px solid var(--eco-line);
+    border-radius: 12px;
+}
+
+.ecologist-page .findings dt {
+    color: var(--eco-cyan-bright);
+    font-weight: 750;
+}
+
+.ecologist-page .findings dd {
+    margin: 7px 0 0;
+    color: #d8edf0;
+}
+
+.ecologist-page .mission-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+}
+
+.ecologist-page .mission-fields label,
+.ecologist-page .mission-review > label {
+    display: grid;
+    gap: 7px;
+    color: var(--eco-muted);
+}
+
+.ecologist-page .mission-fields input,
+.ecologist-page .mission-fields select,
+.ecologist-page .mission-review textarea {
+    width: 100%;
+    min-width: 0;
+}
+
+.ecologist-page .more {
+    padding: 0;
+}
+
+.ecologist-page .more > summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 19px 22px;
+    cursor: pointer;
+    color: #eaf8fb;
+    font-weight: 700;
+    list-style: none;
+}
+
+.ecologist-page .more > summary::-webkit-details-marker {
+    display: none;
+}
+
+.ecologist-page .more[open] > summary {
+    border-bottom: 1px solid var(--eco-line);
+}
+
+.ecologist-page .more-body {
+    padding: 20px 22px;
+}
+
+.ecologist-page .more-body h3 {
+    color: var(--eco-cyan-bright);
+}
+
+.ecologist-page .more-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 22px;
+}
+
+.ecologist-page .profile {
+    margin: 0;
+}
+
+.ecologist-page .profile svg {
+    width: 100%;
+    max-width: 340px;
+}
+
+.ecologist-page .fresh-list {
+    display: grid;
+    gap: 8px;
+}
+
+.ecologist-page .fresh-list > * {
+    padding: 10px 12px;
+    border: 1px solid var(--eco-line);
+    border-radius: 10px;
+}
+
+.ecologist-page .copilot {
+    position: sticky;
+    top: 18px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: min(820px, calc(100vh - 36px));
+    overflow: hidden;
+    border-color: rgba(98, 221, 218, .28);
+    background: linear-gradient(160deg, rgba(7, 48, 64, .96), rgba(3, 26, 41, .95));
+}
+
+.ecologist-page .cp-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+    border-bottom: 1px solid var(--eco-line);
+}
+
+.ecologist-page .cp-avatar {
+    display: grid;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid rgba(108, 246, 231, .45);
+    border-radius: 14px;
+    color: #032c39;
+    background: linear-gradient(145deg, #75f2e5, #14aebd);
+    box-shadow: 0 8px 24px rgba(26, 205, 198, .22);
+}
+
+.ecologist-page .cp-title {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.ecologist-page .cp-title strong {
+    color: white;
+    font-size: 1.02rem;
+}
+
+.ecologist-page .engine-pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--eco-muted);
+    font-size: .78rem;
+}
+
+.ecologist-page .engine-pill i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f3b75a;
+}
+
+.ecologist-page .engine-pill.is-ai i {
+    background: #4be0a1;
+    box-shadow: 0 0 10px rgba(75, 224, 161, .5);
+}
+
+.ecologist-page .cp-icon-btn {
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    margin-left: auto;
+    border: 1px solid var(--eco-line);
+    border-radius: 10px;
+    color: var(--eco-muted);
+    background: rgba(255, 255, 255, .04);
+    cursor: pointer;
+}
+
+.ecologist-page .cp-close {
+    display: none;
+    margin-left: 0;
+}
+
+.ecologist-page .cp-chat {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 18px;
+    scrollbar-color: rgba(91, 194, 196, .35) transparent;
+}
+
+.ecologist-page .cp-chat > * {
+    max-width: 94%;
+    margin: 0 0 12px;
+    padding: 13px 15px;
+    border: 1px solid var(--eco-line);
+    border-radius: 15px 15px 15px 5px;
+    color: #eaf8fb;
+    background: rgba(113, 177, 185, .12);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.ecologist-page .cp-chat > :nth-child(even) {
+    margin-left: auto;
+    border-radius: 15px 15px 5px 15px;
+    background: rgba(22, 132, 151, .23);
+}
+
+.ecologist-page .cp-foot {
+    padding: 14px;
+    border-top: 1px solid var(--eco-line);
+    background: rgba(1, 20, 31, .38);
+}
+
+.ecologist-page .cp-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 12px;
+}
+
+.ecologist-page .cp-chips > * {
+    max-width: 100%;
+    padding: 8px 11px;
+    border: 1px solid var(--eco-line-strong);
+    border-radius: 999px;
+    color: #dff7f8;
+    background: rgba(255, 255, 255, .045);
+    cursor: pointer;
+    font-size: .82rem;
+}
+
+.ecologist-page .cp-input {
+    display: flex;
+    align-items: end;
+    gap: 8px;
+    padding: 7px;
+    border: 1px solid rgba(111, 224, 220, .35);
+    border-radius: 16px;
+    background: rgba(1, 18, 29, .65);
+}
+
+.ecologist-page .cp-input textarea {
+    flex: 1;
+    min-width: 0;
+    max-height: 130px;
+    resize: vertical;
+    padding: 10px;
+    border: 0;
+    outline: 0;
+    color: white;
+    background: transparent;
+}
+
+.ecologist-page .cp-input textarea::placeholder {
+    color: #83aab5;
+}
+
+.ecologist-page .cp-send {
+    display: grid;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    color: #032b39;
+    background: linear-gradient(135deg, #75f2e5, #22bdc6);
+    cursor: pointer;
+}
+
+.ecologist-page .cp-fab {
+    display: none;
+}
+
+.ecologist-page .button,
+.ecologist-page button.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 15px;
+    border: 1px solid rgba(108, 220, 218, .30);
+    border-radius: 12px;
+    color: #eaffff;
+    background: rgba(13, 83, 101, .62);
+    font-weight: 680;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
+}
+
+.ecologist-page .button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(114, 245, 230, .7);
+    background: rgba(17, 113, 127, .75);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .16);
+}
+
+.ecologist-page .button.primary {
+    border-color: transparent;
+    color: #032833;
+    background: linear-gradient(135deg, #77f1e4, #25c4c7);
+}
+
+.ecologist-page .button.secondary {
+    background: rgba(255, 255, 255, .055);
+}
+
+.ecologist-page .button.small {
+    min-height: 35px;
+    padding: 7px 10px;
+    font-size: .82rem;
+}
+
+.ecologist-page .button:disabled,
+.ecologist-page button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.ecologist-page input:not([type="range"]):not([type="checkbox"]),
+.ecologist-page select,
+.ecologist-page textarea {
+    border: 1px solid var(--eco-line-strong);
+    border-radius: 11px;
+    color: var(--eco-ink);
+    background: rgba(1, 23, 35, .72);
+}
+
+.ecologist-page input:not([type="range"]):not([type="checkbox"]),
+.ecologist-page select {
+    min-height: 42px;
+    padding: 9px 11px;
+}
+
+.ecologist-page textarea {
+    padding: 10px 12px;
+}
+
+.ecologist-page select option {
+    color: #eaf8fb;
+    background: #073343;
+}
+
+.ecologist-page :focus-visible {
+    outline: 2px solid var(--eco-cyan-bright);
+    outline-offset: 3px;
+}
+
+.ecologist-page .icon {
+    width: 1.1em;
+    height: 1.1em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+}
+
+.ecologist-page .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.ecologist-page .skip {
+    position: absolute;
+    z-index: 9999;
+    top: 8px;
+    left: 8px;
+    padding: 10px 14px;
+    transform: translateY(-160%);
+    border-radius: 10px;
+    color: #032833;
+    background: var(--eco-cyan-bright);
+}
+
+.ecologist-page .skip:focus {
+    transform: translateY(0);
+}
+
+.ecologist-page [hidden] {
+    display: none !important;
+}
+
+/* Leaflet controls are kept legible over the satellite imagery. */
+.ecologist-page .leaflet-container {
+    color: #eaf8fb;
+    font: inherit;
+}
+
+.ecologist-page .leaflet-control-zoom a,
+.ecologist-page .leaflet-bar a,
+.ecologist-page .leaflet-control-layers,
+.ecologist-page .leaflet-popup-content-wrapper,
+.ecologist-page .leaflet-popup-tip {
+    color: #eaf8fb !important;
+    border-color: rgba(111, 220, 220, .28) !important;
+    background: rgba(3, 35, 49, .92) !important;
+}
+
+.ecologist-page .leaflet-control-attribution {
+    color: #d5e9ed !important;
+    background: rgba(2, 23, 34, .72) !important;
+}
+
+.ecologist-page .leaflet-control-attribution a {
+    color: #65e5df !important;
+}
+
+/* Shared layout fragment: theme the existing rail/header without changing its Thymeleaf contract. */
+.ecologist-page .rail,
+.ecologist-page .sidebar,
+.ecologist-page .app-rail,
+.ecologist-page nav[aria-label] {
+    color: var(--eco-ink);
+}
+
+.ecologist-page .rail,
+.ecologist-page .sidebar,
+.ecologist-page .app-rail {
+    border-color: var(--eco-line) !important;
+    background: rgba(2, 25, 39, .88) !important;
+    backdrop-filter: blur(18px);
+}
+
+.ecologist-page .rail a,
+.ecologist-page .sidebar a,
+.ecologist-page .app-rail a {
+    color: #c5e4e9;
+}
+
+.ecologist-page .rail a[aria-current="page"],
+.ecologist-page .sidebar a[aria-current="page"],
+.ecologist-page .app-rail a[aria-current="page"] {
+    color: #062d38;
+    background: linear-gradient(100deg, #6cebdd, #22bfc4);
+    border-radius: 11px;
+}
+
+@media (max-width: 1120px) {
+    .ecologist-page .site-layout {
+        grid-template-columns: minmax(0, 1fr) 330px;
+    }
+
+    .ecologist-page .site-brief {
+        grid-template-columns: minmax(0, 1fr) minmax(250px, .9fr);
+    }
+
+    .ecologist-page .anchor-board {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 850px) {
+    .ecologist-page .workspace {
+        padding: 16px;
+    }
+
+    .ecologist-page .site-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .ecologist-page .copilot {
+        position: fixed;
+        z-index: 1500;
+        inset: 12px;
+        display: none;
+        width: auto;
+        height: auto;
+        max-height: calc(100dvh - 24px);
+    }
+
+    .ecologist-page .copilot.is-open,
+    .ecologist-page .copilot[aria-expanded="true"] {
+        display: flex;
+    }
+
+    .ecologist-page .cp-close {
+        display: grid;
+    }
+
+    .ecologist-page .cp-fab {
+        position: fixed;
+        z-index: 1400;
+        right: 18px;
+        bottom: 18px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 0 17px;
+        border: 1px solid rgba(119, 241, 228, .45);
+        border-radius: 999px;
+        color: #032833;
+        background: linear-gradient(135deg, #77f1e4, #25c4c7);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, .3);
+        font-weight: 750;
+    }
+}
+
 @media (max-width: 640px) {
-    .mission-board { grid-template-columns: 1fr; }
+    .ecologist-page .workspace {
+        padding: 12px;
+    }
+
+    .ecologist-page .site-head {
+        align-items: stretch;
+    }
+
+    .ecologist-page .eco-picker {
+        flex-basis: 100%;
+    }
+
+    .ecologist-page .site-head > a {
+        flex: 1 1 auto;
+    }
+
+    .ecologist-page .site-brief {
+        grid-template-columns: 1fr;
+    }
+
+    .ecologist-page .brief-map,
+    .ecologist-page .map-shell,
+    .ecologist-page .seamap {
+        min-height: 270px;
+    }
+
+    .ecologist-page .verdict-main {
+        min-height: 280px;
+        padding: 20px;
+    }
+
+    .ecologist-page .gauges dd strong {
+        font-size: 2.8rem;
+    }
+
+    .ecologist-page .grid-2,
+    .ecologist-page .mission-board,
+    .ecologist-page .more-grid,
+    .ecologist-page .mission-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .ecologist-page .panel-head,
+    .ecologist-page .wc-head,
+    .ecologist-page .panel-body {
+        padding: 16px;
+    }
+
+    .ecologist-page .wc-head {
+        align-items: stretch;
+    }
+
+    .ecologist-page .segmented {
+        width: 100%;
+    }
+
+    .ecologist-page .segmented button {
+        flex: 1;
+        padding-inline: 7px;
+        font-size: .82rem;
+    }
+
+    .ecologist-page .cp-head {
+        padding: 14px;
+    }
+
+    .ecologist-page .cp-foot {
+        padding: 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ecologist-page *, .ecologist-page *::before, .ecologist-page *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+body.ecologist-page :is(.actions, .threats, .causes, .mission-points) button,
+body.ecologist-page .link-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 7px 14px !important;
+    border: 1px solid rgba(97, 238, 226, .45) !important;
+    border-radius: 999px !important;
+    color: var(--eco-cyan-bright) !important;
+    background: rgba(39, 214, 208, .12) !important;
+    font-size: .85rem;
+    font-weight: 650;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, transform .2s, box-shadow .2s;
+}
+
+body.ecologist-page :is(.actions, .threats, .causes, .mission-points) button:hover:not(:disabled),
+body.ecologist-page .link-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: var(--eco-cyan-bright) !important;
+    background: rgba(39, 214, 208, .24) !important;
+    box-shadow: 0 6px 18px rgba(39, 214, 208, .22);
+}
+
+/* already added = calm green, not greyed out */
+body.ecologist-page :is(.actions, .threats, .causes, .mission-points) button:disabled,
+body.ecologist-page .link-btn:disabled {
+    opacity: 1 !important;
+    cursor: default;
+    color: #8ff0c3 !important;
+    border-color: rgba(75, 224, 161, .45) !important;
+    background: rgba(75, 224, 161, .13) !important;
+}
+
+/* 3. Priority label was glued to the action title ("…мътностВисок") */
+.ecologist-page .action-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ecologist-page .action-top > :not(strong) {
+    flex: 0 0 auto;
+    padding: 2px 10px;
+    border: 1px solid var(--eco-line-strong);
+    border-radius: 999px;
+    color: var(--eco-ink);
+    background: rgba(255, 255, 255, .07);
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.ecologist-page .priority.p-urgent {
+    color: #ffd0c4;
+    border-color: rgba(255, 99, 71, .45);
+    background: rgba(255, 99, 71, .18);
+}
+
+.ecologist-page .priority.p-high {
+    color: #ffdcb0;
+    border-color: rgba(255, 154, 69, .45);
+    background: rgba(255, 154, 69, .16);
+}
+
+.ecologist-page .priority.p-mid {
+    color: #bfeeff;
+    border-color: rgba(37, 141, 255, .45);
+    background: rgba(37, 141, 255, .16);
+}
+
+.ecologist-page .priority.p-routine {
+    color: #baf8dc;
+    border-color: rgba(75, 224, 161, .45);
+    background: rgba(35, 186, 125, .14);
+}
+
+/* 4. "Вариант Б" card was pale mint with white text (invisible). Both cards are dark glass; Б gets a teal tint. */
+body.ecologist-page .anchor-results > div {
+    color: var(--eco-ink) !important;
+    border: 1px solid var(--eco-line) !important;
+    background: rgba(2, 28, 41, .45) !important;
+}
+
+body.ecologist-page .anchor-results > div:nth-child(2) {
+    border-color: rgba(97, 238, 226, .55) !important;
+    background: rgba(39, 214, 208, .13) !important;
+}
+
+body.ecologist-page .anchor-results strong {
+    color: #fff !important;
+}
+
+body.ecologist-page .anchor-results span,
+body.ecologist-page .anchor-results small {
+    color: var(--eco-muted) !important;
 }
