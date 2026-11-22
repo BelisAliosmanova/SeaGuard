@@ -5,8 +5,8 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "community_posts", indexes = @Index(name = "community_post_sequence", columnList = "topic_id,id"))
-class CommunityPost {
-    enum Metric {
+public class CommunityPost {
+    public enum Metric {
         TURBIDITY("Мътност", "FNU"), CHLOROPHYLL("Хлорофил-а", "мг/м³");
 
         final String label;
