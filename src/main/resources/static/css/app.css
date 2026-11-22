@@ -1482,8 +1482,8 @@ body.has-fullscreen-map::after {
     white-space: nowrap;
 }
 
-/* The marine pages and community use the Blue root dashboard palette. */
-body:has(.workspace:is(.simulation, .dive, .community-page)) {
+/* Pages using the Blue root dashboard palette. */
+body:has(.workspace:is(.simulation, .dive, .community-page, .measurement-page)) {
     color-scheme: dark;
     --canvas: #031722;
     --paper: rgba(7, 45, 60, .90);
@@ -1519,7 +1519,7 @@ body:has(.workspace:is(.simulation, .dive, .community-page)) {
     background: #104554;
 }
 
-.workspace:is(.simulation, .dive, .community-page) .panel {
+.workspace:is(.simulation, .dive, .community-page, .measurement-page) .panel {
     background: linear-gradient(145deg, rgba(12, 62, 77, .90), rgba(5, 35, 49, .88));
 }
 

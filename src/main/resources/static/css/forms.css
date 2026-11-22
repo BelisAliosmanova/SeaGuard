@@ -151,3 +151,84 @@ fieldset + fieldset {
         width: 100%;
     }
 }
+
+.workspace.measurement-page {
+    max-width: 1140px;
+    --faint: #a9c7d0;
+    --danger: #ffaaa0;
+    --danger-soft: rgba(255, 107, 101, .13);
+}
+
+.measurement-page .masthead p {
+    text-shadow: 0 2px 8px #031722;
+}
+
+.measurement-page .back-link {
+    color: var(--accent-strong);
+}
+
+.measurement-page .form-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 286px);
+    gap: 18px;
+    margin-top: 0;
+}
+
+.measurement-page .form-card {
+    gap: 16px;
+    padding: clamp(14px, 2vw, 22px);
+}
+
+.measurement-page legend {
+    padding-inline-end: 10px;
+    color: var(--accent-strong);
+}
+
+.measurement-page .input {
+    min-width: 0;
+    min-height: 40px;
+    background: rgba(3, 25, 37, .72);
+}
+
+.measurement-page .input:focus {
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.measurement-page .date-input {
+    max-width: none;
+}
+
+.measurement-page .coords-row > .button {
+    min-height: 40px;
+}
+
+.measurement-page .form-aside {
+    top: 96px;
+}
+
+.measurement-page .form-aside .callout {
+    border: 1px solid var(--border);
+    background: var(--paper);
+    color: var(--muted);
+}
+
+.measurement-page .form-aside .callout strong {
+    color: var(--ink);
+}
+
+.measurement-page .form-aside .icon {
+    color: var(--accent-strong);
+}
+
+.measurement-page .form-grid > .error {
+    color: var(--danger);
+}
+
+.measurement-page .form-actions .button {
+    min-height: 40px;
+}
+
+@media (max-width: 860px) {
+    .measurement-page .form-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
