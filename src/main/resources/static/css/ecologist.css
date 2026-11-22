@@ -100,6 +100,7 @@ body.ecologist-page .panel,
 body.ecologist-page .copilot {
     background: linear-gradient(145deg, rgba(12, 62, 77, .80), rgba(5, 35, 49, .74));
 }
+
 .ecologist-page .eco-picker select,
 .ecologist-page .eco-picker button,
 .ecologist-page .eco-picker [role="combobox"] {

@@ -1,42 +1,394 @@
 /* Field tasks and measurements. */
-.alerts-panel { display: flex; flex-direction: column; align-self: stretch; }
-.alerts { flex: 1; display: grid; align-content: start; gap: 8px; padding: 0 16px 14px; max-height: 300px; overflow-y: auto; }
-.alert-card { border: 1px solid var(--border); border-radius: 8px; padding: 11px 13px; }
-.alert-card .place { color: var(--muted); font-size: 12px; margin-top: 1px; }
-.alert-values { display: flex; align-items: baseline; gap: 8px; margin-top: 7px; font-variant-numeric: tabular-nums; flex-wrap: wrap; }
-.alert-values strong { font: 600 17px var(--display); letter-spacing: -.02em; }
-.alert-values .delta { font-size: 12px; font-weight: 500; padding: 1px 7px; border-radius: 999px; }
-.delta.up { color: var(--risk-high); background: var(--risk-high-soft); }
-.delta.down { color: var(--accent); background: var(--accent-soft); }
-.alert-values .base { color: var(--muted); font-size: 12px; }
-.chart-wrap { position: relative; height: 260px; }
+.alerts-panel {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+}
 
-#measurements { scroll-margin-block-start: 60px; }
-.task-form { display: grid; grid-template-columns: minmax(185px, 1fr) minmax(170px, 1.5fr) minmax(96px, .5fr) auto; gap: 8px 12px; align-items: end; padding-block: 10px 16px; border-bottom: 1px solid var(--border); }
-.task-form h3 { grid-column: 1 / -1; }
-.task-form .button { min-height: 36px; }
-.task-form .picker-trigger { height: 36px; }
-.task-form .input { height: 36px; }
-.task-status { margin-top: 8px; font-size: 12.5px; }
-.task-status:empty { display: none; }
-.task-status.is-error { color: var(--risk-high); }
-.task-groups { display: grid; gap: 14px; margin-top: 14px; }
-.task-groups h3 { font-size: 14px; margin-bottom: 4px; }
-.field-tasks { margin: 0; padding: 0; list-style: none; }
-.field-tasks .empty { text-align: left; padding: 8px 0; }
-.field-task { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 9px; padding: 8px 0; align-items: center; border-top: 1px solid var(--border); }
-.field-task input { margin: 0; accent-color: var(--accent); }
-.field-task-details { display: flex; flex-wrap: wrap; gap: 3px 12px; align-items: baseline; min-width: 0; }
-.field-task-details strong { flex-basis: 100%; font-size: 13.5px; overflow-wrap: anywhere; }
-.field-task-details a, .field-task-details span { font-size: 12px; }
-.field-task.is-done strong { text-decoration: line-through; color: var(--muted); }
-.field-task button { justify-self: end; }
-.measurement-search { padding-top: 4px; }
+.alerts {
+    flex: 1;
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 0 16px 14px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.alert-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 13px;
+}
+
+.alert-card .place {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 1px;
+}
+
+.alert-values {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 7px;
+    font-variant-numeric: tabular-nums;
+    flex-wrap: wrap;
+}
+
+.alert-values strong {
+    font: 600 17px var(--display);
+    letter-spacing: -.02em;
+}
+
+.alert-values .delta {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 1px 7px;
+    border-radius: 999px;
+}
+
+.delta.up {
+    color: var(--risk-high);
+    background: var(--risk-high-soft);
+}
+
+.delta.down {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.alert-values .base {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.chart-wrap {
+    position: relative;
+    height: 260px;
+}
+
+#measurements {
+    scroll-margin-block-start: 60px;
+}
+
+.task-form {
+    display: grid;
+    grid-template-columns: minmax(185px, 1fr) minmax(170px, 1.5fr) minmax(96px, .5fr) auto;
+    gap: 8px 12px;
+    align-items: end;
+    padding-block: 10px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.task-form h3 {
+    grid-column: 1 / -1;
+}
+
+.task-form .button {
+    min-height: 36px;
+}
+
+.task-form .picker-trigger {
+    height: 36px;
+}
+
+.task-form .input {
+    height: 36px;
+}
+
+.task-status {
+    margin-top: 8px;
+    font-size: 12.5px;
+}
+
+.task-status:empty {
+    display: none;
+}
+
+.task-status.is-error {
+    color: var(--risk-high);
+}
+
+.task-groups {
+    display: grid;
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.task-groups h3 {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.field-tasks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.field-tasks .empty {
+    text-align: left;
+    padding: 8px 0;
+}
+
+.field-task {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    gap: 9px;
+    padding: 8px 0;
+    align-items: center;
+    border-top: 1px solid var(--border);
+}
+
+.field-task input {
+    margin: 0;
+    accent-color: var(--accent);
+}
+
+.field-task-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px 12px;
+    align-items: baseline;
+    min-width: 0;
+}
+
+.field-task-details strong {
+    flex-basis: 100%;
+    font-size: 13.5px;
+    overflow-wrap: anywhere;
+}
+
+.field-task-details a, .field-task-details span {
+    font-size: 12px;
+}
+
+.field-task.is-done strong {
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+.field-task button {
+    justify-self: end;
+}
+
+.measurement-search {
+    padding-top: 4px;
+}
 
 @media (max-width: 1100px) {
-    .task-form { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-    .task-form .button { justify-self: start; }
+    .task-form {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .task-form .button {
+        justify-self: start;
+    }
 }
+
 @media (max-width: 625px) {
-    .task-form { grid-template-columns: 1fr; }
+    .task-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+body {
+    color-scheme: dark;
+
+    /* surfaces */
+    --canvas: #031722;
+    --paper: rgba(7, 45, 60, .90);
+    --sidebar: rgba(3, 35, 49, .94);
+    --well: rgba(255, 255, 255, .07);
+    --hover: rgba(255, 255, 255, .11);
+
+    /* text + lines */
+    --ink: #eaf8fb;
+    --muted: #a9c7d0;
+    --faint: #7fa5b1;
+    --border: rgba(151, 220, 226, .20);
+    --control: rgba(151, 220, 226, .34);
+
+    /* accent: Blue Root cyan, dark text on it */
+    --accent: #27d6d0;
+    --accent-strong: #61eee2;
+    --accent-soft: rgba(39, 214, 208, .15);
+    --on-accent: #032833;
+
+    /* map + glass */
+    --map-glass: rgba(3, 27, 39, .84);
+    --map-backdrop: #052a38;
+
+    /* risk colors tuned for dark backgrounds */
+    --risk-low: #6ee7a8;
+    --risk-low-soft: rgba(52, 199, 89, .17);
+    --risk-mid: #ffc169;
+    --risk-mid-soft: rgba(255, 179, 64, .17);
+    --risk-high: #ff8f84;
+    --risk-high-soft: rgba(255, 69, 58, .19);
+    --risk-none: #b5ccd3;
+
+    /* app.css aliases are resolved on :root, so they have to be re-pointed here as well */
+    --action: var(--accent);
+    --shallow: var(--accent);
+    --shallow-soft: var(--accent-soft);
+    --zostera: var(--risk-low);
+    --zostera-soft: var(--risk-low-soft);
+    --deep: var(--ink);
+    --warn: var(--risk-mid);
+    --warn-soft: var(--risk-mid-soft);
+    --danger: var(--risk-high);
+    --danger-soft: var(--risk-high-soft);
+    --ok: var(--risk-low);
+    --ok-soft: var(--risk-low-soft);
+
+    /* chart colors (used by charts.js if it reads them) */
+    --chart-light: #4da3ff;
+    --chart-turbidity: #a28bff;
+    --chart-chlorophyll: #4be0a1;
+    --chart-reference: #7fa5b1;
+
+    --shadow-sm: 0 8px 24px rgba(0, 8, 16, .28);
+    --shadow-md: 0 18px 50px rgba(0, 8, 16, .42);
+
+    /* Roboto has Cyrillic; Braah One is only used for the Blue root name in the top bar */
+    --sans: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --display: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    /* ocean photo (static/img/bg.png), tinted so light text stays readable */
+    background: linear-gradient(rgba(3, 23, 34, .45), rgba(3, 27, 42, .68)),
+    url("../img/bg.png") center / cover no-repeat fixed;
+}
+
+/* ---- Header sits straight on the photo ---- */
+body .masthead h1,
+body .masthead p {
+    text-shadow: 0 2px 14px rgba(0, 8, 16, .55);
+}
+
+/* ---- Frosted-glass panels ---- */
+body .panel {
+    background: linear-gradient(145deg, rgba(12, 62, 77, .80), rgba(5, 35, 49, .74));
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, .045);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+/* ---- Buttons (same look as the ecologist and dashboard pages) ---- */
+body .button {
+    transition: transform .18s, background .18s, border-color .18s, box-shadow .18s;
+}
+
+body .button.primary {
+    color: #032833;
+    border-color: transparent;
+    background: linear-gradient(135deg, #77f1e4, #25c4c7);
+    font-weight: 650;
+}
+
+body .button.primary:hover {
+    background: linear-gradient(135deg, #8ff6ea, #3dd3d5);
+    box-shadow: 0 8px 22px rgba(39, 214, 208, .30);
+    transform: translateY(-1px);
+}
+
+body .button.secondary {
+    background: rgba(255, 255, 255, .07);
+    border-color: rgba(108, 220, 218, .32);
+    color: #eaffff;
+}
+
+body .button.secondary:hover {
+    background: rgba(255, 255, 255, .13);
+    border-color: rgba(114, 245, 230, .7);
+    transform: translateY(-1px);
+}
+
+/* ---- Form fields ---- */
+body .input,
+body .select {
+    background: rgba(1, 23, 35, .62);
+    border-color: var(--control);
+    color: var(--ink);
+}
+
+body .input:focus,
+body .select:focus {
+    border-color: #61eee2;
+    box-shadow: 0 0 0 3px rgba(39, 214, 208, .22);
+}
+
+body .input::placeholder {
+    color: #83aab5;
+}
+
+body select option {
+    color: #eaf8fb;
+    background: #073343;
+}
+
+/* ---- Site picker (the dropdown was see-through) ---- */
+body .picker-trigger {
+    background: rgba(1, 20, 31, .45);
+}
+
+body .picker-pop {
+    background: #073343;
+    border-color: var(--control);
+    backdrop-filter: blur(16px);
+}
+
+body .picker-search {
+    background: rgba(1, 20, 31, .5);
+    color: var(--ink);
+}
+
+/* ---- Segmented switch ---- */
+body .segmented {
+    background: rgba(1, 20, 31, .42);
+    border-color: var(--border);
+}
+
+body .segmented button[aria-pressed="true"] {
+    color: #042630;
+    background: linear-gradient(135deg, #73f0e4, #29c8c6);
+    font-weight: 700;
+}
+
+/* ---- Tasks ---- */
+body .field-task {
+    transition: background .2s;
+}
+
+body .field-task:hover {
+    background: rgba(255, 255, 255, .05);
+}
+
+/* ---- Table ---- */
+body .table th {
+    background: rgba(5, 35, 49, .95);
+}
+
+body .table tbody tr {
+    transition: background .2s;
+}
+
+/* ---- Unusual-value cards ---- */
+body .alert-card {
+    background: rgba(255, 255, 255, .05);
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+}
+
+body .alert-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(97, 238, 226, .5);
+    box-shadow: 0 10px 26px rgba(31, 182, 193, .2);
+}
+
+/* ---- Scrollbars of the small scrolling areas ---- */
+body .alerts,
+body .picker-list {
+    scrollbar-color: rgba(91, 194, 196, .4) transparent;
 }
