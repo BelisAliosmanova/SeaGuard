@@ -1,12 +1,12 @@
-import { route } from './sea-game-model.js';
+import {route} from './sea-game-model.js';
 
 const wobble = (seed, rate, time) => Math.sin(seed + rate * time);
 const random = seed => {
     const value = Math.sin(seed * 78.233 + 13.187) * 43758.5453;
     return value - Math.floor(value);
 };
-const plantSeeds = Array.from({ length: 90 }, (_, i) =>
-    Array.from({ length: 4 }, (_, j) => random(i * 4 + j)));
+const plantSeeds = Array.from({length: 90}, (_, i) =>
+    Array.from({length: 4}, (_, j) => random(i * 4 + j)));
 
 function fill(context, color, commands) {
     context.fillStyle = color;

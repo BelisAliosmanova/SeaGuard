@@ -4,7 +4,7 @@ export const cases = {
         clue: 'Стръковете губят цвят и пасажите оредяват.',
         cause: 'sediment',
         readings: [20, 7.5, 20],
-        initial: { grass: 48, fish: 12, clarity: 20 },
+        initial: {grass: 48, fish: 12, clarity: 20},
         explanation: 'Наносите намаляват светлината, от която тревата се нуждае.'
     },
     heat: {
@@ -12,7 +12,7 @@ export const cases = {
         clue: 'Водата изглежда бистра, но рибите плуват близо до повърхността.',
         cause: 'heat',
         readings: [31, 3, 85],
-        initial: { grass: 59, fish: 10, clarity: 85 },
+        initial: {grass: 59, fish: 10, clarity: 85},
         explanation: 'При горещата вълна кислородът е нисък, а рибите показват признаци на стрес.'
     },
     anchors: {
@@ -20,7 +20,7 @@ export const cases = {
         clue: 'В тревата се отварят тесни ивици оголено дъно след преминаване на лодки.',
         cause: 'anchors',
         readings: [21, 8, 88],
-        initial: { grass: 37, fish: 13, clarity: 88 },
+        initial: {grass: 37, fish: 13, clarity: 88},
         explanation: 'Котвите оставят видими бразди, дори когато измерените условия във водата са добри.'
     }
 };
@@ -36,9 +36,9 @@ export const measures = {
 };
 
 export const samples = [
-    { label: 'Температура', unit: '°C', typical: '18–24 °C', location: 'повърхност' },
-    { label: 'Кислород', unit: 'мг/л', typical: '6–9 мг/л', location: 'край пасажа' },
-    { label: 'Прозрачност', unit: '%', typical: '75–95%', location: 'над ливадата' }
+    {label: 'Температура', unit: '°C', typical: '18–24 °C', location: 'повърхност'},
+    {label: 'Кислород', unit: 'мг/л', typical: '6–9 мг/л', location: 'край пасажа'},
+    {label: 'Прозрачност', unit: '%', typical: '75–95%', location: 'над ливадата'}
 ];
 
 const clamp = (value, max = 100) => Math.max(0, Math.min(max, value));
@@ -50,7 +50,7 @@ export function advanceBay(bay, cause, action, step) {
     const clarity = clamp(bay.clarity + (storm ? -8 : 4) + (relief && cause === 'sediment' ? 23 : 0));
     const grass = clamp(bay.grass - (storm ? 8 : heatwave ? 6 : 3) + (relief ? 19 : 0));
     const fish = clamp(bay.fish - (storm || heatwave ? 3 : 1) + (relief ? 6 : 0), 30);
-    return { grass, fish, clarity };
+    return {grass, fish, clarity};
 }
 
 export const route = {

@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/ecologist.css}">
     <link rel="stylesheet" th:href="@{/css/anchoring.css}">
 </head>
-<body>
+<body class="ecologist-page">
 <svg th:replace="~{fragments/layout :: symbols}"></svg>
 <a class="skip" href="#workspace">Към разследването</a>
 <div class="app-shell">
@@ -23,40 +23,40 @@
                     <a class="button secondary anchoring-jump" href="#anchoring">Зона за закотвяне</a>
                     <a id="map-link" class="button secondary" th:href="@{/dashboard}"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>На картата</a>
                 </header>
-        <div class="panel site-brief">
-            <figure class="brief-map" aria-labelledby="meadow-map-title">
-                <p id="meadow-map-status" class="empty" role="status">Зареждаме картата…</p>
-                <div class="map-shell" id="meadow-map-shell" hidden>
-                    <div id="meadow-map" class="seamap" aria-label="Сателитна карта на избрания участък"></div>
-                </div>
-                <figcaption class="brief-map-caption">
-                    <h2 id="meadow-map-title">Избран участък</h2>
-                    
-                </figcaption>
-            </figure>
+                <div class="panel site-brief">
+                    <figure class="brief-map" aria-labelledby="meadow-map-title">
+                        <p id="meadow-map-status" class="empty" role="status">Зареждаме картата…</p>
+                        <div class="map-shell" id="meadow-map-shell" hidden>
+                            <div id="meadow-map" class="seamap" aria-label="Сателитна карта на избрания участък"></div>
+                        </div>
+                        <figcaption class="brief-map-caption">
+                            <h2 id="meadow-map-title">Избран участък</h2>
 
-            <section class="verdict-main" aria-labelledby="verdict-title">
-                <h2 id="verdict-title" class="visually-hidden">Оценка на участъка</h2>
-                <div class="verdict-top">
-                    <span id="verdict-status" class="badge risk-unknown">Зареждаме…</span>
-                    <span id="verdict-meta" class="verdict-meta"></span>
-                </div>
-                <p id="verdict-headline" class="verdict-headline">Зареждаме оценката…</p>
-                <dl class="gauges">
-                    <div>
-                        <dt>Риск</dt>
-                        <dd><strong id="risk-score">—</strong><span>/ 100</span></dd>
-                        <dd class="gauge"><i id="risk-bar"></i></dd>
-                    </div>
-                    <div>
-                        <dt>Увереност</dt>
-                        <dd><strong id="confidence">—</strong><span>%</span></dd>
-                        <dd class="gauge confidence"><i id="confidence-bar"></i></dd>
-                    </div>
-                </dl>
-            </section>
+                        </figcaption>
+                    </figure>
 
-        </div>
+                    <section class="verdict-main" aria-labelledby="verdict-title">
+                        <h2 id="verdict-title" class="visually-hidden">Оценка на участъка</h2>
+                        <div class="verdict-top">
+                            <span id="verdict-status" class="badge risk-unknown">Зареждаме…</span>
+                            <span id="verdict-meta" class="verdict-meta"></span>
+                        </div>
+                        <p id="verdict-headline" class="verdict-headline">Зареждаме оценката…</p>
+                        <dl class="gauges">
+                            <div>
+                                <dt>Риск</dt>
+                                <dd><strong id="risk-score">—</strong><span>/ 100</span></dd>
+                                <dd class="gauge"><i id="risk-bar"></i></dd>
+                            </div>
+                            <div>
+                                <dt>Увереност</dt>
+                                <dd><strong id="confidence">—</strong><span>%</span></dd>
+                                <dd class="gauge confidence"><i id="confidence-bar"></i></dd>
+                            </div>
+                        </dl>
+                    </section>
+
+                </div>
 
                 <section class="panel section water-card" aria-labelledby="trend-title">
                     <header class="wc-head">
@@ -177,56 +177,56 @@
                 </section>
 
                 <section id="footage" class="panel section footage" th:data-endpoint="@{/api/ecologist/footage}" aria-labelledby="footage-title">
-            <header class="panel-head">
-                <div><h2 id="footage-title">Подводни кадри</h2></div>
-            </header>
-            <div class="panel-body">
-                <p id="mission-capture" class="mission-capture" hidden></p>
-                <div class="footage-actions">
-                    <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
-                    <input id="footage-file" class="file-input" type="file" disabled multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
-                </div>
-                <p id="footage-formats" class="footage-formats">До 3 снимки (JPG, PNG, WebP) или 1 видео (MP4, WebM), до 100 MB на файл. При видео се подбират до 3 кадъра за локалния AI еколог.</p>
-                <div id="frame-preview" class="frame-preview" hidden></div>
-                <button id="analyze-file" class="button primary" type="button" hidden>Анализирай с AI еколога</button>
-                <p id="analysis-status" class="analysis-status" role="status">Изчакваме списъка с участъци.</p>
-            </div>
-            <section id="analysis-result" class="panel-body analysis-result" aria-labelledby="analysis-title" hidden>
-                <h3 id="analysis-title" tabindex="-1">AI еколог · анализ на кадрите</h3>
-                <p id="analysis-provenance" class="analysis-provenance"></p>
-                <dl class="findings">
-                    <div><dt>Видимо в кадрите</dt><dd><ol id="analysis-frames"></ol></dd></div>
-                    <div><dt>Обобщение и несигурност</dt><dd id="analysis-summary"></dd></div>
-                    <div><dt>Теренна проверка</dt><dd id="analysis-next"></dd></div>
-                </dl>
-                <button id="footage-add-task" type="button" class="button secondary">Добави теренна проверка</button>
-                <p id="footage-task-status" class="analysis-status" role="status"></p>
-            </section>
-            <form id="mission-review" class="panel-body mission-review" hidden>
-                <div class="mission-review-head">
-                    <h3 id="mission-review-title">Теренен преглед на кадъра</h3>
-                    <button id="mission-cancel" type="button" class="button secondary small">Откачи от точката</button>
-                </div>
-                <p>При запис избраният кадър се съхранява към тази точка на мисията.</p>
-                <div class="mission-fields">
-                    <label>Кадър <select id="mission-frame" required></select></label>
-                    <label>Дата на заснемане <input name="capturedOn" type="date" required></label>
-                    <label>Дълбочина (м) <input name="depthM" type="number" min="0" step="any" inputmode="decimal" required></label>
-                    <label>Листовидни растителни форми
-                        <select name="verdict" required>
-                            <option value="">Избери резултат</option>
-                            <option value="CONFIRMED">Потвърдено</option>
-                            <option value="NOT_VISIBLE">Не се виждат</option>
-                            <option value="UNCLEAR">Кадърът е неясен</option>
-                        </select>
-                    </label>
-                </div>
-                <label>Теренна бележка <textarea name="notes" rows="2" maxlength="600"></textarea></label>
-                <p id="mission-ai-note" class="mission-status"></p>
-                <button id="mission-save" type="submit" class="button primary">Запиши проверката</button>
-                <p id="mission-save-status" class="mission-status" role="status"></p>
-            </form>
-        </section>
+                    <header class="panel-head">
+                        <div><h2 id="footage-title">Подводни кадри</h2></div>
+                    </header>
+                    <div class="panel-body">
+                        <p id="mission-capture" class="mission-capture" hidden></p>
+                        <div class="footage-actions">
+                            <label for="footage-file" class="button primary file-label"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg> Качи кадри</label>
+                            <input id="footage-file" class="file-input" type="file" disabled multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" aria-describedby="footage-formats">
+                        </div>
+                        <p id="footage-formats" class="footage-formats">До 3 снимки (JPG, PNG, WebP) или 1 видео (MP4, WebM), до 100 MB на файл. При видео се подбират до 3 кадъра за локалния AI еколог.</p>
+                        <div id="frame-preview" class="frame-preview" hidden></div>
+                        <button id="analyze-file" class="button primary" type="button" hidden>Анализирай с AI еколога</button>
+                        <p id="analysis-status" class="analysis-status" role="status">Изчакваме списъка с участъци.</p>
+                    </div>
+                    <section id="analysis-result" class="panel-body analysis-result" aria-labelledby="analysis-title" hidden>
+                        <h3 id="analysis-title" tabindex="-1">AI еколог · анализ на кадрите</h3>
+                        <p id="analysis-provenance" class="analysis-provenance"></p>
+                        <dl class="findings">
+                            <div><dt>Видимо в кадрите</dt><dd><ol id="analysis-frames"></ol></dd></div>
+                            <div><dt>Обобщение и несигурност</dt><dd id="analysis-summary"></dd></div>
+                            <div><dt>Теренна проверка</dt><dd id="analysis-next"></dd></div>
+                        </dl>
+                        <button id="footage-add-task" type="button" class="button secondary">Добави теренна проверка</button>
+                        <p id="footage-task-status" class="analysis-status" role="status"></p>
+                    </section>
+                    <form id="mission-review" class="panel-body mission-review" hidden>
+                        <div class="mission-review-head">
+                            <h3 id="mission-review-title">Теренен преглед на кадъра</h3>
+                            <button id="mission-cancel" type="button" class="button secondary small">Откачи от точката</button>
+                        </div>
+                        <p>При запис избраният кадър се съхранява към тази точка на мисията.</p>
+                        <div class="mission-fields">
+                            <label>Кадър <select id="mission-frame" required></select></label>
+                            <label>Дата на заснемане <input name="capturedOn" type="date" required></label>
+                            <label>Дълбочина (м) <input name="depthM" type="number" min="0" step="any" inputmode="decimal" required></label>
+                            <label>Листовидни растителни форми
+                                <select name="verdict" required>
+                                    <option value="">Избери резултат</option>
+                                    <option value="CONFIRMED">Потвърдено</option>
+                                    <option value="NOT_VISIBLE">Не се виждат</option>
+                                    <option value="UNCLEAR">Кадърът е неясен</option>
+                                </select>
+                            </label>
+                        </div>
+                        <label>Теренна бележка <textarea name="notes" rows="2" maxlength="600"></textarea></label>
+                        <p id="mission-ai-note" class="mission-status"></p>
+                        <button id="mission-save" type="submit" class="button primary">Запиши проверката</button>
+                        <p id="mission-save-status" class="mission-status" role="status"></p>
+                    </form>
+                </section>
 
 
                 <details class="panel section more">
