@@ -15,32 +15,32 @@ const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
 const ease = (a, b, strength, dt) => a + (b - a) * (1 - Math.exp(-strength * dt));
 const range = (x, y, other) => Math.hypot(x - other.x, y - other.y);
 const layout = [
-    { x: 263, y: 418, name: 'Каменният риф' },
-    { x: 543, y: 379, name: 'Тихият склон' },
-    { x: 836, y: 424, name: 'Външният залив' }
+    {x: 263, y: 418, name: 'Каменният риф'},
+    {x: 543, y: 379, name: 'Тихият склон'},
+    {x: 836, y: 424, name: 'Външният залив'}
 ];
-const dock = { x: 96, y: 196, kind: 'dock' };
+const dock = {x: 96, y: 196, kind: 'dock'};
 const cuttings = [
-    { x: 351, y: 279, kind: 'cutting' },
-    { x: 497, y: 438, kind: 'cutting' },
-    { x: 609, y: 243, kind: 'cutting' }
+    {x: 351, y: 279, kind: 'cutting'},
+    {x: 497, y: 438, kind: 'cutting'},
+    {x: 609, y: 243, kind: 'cutting'}
 ];
 const beds = [
-    { x: 543, y: 379, kind: 'plant', safe: true },
-    { x: 713, y: 397, kind: 'plant', safe: false }
+    {x: 543, y: 379, kind: 'plant', safe: true},
+    {x: 713, y: 397, kind: 'plant', safe: false}
 ];
 const cutOffsets = [[-44, 4], [-10, -16], [35, 6]];
 const rocks = [
-    { x: 344, y: 462, size: 46 }, { x: 460, y: 481, size: 30 },
-    { x: 653, y: 467, size: 63 }, { x: 767, y: 489, size: 36 },
-    { x: 910, y: 475, size: 55 }
+    {x: 344, y: 462, size: 46}, {x: 460, y: 481, size: 30},
+    {x: 653, y: 467, size: 63}, {x: 767, y: 489, size: 36},
+    {x: 910, y: 475, size: 55}
 ];
 let mission, knot, collected, carried, exposedSeed, healthy;
 let pulse, sonarReady, revealedUntil, noticeUntil, notice, scatter, blocked, retryCutting;
 const PRESS_RANGE = 27;
 const vents = [
-    { x: 405, y: 365, width: 47, height: 105, phase: 0.3 },
-    { x: 699, y: 310, width: 53, height: 125, phase: 2.7 }
+    {x: 405, y: 365, width: 47, height: 105, phase: 0.3},
+    {x: 699, y: 310, width: 53, height: 125, phase: 2.7}
 ];
 const keys = new Set();
 let pointer = null;
@@ -60,13 +60,13 @@ function seeded(seed) {
     return raw - Math.floor(raw);
 }
 
-const drift = Array.from({ length: 105 }, (_, i) => ({
+const drift = Array.from({length: 105}, (_, i) => ({
     x: seeded(i) * W, y: seeded(i + 200) * H,
     radius: 0.55 + seeded(i + 400) * 2,
     speed: 5 + seeded(i + 600) * 20
 }));
 
-const blades = Array.from({ length: 42 }, (_, i) => ({
+const blades = Array.from({length: 42}, (_, i) => ({
     offset: (seeded(i + 800) - .5) * 166,
     size: 12 + seeded(i + 900) * 60,
     lean: -15 + seeded(i + 1000) * 30,
@@ -127,13 +127,13 @@ function clearInput() {
 function reset() {
     clearInput();
     paused = false;
-    patches = layout.map((patch, i) => ({ ...patch, phase: i === 0 ? 'net' : 'barren', bloom: 0 }));
+    patches = layout.map((patch, i) => ({...patch, phase: i === 0 ? 'net' : 'barren', bloom: 0}));
     mission = 'rescue';
     collected = new Set();
     knot = carried = healthy = sonarReady = revealedUntil = noticeUntil = scatter = 0;
     pulse = exposedSeed = retryCutting = null;
     blocked = false;
-    drone = { x: 116, y: 227, vx: 0, vy: 0, energy: 100, face: 1 };
+    drone = {x: 116, y: 227, vx: 0, vy: 0, energy: 100, face: 1};
     time = trail = completed = danger = victoryAt = 0;
     lastWarning = 0;
     particles = [];
@@ -173,7 +173,16 @@ function emit(x, y, count, color, speed) {
         const angle = Math.random() * TAU;
         const force = speed * (.25 + Math.random() * .75);
         const life = .45 + Math.random() * .85;
-        particles.push({ x, y, vx: Math.cos(angle) * force, vy: Math.sin(angle) * force - 16, life, total: life, color, r: 1 + Math.random() * 3 });
+        particles.push({
+            x,
+            y,
+            vx: Math.cos(angle) * force,
+            vy: Math.sin(angle) * force - 16,
+            life,
+            total: life,
+            color,
+            r: 1 + Math.random() * 3
+        });
     }
 }
 
@@ -191,7 +200,7 @@ function activeNet() {
 }
 
 function knots(patch) {
-    return cutOffsets.map(([x, y], index) => ({ x: patch.x + x, y: patch.y + y, index, kind: 'knot' }));
+    return cutOffsets.map(([x, y], index) => ({x: patch.x + x, y: patch.y + y, index, kind: 'knot'}));
 }
 
 function objectives() {
@@ -224,7 +233,7 @@ function announce(message, seconds = 2.8) {
 
 function ping() {
     if (paused || mission === 'won' || mission === 'intermission' || time < sonarReady) return;
-    pulse = { x: drone.x, y: drone.y, at: time };
+    pulse = {x: drone.x, y: drone.y, at: time};
     sonarReady = time + 4;
     revealedUntil = time + 9;
     sound([740, 535, 360]);
@@ -276,7 +285,7 @@ function finishWork(target) {
     if (target.kind === 'plant') {
         carried--;
         if (!target.safe) {
-            exposedSeed = { x: target.x, y: target.y, since: time };
+            exposedSeed = {x: target.x, y: target.y, since: time};
             announce('Тук течението е силно. Виж какво ще стане с разсада.');
             return;
         }
@@ -332,7 +341,7 @@ function update(dt) {
         emit(exposedSeed.x + 65, exposedSeed.y - 28, 13, '#a1cda0', 48);
         exposedSeed = null;
         if (carried + cuttings.length - collected.size < 2 - healthy) {
-            retryCutting = { ...cuttings[0] };
+            retryCutting = {...cuttings[0]};
         }
         announce('Течението отнесе стръка. Засади следващия зад скалния заслон.');
     }
@@ -388,7 +397,7 @@ function update(dt) {
         trail = 0;
     }
     if (drone.energy <= 0) {
-        Object.assign(drone, { x: dock.x, y: dock.y, energy: 35, vx: 0, vy: 0 });
+        Object.assign(drone, {x: dock.x, y: dock.y, energy: 35, vx: 0, vy: 0});
         pointer = null;
         lastWarning = time + 3.4;
         sound([180, 130]);
@@ -415,15 +424,15 @@ function update(dt) {
     } else if (nearby?.kind === 'knot') say(nearby.index === knot ? 'Задръж за работа при възел ' + (knot + 1) + '. После отпусни бутона.' : 'Първо освободи светещия възел ' + (knot + 1) + '.');
     else if (drone.energy < 24) say('Батерията е ниска. Зарядната станция е горе вляво.');
     else say(time < revealedUntil ? 'Плувай към светещия възел ' + (knot + 1) + '.' :
-        'Използвай сонар (Q), за да откриеш мрежата. Светлината следва дрона.');
+            'Използвай сонар (Q), за да откриеш мрежата. Светлината следва дрона.');
     hud();
 }
 
 const dunes = [
-    { y: 342, amplitude: 52, color: '#103945', scale: .009, offset: 3 },
-    { y: 397, amplitude: 28, color: '#12353b', scale: .014, offset: 7 },
-    { y: 462, amplitude: 29, color: '#132d30', scale: .018, offset: 1.4 },
-    { y: 523, amplitude: 24, color: '#102425', scale: .017, offset: 5 }
+    {y: 342, amplitude: 52, color: '#103945', scale: .009, offset: 3},
+    {y: 397, amplitude: 28, color: '#12353b', scale: .014, offset: 7},
+    {y: 462, amplitude: 29, color: '#132d30', scale: .018, offset: 1.4},
+    {y: 523, amplitude: 24, color: '#102425', scale: .017, offset: 5}
 ];
 
 function path(color, points) {
@@ -491,7 +500,7 @@ function drawSea(t) {
         ctx.stroke();
     }
 
-    dunes.forEach(({ y, amplitude, color, scale, offset }) => path(color, () => {
+    dunes.forEach(({y, amplitude, color, scale, offset}) => path(color, () => {
         ctx.moveTo(0, H);
         for (let x = 0; x <= W; x += 8) {
             const ridge = y + Math.sin(x * scale + offset) * amplitude + Math.sin(x * scale * 2.2) * 12;
@@ -577,6 +586,7 @@ function drawJelly(x, y, size, phase, t) {
     }
     ctx.restore();
 }
+
 function drawGrass(patch, t) {
     const living = patch.phase === 'done' || patch.phase === 'growing';
     const growth = (living ? .13 + .87 * patch.bloom : .2) * (1 - Math.min(.65, (patch.damage || 0) * .18));
@@ -601,7 +611,7 @@ function drawGrass(patch, t) {
 }
 
 function drawRock(rock, outline = false) {
-    const { x, y, size } = rock;
+    const {x, y, size} = rock;
     const stone = ctx.createLinearGradient(x, y - size, x, y + 15);
     stone.addColorStop(0, '#3d6971');
     stone.addColorStop(.48, '#25494f');
@@ -717,7 +727,7 @@ function drawSonar() {
 }
 
 function drawObjective(point, t) {
-    const { x, y, kind } = point;
+    const {x, y, kind} = point;
     const distance = range(drone.x, drone.y, point);
     const close = distance < PRESS_RANGE;
     const current = kind !== 'knot' || point.index === knot;
@@ -961,14 +971,27 @@ hold('work', value => {
     workHeld = value;
     if (!value && !keys.has(' ')) blocked = false;
 });
-hold('boost', value => { boostHeld = value; });
-byId('sonar').addEventListener('click', () => { ping(); canvas.focus(); });
-byId('pause').addEventListener('click', () => { if (mission !== 'intermission') togglePause(); });
-byId('restart').addEventListener('click', () => { reset(); canvas.focus(); });
+hold('boost', value => {
+    boostHeld = value;
+});
+byId('sonar').addEventListener('click', () => {
+    ping();
+    canvas.focus();
+});
+byId('pause').addEventListener('click', () => {
+    if (mission !== 'intermission') togglePause();
+});
+byId('restart').addEventListener('click', () => {
+    reset();
+    canvas.focus();
+});
 byId('overlay-action').addEventListener('click', () => {
     if (paused) togglePause();
     else if (mission === 'intermission') startStorm();
-    else { reset(); canvas.focus(); }
+    else {
+        reset();
+        canvas.focus();
+    }
 });
 byId('sound').addEventListener('click', async () => {
     const Audio = window.AudioContext || window.webkitAudioContext;
@@ -996,6 +1019,7 @@ new ResizeObserver(() => {
 }).observe(canvas);
 
 let previous;
+
 function frame(now) {
     const dt = previous === undefined ? 0 : Math.min((now - previous) / 1000, .04);
     previous = now;
@@ -1003,5 +1027,6 @@ function frame(now) {
     draw();
     requestAnimationFrame(frame);
 }
+
 reset();
 requestAnimationFrame(frame);

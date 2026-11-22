@@ -16,10 +16,10 @@ const scenarios = {
 };
 const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 const mix = (a, b, amount) => a + (b - a) * amount;
-const random = count => Array.from({ length: count }, () => Math.random());
-const plants = Array.from({ length: 104 }, () => random(5)).sort((a, b) => a[1] - b[1]);
-const particles = Array.from({ length: 85 }, () => random(4));
-const fish = Array.from({ length: 30 }, (_, index) => ({
+const random = count => Array.from({length: count}, () => Math.random());
+const plants = Array.from({length: 104}, () => random(5)).sort((a, b) => a[1] - b[1]);
+const particles = Array.from({length: 85}, () => random(4));
+const fish = Array.from({length: 30}, (_, index) => ({
     school: index % 3,
     offset: random(4)
 }));
@@ -37,7 +37,7 @@ function syncInputs() {
         return Number(input.value);
     });
     const [temperature, oxygen, clarity, current] = values;
-    environment = { temperature, oxygen, clarity: clarity / 100, current: current / 100 };
+    environment = {temperature, oxygen, clarity: clarity / 100, current: current / 100};
     buttons.forEach(button => {
         const selected = scenarios[button.dataset.scenario].every((value, index) => value === values[index]);
         button.setAttribute('aria-pressed', selected);
@@ -52,12 +52,14 @@ function syncInputs() {
 }
 
 function setScenario(name) {
-    inputs.forEach((input, index) => { input.value = scenarios[name][index]; });
+    inputs.forEach((input, index) => {
+        input.value = scenarios[name][index];
+    });
     syncInputs();
 }
 
 function update(dt) {
-    const { temperature, oxygen, clarity, current } = environment;
+    const {temperature, oxygen, clarity, current} = environment;
     const heat = clamp((temperature - 24) / 9);
     const cold = clamp((15 - temperature) / 9);
     const oxygenStress = clamp((6 - oxygen) / 5);
@@ -76,7 +78,7 @@ function showStats() {
 }
 
 function drawWater(w, h) {
-    const { temperature, clarity } = environment;
+    const {temperature, clarity} = environment;
     const color = mix(171, 199, clamp((25 - temperature) / 15));
     const water = ctx.createLinearGradient(0, 0, 0, h);
     water.addColorStop(0, 'hsl(' + color + ', 69%, 34%)');
@@ -153,11 +155,11 @@ function drawPlants(w, h, foreground) {
 }
 
 function drawFish(w, h) {
-    const { temperature, oxygen, current } = environment;
+    const {temperature, oxygen, current} = environment;
     const urgency = clamp((5 - oxygen) / 4);
     const pace = .12 + clamp((temperature - 7) / 22) * .55 + current * .24;
     for (let i = 0; i < Math.min(fish.length, Math.ceil(count)); i++) {
-        const { school, offset: [a, b, c, d] } = fish[i];
+        const {school, offset: [a, b, c, d]} = fish[i];
         const phase = fishPhase + school * 2.1;
         const x = w * (.5 + Math.sin(phase) * .32 + (a - .5) * (.21 + (1 - health) * .18));
         const depth = .35 + school * .108;
@@ -199,6 +201,7 @@ function drawFish(w, h) {
 }
 
 let fishPhase = 0;
+
 function draw() {
     if (!width || !height) return;
     ctx.setTransform(scale, 0, 0, scale, 0, 0);

@@ -129,7 +129,10 @@
                     y: local.bottom + (local.top - local.bottom) * row / 7
                 };
                 const next = overlap(polygons, zone);
-                if (next > area) { best = zone; area = next; }
+                if (next > area) {
+                    best = zone;
+                    area = next;
+                }
             }
         }
         return best;
@@ -251,7 +254,9 @@
             const local = location(event);
             if (local) position(local[0] + drag.dx, local[1] + drag.dy);
         });
-        map.addEventListener('lostpointercapture', () => { drag = null; });
+        map.addEventListener('lostpointercapture', () => {
+            drag = null;
+        });
 
         const arrows = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowDown: [0, -1], ArrowUp: [0, 1]};
         handle.addEventListener('keydown', event => {
@@ -329,7 +334,14 @@
                     return;
                 }
                 const a = initialZone(prepared);
-                state = {...prepared, a, b: {...a}, areaA: overlap(prepared.polygons, a), saved: new Set(), saving: false};
+                state = {
+                    ...prepared,
+                    a,
+                    b: {...a},
+                    areaA: overlap(prepared.polygons, a),
+                    saved: new Set(),
+                    saving: false
+                };
                 drawOutline();
                 render();
                 loading.hidden = true;

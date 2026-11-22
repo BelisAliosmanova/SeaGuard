@@ -213,7 +213,9 @@ window.setupFieldMission = (() => {
                             announceProgress();
                             onTasks();
                         }
-                    }).catch(() => { if (siteId === selected) notice.textContent = error.message; });
+                    }).catch(() => {
+                        if (siteId === selected) notice.textContent = error.message;
+                    });
                 } else notice.textContent = error.message;
             } finally {
                 if (siteId === selected) plan.disabled = false;
@@ -244,7 +246,11 @@ window.setupFieldMission = (() => {
             saveStatus.textContent = 'Записваме проверката…';
             renderReview();
             try {
-                const result = await request(pointUrl(point), {method: 'POST', body: data, headers: {'X-SeaGuard-Mission': '1'}});
+                const result = await request(pointUrl(point), {
+                    method: 'POST',
+                    body: data,
+                    headers: {'X-SeaGuard-Mission': '1'}
+                });
                 if (siteId !== selected) return;
                 if (active === point) {
                     active = null;

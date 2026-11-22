@@ -26,8 +26,14 @@ window.setupFootage = (() => {
                 media.removeEventListener(event, success);
                 media.removeEventListener('error', failure);
             };
-            const success = () => { cleanup(); resolve(); };
-            const failure = () => { cleanup(); reject(new Error('Файлът не може да се прочете от този браузър.')); };
+            const success = () => {
+                cleanup();
+                resolve();
+            };
+            const failure = () => {
+                cleanup();
+                reject(new Error('Файлът не може да се прочете от този браузър.'));
+            };
             const timer = setTimeout(failure, 8000);
             media.addEventListener(event, success, {once: true});
             media.addEventListener('error', failure, {once: true});
@@ -46,7 +52,9 @@ window.setupFootage = (() => {
         video.preload = 'auto';
         video.playsInline = true;
         try {
-            await mediaEvent(video, 'loadeddata', () => { video.src = url; }).catch(() => {
+            await mediaEvent(video, 'loadeddata', () => {
+                video.src = url;
+            }).catch(() => {
                 throw new Error('Браузърът не отвори видеото. Опитай MP4 с H.264, WebM или отделни снимки.');
             });
             if (!Number.isFinite(video.duration) || video.duration <= 0 || !video.videoWidth) {
@@ -56,7 +64,9 @@ window.setupFootage = (() => {
             const frames = [];
             for (const fraction of fractions) {
                 const seconds = video.duration * fraction;
-                await mediaEvent(video, 'seeked', () => { video.currentTime = seconds; });
+                await mediaEvent(video, 'seeked', () => {
+                    video.currentTime = seconds;
+                });
                 frames.push({blob: await captureFrame(video, video.videoWidth, video.videoHeight), seconds});
             }
             return frames;
@@ -77,7 +87,9 @@ window.setupFootage = (() => {
             if (isVideo(file)) return await readVideo(url);
             if (!isImage(file)) throw new Error('Избери JPG, PNG, WebP, MP4 или WebM.');
             const image = new Image();
-            await mediaEvent(image, 'load', () => { image.src = url; });
+            await mediaEvent(image, 'load', () => {
+                image.src = url;
+            });
             return [{blob: await captureFrame(image, image.naturalWidth, image.naturalHeight), seconds: null}];
         } finally {
             URL.revokeObjectURL(url);
@@ -138,7 +150,10 @@ window.setupFootage = (() => {
             preview.replaceChildren(...figures);
             preview.hidden = figures.length === 0;
             analyzeButton.hidden = figures.length === 0;
-            if (currentSite) onFrames?.(currentSite.id, newFrames.map((frame, index) => ({...frame, label: frameLabel(frame, index)})));
+            if (currentSite) onFrames?.(currentSite.id, newFrames.map((frame, index) => ({
+                ...frame,
+                label: frameLabel(frame, index)
+            })));
         }
 
         async function analyze() {
@@ -261,5 +276,6 @@ window.setupFootage = (() => {
             }
         };
     }
+
     return setupFootage;
 })();
