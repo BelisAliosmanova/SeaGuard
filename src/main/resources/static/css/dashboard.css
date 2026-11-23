@@ -1,9 +1,3 @@
-/* Coast overview. Shared tokens, map and components are in app.css. */
-.overview-page {
-    display: grid;
-    gap: 18px;
-}
-
 /* Header with a live pulse of the coast */
 .ov-head {
     display: flex;
