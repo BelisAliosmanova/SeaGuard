@@ -74,6 +74,7 @@
     --serif: var(--display);
     --radius: 14px;
     --radius-sm: 7px;
+    --heading: 'Braah One', 'Roboto', system-ui, sans-serif;
 }
 
 * {
@@ -109,9 +110,9 @@ h1, h2, h3, p, dl, dd, ol, figure {
     margin: 0;
 }
 
-h1, h2, h3 {
-    font-family: var(--display);
-    letter-spacing: -.015em;
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Braah One', 'Roboto', system-ui, sans-serif;
+    font-synthesis: none;
 }
 
 h2 {
