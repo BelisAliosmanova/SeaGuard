@@ -5,7 +5,7 @@ From a terminal with Java 21 and Maven, run `mvn spring-boot:run`.
 
 The default Spring profile is `h2`: no MySQL server is needed. The in-memory database starts empty
 and stores the team’s field measurements and tasks for the current session.
-
+--**Портал** at http://localhost:8080/
 - **Преглед** at http://localhost:8080/dashboard shows coastal risk, monthly water conditions, and today's offshore marine models. The root route opens this page.
 - **Участък** at http://localhost:8080/ecologist opens the AI ecologist. Add `?site=16` to open **Равда, юг 1** directly.
 - **Теренна работа** at http://localhost:8080/field groups field tasks and lists measurements with search and CSV export.
