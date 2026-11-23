@@ -1,6 +1,8 @@
 (() => {
     'use strict';
     const $ = id => document.getElementById(id);
+    const coastalMap = $('coastal-map');
+    const hasInsights = Boolean($('metric-switch'));
     const page = document.querySelector('.overview-page').dataset;
     const LIGHT_OK = Number(page.lightOk) || 20, LIGHT_CRIT = Number(page.lightCritical) || 11;
     const CHL_MID = Number(page.chlModerate) || 3, CHL_HIGH = Number(page.chlHigh) || 6;
@@ -47,6 +49,7 @@
             return;
         }
         ({map} = SeaMap.create('map', {onReset: fitAll}));
+        if (!hasInsights) map.scrollWheelZoom.disable();
         const outlines = L.geoJSON(archive, {
             style: f => polygonStyle(byId.get(f.id), false),
             onEachFeature(f, layer) {
@@ -133,7 +136,8 @@
         const url = new URL(location.href);
         url.searchParams.set('site', id);
         history.replaceState(null, '', url);
-        renderWater();
+        coastalMap.dispatchEvent(new CustomEvent('coast:select', {detail: s}));
+        if (hasInsights) renderWater();
     }
 
     function renderPriority() {
@@ -368,23 +372,42 @@
         if (s && map) map.flyTo([s.latitude, s.longitude], 14, {duration: .8});
     });
 
-    (async () => {
+    async function loadJson(url) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return response.json();
+    }
+
+    async function loadOverview() {
         const [siteRes, archive, waterRes] = await Promise.all([
-            fetch('/api/ecologist/sites').then(r => r.json()),
-            fetch('/data/zostera-bulgaria.geojson').then(r => r.json()),
-            fetch('/api/ecologist/water').then(r => r.json()).catch(() => null)
+            loadJson('/api/ecologist/sites'),
+            loadJson('/data/zostera-bulgaria.geojson').catch(() => null),
+            hasInsights ? loadJson('/api/ecologist/water').catch(() => null) : null
         ]);
         sites = siteRes.sites;
+        if (!sites.length) {
+            $('mc-name').textContent = 'Няма заредени участъци';
+            $('priority-list').replaceChildren(el('li', 'Няма данни за участъци.', 'empty'));
+            return;
+        }
         sites.forEach(s => byId.set(s.id, s));
         water = waterRes;
-        renderPulse();
         renderPriority();
         picker = SitePicker.create($('picker'), {sites, onSelect: id => select(id, true)});
-        initMap(archive);
-        if (!water) $('heat-body').replaceChildren(el('p', 'Сателитните данни не се заредиха.', 'empty'));
+        if (archive) initMap(archive);
+        else $('map').append(el('p', 'Контурите на картата не се заредиха.', 'empty'));
         const wanted = Number(new URLSearchParams(location.search).get('site'));
         select(byId.has(wanted) ? wanted : sites[0].id, byId.has(wanted));
+        if (!hasInsights) return;
+
+        renderPulse();
+        if (!water) $('heat-body').replaceChildren(el('p', 'Сателитните данни не се заредиха.', 'empty'));
         loadSea();
         loadField();
-    })();
+    }
+
+    loadOverview().catch(() => {
+        $('mc-name').textContent = 'Данните за картата са недостъпни';
+        $('priority-list').replaceChildren(el('li', 'Опитай да опресниш страницата.', 'empty'));
+    });
 })();

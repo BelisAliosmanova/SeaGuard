@@ -16,7 +16,7 @@ public class DashboardController {
     private final MeasurementRepository repository;
     public DashboardController(MeasurementRepository repository) { this.repository = repository; }
 
-    @GetMapping({"/", "/overview"})
+    @GetMapping("/overview")
     public String landing() { return "redirect:/dashboard"; }
 
     @GetMapping("/dashboard")

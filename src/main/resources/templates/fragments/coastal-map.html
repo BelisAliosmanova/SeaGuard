@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<body>
+<section id="coastal-map" class="ov-hero" th:fragment="map" aria-label="Карта на риска">
+    <div class="map-shell ov-map">
+        <div id="map" class="seamap" aria-label="Карта на морските ливади, оцветени по риск"></div>
+
+        <article class="map-card" id="map-card" aria-live="polite">
+            <div class="mc-top">
+                <span id="mc-status" class="badge risk-unknown">—</span>
+                <span id="mc-area" class="mc-area"></span>
+            </div>
+            <div class="mc-title">
+                <h2 id="mc-name">Зареждане…</h2>
+                <div class="mc-score"><strong id="mc-score">—</strong><span>/100</span></div>
+            </div>
+            <div class="mc-bar"><i id="mc-bar"></i></div>
+            <dl class="mc-facts">
+                <div><dt>Главна заплаха</dt><dd id="mc-threat">—</dd></div>
+                <div><dt>Вероятна причина</dt><dd id="mc-cause">—</dd></div>
+            </dl>
+            <div class="mc-actions">
+                <a id="mc-link" class="button primary small" th:href="@{/ecologist}"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Разгледай с Pickle</a>
+                <button id="mc-zoom" class="button secondary small" type="button"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg>Приближи</button>
+            </div>
+        </article>
+
+        <div class="map-legend-pill" aria-hidden="true">
+            <span><i style="background:var(--marker-high)"></i>Висок</span>
+            <span><i style="background:var(--marker-elevated)"></i>Повишен</span>
+            <span><i style="background:var(--marker-watch)"></i>Наблюдение</span>
+            <span><i style="background:var(--marker-low)"></i>Нисък</span>
+        </div>
+    </div>
+
+    <aside class="panel priority" aria-labelledby="priority-title">
+        <header class="priority-head">
+            <div>
+                <h2 id="priority-title">Къде да отиде екипът</h2>
+                <p>Подредени по риск. Кликни, за да видиш на картата.</p>
+            </div>
+            <div id="picker"></div>
+        </header>
+        <ol id="priority-list" class="priority-list"><li class="empty">Зареждане…</li></ol>
+    </aside>
+</section>
+</body>
+</html>

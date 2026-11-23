@@ -47,10 +47,11 @@
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 11a7 7 0 0 1-7 7H8l-4 3v-5a7 7 0 0 1-1-4 7 7 0 0 1 7-7h3a7 7 0 0 1 7 6Z"/><path d="M8 10h7m-7 4h5"/></symbol>
 </svg>
 
-<!-- Shared navigation. `active` is one of: dashboard, ecologist, field, simulation, dive, community. -->
+<!-- Shared top navigation. The brand is the home link. -->
 <aside th:fragment="rail(active)" class="site-nav">
     <div class="site-nav-inner">
-        <a class="brand" aria-label="Blue root" th:href="@{/}">
+        <a class="brand" aria-label="Blue root · Начало" th:href="@{/}"
+           th:attr="aria-current=${active == 'home'} ? 'page' : null">
             <img class="brand-mark" th:src="@{/img/Logo.png}" alt="">
             <span class="brand-name">Blue <span class="root">root</span></span>
         </a>

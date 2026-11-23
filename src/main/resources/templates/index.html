@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Начало')}"></th:block>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/portal.css}">
+</head>
+<body class="portal-page">
+<svg th:replace="~{fragments/layout :: symbols}"></svg>
+<svg width="0" height="0" class="symbols" aria-hidden="true">
+    <symbol id="fish" viewBox="0 0 120 60">
+        <path d="M8 30C28 6 70 4 96 26L118 8V52L96 34C70 56 28 54 8 30Z" fill="currentColor"/>
+        <circle cx="30" cy="27" r="3.2" fill="#04182b"/>
+        <path d="M52 16C58 28 58 34 52 46" stroke="#04182b" stroke-opacity=".25" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </symbol>
+</svg>
+
+<a class="skip" href="#top">Към съдържанието</a>
+<header th:replace="~{fragments/layout :: rail('home')}"></header>
+
+<main id="top">
+    <section class="hero" id="hero" aria-labelledby="portal-title">
+        <div class="plant-layer" id="plantLayer" aria-hidden="true"></div>
+        <div class="fish-layer" id="fishLayer" aria-hidden="true"></div>
+        <div class="hero-inner">
+            <img class="logo" th:src="@{/img/Logo.png}" alt="">
+            <h1 id="portal-title">Blue <span class="root">root</span></h1>
+            <p class="monitor"><span class="rule" aria-hidden="true"></span>Морските ливади на Черно море<span class="rule" aria-hidden="true"></span></p>
+
+            <form class="ask" id="ask" th:if="${initialSite != null}" th:data-ask-url="@{/api/ecologist/ask}"
+                  th:data-site-id="${initialSite.id}" th:data-site-name="${initialSite.name}">
+                <div class="ask-row">
+                    <label class="spark" for="askInput"><span aria-hidden="true">✦</span><span class="visually-hidden">Въпрос към Pickle</span></label>
+                    <input id="askInput" type="text" placeholder="Попитай Pickle…" required maxlength="1000" autocomplete="off">
+                    <button class="ask-send" type="submit" aria-label="Изпрати въпрос" title="Изпрати въпрос">
+                        <svg class="icon" aria-hidden="true"><use href="#i-send"/></svg>
+                    </button>
+                </div>
+                <div class="suggest">
+                    <button type="button">Как мътността влияе на морските треви?</button>
+                    <button type="button">Откъде идват хранителните вещества?</button>
+                </div>
+            </form>
+            <p class="ask-status" id="ask-status" role="status" hidden></p>
+            <div class="ask-answer" id="ask-answer" aria-live="polite" hidden>
+                <strong id="answer-heading">Pickle</strong>
+                <p id="answer-text"></p>
+                <a class="portal-link" id="answer-site" th:href="@{/ecologist}">Отвори участъка <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
+        <a class="scroll-cue" href="#coast"><span>Разгледай крайбрежието</span><i aria-hidden="true"></i></a>
+    </section>
+
+    <section class="workspace overview-page portal-coast" id="coast" aria-labelledby="map-title">
+        <h2 class="big" id="map-title">Карта на крайбрежието</h2>
+        <section th:replace="~{fragments/coastal-map :: map}"></section>
+    </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+<script th:src="@{/js/seamap.js}" defer></script>
+<script th:src="@{/js/site-picker.js}" defer></script>
+<script th:src="@{/js/portal.js}" defer></script>
+<script th:src="@{/js/dashboard.js}" defer></script>
+</body>
+</html>
